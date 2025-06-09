@@ -1,4 +1,12 @@
 backend/venv/
-backend/venv/
 backend/uploads/
 backend/.env
+__pycache__/
+*.py[cod]
+.env
+.venv
+venv/
+*.log
+db.sqlite3
+.vscode/
+.cursorignore
