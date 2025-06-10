@@ -1,6 +1,6 @@
 # ASMIS Backend
 
-Backend service for the ASMIS (Account Success Management Information System) application, built with FastAPI.
+Backend service for the ASMIS (Agentic Sales Meeting Intelligence System) application, built with FastAPI.
 
 ## Features
 
