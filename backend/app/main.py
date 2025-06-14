@@ -4,8 +4,8 @@ import os
 from datetime import datetime
 import shutil
 from dotenv import load_dotenv
-from app.meeting_intelligence import MeetingIntelligenceAgent
-from app.action_items_agent import ActionItemsAgent
+from app.agents.meeting_intelligence_agent import MeetingIntelligenceAgent
+from app.agents.action_items_agent import ActionItemsAgent
 import anthropic
 import logging
 
