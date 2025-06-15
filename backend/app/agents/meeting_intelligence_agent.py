@@ -1,9 +1,10 @@
 import logging
 from typing import Dict, Any, List
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic, APIError
 from anthropic.types import Message
 import json
 from datetime import datetime
+import warnings
 
 # Configure logging
 logging.basicConfig(
@@ -29,11 +30,42 @@ class MeetingIntelligenceAgent:
             api_key (str): Anthropic API key
             model (str): Claude model to use for analysis
         """
-        self.client = AsyncAnthropic(api_key=api_key)
-        self.model = model
-        
+        try:
+            self.client = AsyncAnthropic(api_key=api_key)
+            self.model = model
+            logger.info("Successfully initialized Anthropic client")
+        except Exception as e:
+            logger.error(f"Failed to initialize Anthropic client: {str(e)}")
+            raise
+    
+    def __del__(self):
+        """Cleanup when the agent is destroyed."""
+        try:
+            if hasattr(self, 'client'):
+                # Async client doesn't need explicit cleanup
+                pass
+        except Exception as e:
+            logger.error(f"Error during client cleanup: {str(e)}")
+    
+    async def __aenter__(self):
+        """Async context manager entry."""
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        try:
+            if hasattr(self, 'client'):
+                # Async client doesn't need explicit cleanup
+                pass
+        except Exception as e:
+            logger.error(f"Error during async context cleanup: {str(e)}")
+    
     async def extract_meddpic(self, transcript_text: str) -> Dict[str, Any]:
         """
+        DEPRECATED: This method is deprecated and will be removed in a future version.
+        Please use extract_meddpic_from_transcript() instead, which provides more comprehensive
+        analysis including evidence and better structured output.
+
         Extract MEDDPIC elements from a sales meeting transcript.
         
         Args:
@@ -43,9 +75,15 @@ class MeetingIntelligenceAgent:
             Dict[str, Any]: Dictionary containing MEDDPIC elements with confidence scores
             
         Raises:
-            anthropic.APIError: If there's an error with the Anthropic API
+            APIError: If there's an error with the Anthropic API
             ValueError: If the transcript is empty or invalid
         """
+        warnings.warn(
+            "extract_meddpic() is deprecated and will be removed in a future version. "
+            "Please use extract_meddpic_from_transcript() instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         if not transcript_text or not isinstance(transcript_text, str):
             raise ValueError("Transcript text must be a non-empty string")
             
@@ -114,7 +152,7 @@ class MeetingIntelligenceAgent:
                 logger.error(f"Failed to parse Claude's response as JSON: {str(e)}")
                 raise ValueError("Invalid response format from Claude API")
                 
-        except Exception as e:
+        except APIError as e:
             logger.error(f"Anthropic API error: {str(e)}")
             raise
         except Exception as e:
@@ -133,7 +171,7 @@ class MeetingIntelligenceAgent:
             Dict[str, Any]: Dictionary containing detailed MEDDPIC analysis with evidence
             
         Raises:
-            anthropic.APIError: If there's an error with the Anthropic API
+            APIError: If there's an error with the Anthropic API
             ValueError: If the transcript is empty or invalid
         """
         if not transcript or not isinstance(transcript, str):
@@ -230,7 +268,7 @@ class MeetingIntelligenceAgent:
                 logger.error(f"Failed to parse Claude's response as JSON: {str(e)}")
                 raise ValueError("Invalid response format from Claude API")
                 
-        except Exception as e:
+        except APIError as e:
             logger.error(f"Anthropic API error: {str(e)}")
             raise
         except Exception as e:

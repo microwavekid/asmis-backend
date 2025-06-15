@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Any, List
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic, APIError
 import json
 from datetime import datetime
 
@@ -29,9 +29,36 @@ class DocumentIntelligenceAgent:
             api_key (str): Anthropic API key
             model (str): Claude model to use for analysis
         """
-        self.client = AsyncAnthropic(api_key=api_key)
-        self.model = model
-        
+        try:
+            self.client = AsyncAnthropic(api_key=api_key)
+            self.model = model
+            logger.info("Successfully initialized Anthropic client")
+        except Exception as e:
+            logger.error(f"Failed to initialize Anthropic client: {str(e)}")
+            raise
+    
+    def __del__(self):
+        """Cleanup when the agent is destroyed."""
+        try:
+            if hasattr(self, 'client'):
+                # Async client doesn't need explicit cleanup
+                pass
+        except Exception as e:
+            logger.error(f"Error during client cleanup: {str(e)}")
+    
+    async def __aenter__(self):
+        """Async context manager entry."""
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        try:
+            if hasattr(self, 'client'):
+                # Async client doesn't need explicit cleanup
+                pass
+        except Exception as e:
+            logger.error(f"Error during async context cleanup: {str(e)}")
+    
     async def extract_meddpic_from_document(
         self, 
         document_content: str, 
@@ -50,7 +77,7 @@ class DocumentIntelligenceAgent:
             Dict[str, Any]: Dictionary containing detailed MEDDPIC analysis with evidence
             
         Raises:
-            anthropic.APIError: If there's an error with the Anthropic API
+            APIError: If there's an error with the Anthropic API
             ValueError: If the document content is empty or invalid
         """
         if not document_content or not isinstance(document_content, str):
@@ -159,7 +186,7 @@ class DocumentIntelligenceAgent:
                 logger.error(f"Failed to parse Claude's response as JSON: {str(e)}")
                 raise ValueError("Invalid response format from Claude API")
                 
-        except Exception as e:
+        except APIError as e:
             logger.error(f"Anthropic API error: {str(e)}")
             raise
         except Exception as e:
