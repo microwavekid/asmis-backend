@@ -13,7 +13,9 @@ from datetime import datetime, timedelta
 from enum import Enum
 from dataclasses import dataclass
 import traceback
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic, APIError
+from anthropic.types import Message
+import json
 
 from .meeting_intelligence_agent import MeetingIntelligenceAgent
 from .document_intelligence_agent import DocumentIntelligenceAgent
@@ -270,42 +272,68 @@ class MEDDPICOrchestrator:
     async def _extract_intelligence(self, context: AnalysisContext) -> Dict[str, Any]:
         """Extract intelligence using appropriate agent."""
         results = {}
-        
-        # Extract MEDDPIC analysis based on source type
+        tasks = []
+
+        # Determine MEDDPIC task
+        meddpic_task = None
         if context.source_type in self.MEETING_SOURCES:
             if not self.meeting_agent:
                 raise RuntimeError("Meeting agent not available")
-            
-            results["meddpic_analysis"] = await self.meeting_agent.extract_meddpic_from_transcript(
+            meddpic_task = self.meeting_agent.extract_meddpic_from_transcript(
                 transcript=context.content,
                 meeting_id=context.source_id
             )
-        
         elif context.source_type in self.DOCUMENT_SOURCES:
             if not self.document_agent:
                 raise RuntimeError("Document agent not available")
-            
-            results["meddpic_analysis"] = await self.document_agent.extract_meddpic_from_document(
+            meddpic_task = self.document_agent.extract_meddpic_from_document(
                 document_content=context.content,
                 document_id=context.source_id,
                 document_type=context.source_type.value
             )
-        
         else:
             raise ValueError(f"No agent available for source type: {context.source_type.value}")
-        
-        # Extract action items if enabled
+
+        tasks.append(meddpic_task)
+
+        # Determine Action Items task (if enabled) and wrap it for safe execution
+        action_items_task_exists = False
         if self.config["extract_action_items"] and self.action_items_agent:
-            try:
-                results["action_items"] = await self.action_items_agent.extract_action_items(
-                    context.content
-                )
+            action_items_task_exists = True
+            async def safe_action_items_extraction():
+                try:
+                    return await self.action_items_agent.extract_action_items(context.content)
+                except Exception as e:
+                    logger.error(f"Failed to extract action items: {str(e)}")
+                    return {"error": str(e), "status": "failed"}
+            tasks.append(safe_action_items_extraction())
+
+        # Run tasks in parallel
+        # Using return_exceptions=True to handle individual task failures gracefully
+        try:
+            results_list = await asyncio.gather(*tasks, return_exceptions=True)
+        except Exception as e:
+            # This catches exceptions from asyncio.gather itself, not the tasks within
+            logger.error(f"An unexpected error occurred during parallel extraction: {str(e)}")
+            raise
+
+        # Process results
+        meddpic_result = results_list[0]
+        if isinstance(meddpic_result, Exception):
+            # If MEDDPIC extraction failed, re-raise it as it's a critical component
+            raise meddpic_result
+        else:
+            results["meddpic_analysis"] = meddpic_result
+
+        if action_items_task_exists:
+            action_items_result = results_list[1]
+            if isinstance(action_items_result, dict) and action_items_result.get("status") == "failed":
+                results["action_items_error"] = action_items_result["error"]
+            else:
+                results["action_items"] = action_items_result
                 if self.metrics:
                     self.metrics["action_items_extracted"] += len(results["action_items"])
-            except Exception as e:
-                logger.error(f"Failed to extract action items: {str(e)}")
-                results["action_items_error"] = str(e)
-        
+
         return results
     
     def _generate_recommendations(self, extraction_result: Dict[str, Any]) -> List[Dict[str, Any]]:

@@ -5,6 +5,7 @@ from datetime import datetime
 import shutil
 from dotenv import load_dotenv
 from app.agents.meddpic_orchestrator import MEDDPICOrchestrator, SourceType
+from app.agents.stakeholder_intelligence_agent import StakeholderIntelligenceAgent
 import anthropic
 import logging
 
@@ -41,6 +42,12 @@ try:
     )
 except Exception as e:
     raise RuntimeError(f"Failed to initialize orchestrator: {str(e)}")
+
+# Initialize stakeholder intelligence agent
+try:
+    stakeholder_agent = StakeholderIntelligenceAgent(api_key=api_key)
+except Exception as e:
+    raise RuntimeError(f"Failed to initialize stakeholder agent: {str(e)}")
 
 logger = logging.getLogger(__name__)
 
@@ -193,3 +200,72 @@ async def clear_cache():
             status_code=500,
             detail=f"Failed to clear cache: {str(e)}"
         )
+
+@app.post("/analyze-stakeholders")
+async def analyze_stakeholders(file: UploadFile):
+    """
+    Analyze stakeholders from a sales meeting transcript.
+    """
+    try:
+        # Validate file extension
+        if not is_valid_file(file.filename):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid file type. Allowed types: {', '.join(FILE_TYPE_MAPPING.keys())}"
+            )
+        
+        # Read file content
+        content = await file.read()
+        try:
+            text_content = content.decode('utf-8')
+        except UnicodeDecodeError:
+            raise HTTPException(
+                status_code=400,
+                detail="File must be a valid UTF-8 text file"
+            )
+        
+        # Analyze stakeholders
+        try:
+            logger.info(f"Starting stakeholder analysis for {file.filename}")
+            analysis_result = await stakeholder_agent.analyze_stakeholders(
+                transcript=text_content
+            )
+            logger.info("Stakeholder analysis completed successfully")
+            
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message": "Stakeholder analysis completed successfully",
+                    "filename": file.filename,
+                    "analysis_result": analysis_result
+                }
+            )
+        except anthropic.APIError as e:
+            logger.error(f"Anthropic API error: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Anthropic API error: {str(e)}"
+            )
+        except ValueError as e:
+            logger.error(f"Validation error: {str(e)}")
+            raise HTTPException(
+                status_code=400,
+                detail=str(e)
+            )
+        except Exception as e:
+            logger.error(f"Analysis error: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to analyze stakeholders: {str(e)}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred while processing the file: {str(e)}"
+        )
+    finally:
+        await file.close()
