@@ -31,7 +31,6 @@ class ActionItemsAgent:
             model (str): Claude model to use for analysis
         """
         try:
-            logger.info(f"Initializing ActionItemsAgent with model: {model}")
             self.client = AsyncAnthropic(api_key=api_key)
             self.model = model
             logger.info("ActionItemsAgent initialized successfully")
