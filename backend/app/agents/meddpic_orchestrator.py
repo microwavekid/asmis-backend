@@ -13,11 +13,14 @@ from datetime import datetime, timedelta
 from enum import Enum
 from dataclasses import dataclass
 import traceback
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic, APIError
+from anthropic.types import Message
+import json
 
 from .meeting_intelligence_agent import MeetingIntelligenceAgent
 from .document_intelligence_agent import DocumentIntelligenceAgent
 from .action_items_agent import ActionItemsAgent
+from .stakeholder_intelligence_agent import StakeholderIntelligenceAgent
 
 # Configure logging
 logging.basicConfig(
@@ -96,7 +99,8 @@ class MEDDPICOrchestrator:
         "parallel_processing": True,
         "max_retries": 3,
         "timeout_seconds": 60,
-        "extract_action_items": True  # New config option
+        "extract_action_items": True,
+        "extract_stakeholder_intelligence": True
     }
     
     def __init__(self, api_key: str, config: Optional[Dict[str, Any]] = None):
@@ -138,6 +142,7 @@ class MEDDPICOrchestrator:
             self.meeting_agent = MeetingIntelligenceAgent(self.api_key)
             self.document_agent = DocumentIntelligenceAgent(self.api_key)
             self.action_items_agent = ActionItemsAgent(self.api_key)
+            self.stakeholder_agent = StakeholderIntelligenceAgent(self.api_key)
             
             # Future agents - initialize as None for now
             self.synthesis_agent = None
@@ -270,42 +275,96 @@ class MEDDPICOrchestrator:
     async def _extract_intelligence(self, context: AnalysisContext) -> Dict[str, Any]:
         """Extract intelligence using appropriate agent."""
         results = {}
-        
-        # Extract MEDDPIC analysis based on source type
+        tasks = []
+
+        # Determine MEDDPIC task
+        meddpic_task = None
         if context.source_type in self.MEETING_SOURCES:
             if not self.meeting_agent:
                 raise RuntimeError("Meeting agent not available")
-            
-            results["meddpic_analysis"] = await self.meeting_agent.extract_meddpic_from_transcript(
+            meddpic_task = self.meeting_agent.extract_meddpic_from_transcript(
                 transcript=context.content,
                 meeting_id=context.source_id
             )
-        
         elif context.source_type in self.DOCUMENT_SOURCES:
             if not self.document_agent:
                 raise RuntimeError("Document agent not available")
-            
-            results["meddpic_analysis"] = await self.document_agent.extract_meddpic_from_document(
+            meddpic_task = self.document_agent.extract_meddpic_from_document(
                 document_content=context.content,
                 document_id=context.source_id,
                 document_type=context.source_type.value
             )
-        
         else:
             raise ValueError(f"No agent available for source type: {context.source_type.value}")
-        
-        # Extract action items if enabled
+
+        tasks.append(meddpic_task)
+
+        # Determine Action Items task (if enabled) and wrap it for safe execution
+        action_items_task_exists = False
         if self.config["extract_action_items"] and self.action_items_agent:
-            try:
-                results["action_items"] = await self.action_items_agent.extract_action_items(
-                    context.content
-                )
-                if self.metrics:
-                    self.metrics["action_items_extracted"] += len(results["action_items"])
-            except Exception as e:
-                logger.error(f"Failed to extract action items: {str(e)}")
-                results["action_items_error"] = str(e)
+            action_items_task_exists = True
+            async def safe_action_items_extraction():
+                try:
+                    return await self.action_items_agent.extract_action_items(context.content)
+                except Exception as e:
+                    logger.error(f"Failed to extract action items: {str(e)}")
+                    return {"error": str(e), "status": "failed"}
+            tasks.append(safe_action_items_extraction())
         
+        # Determine Stakeholder Intelligence task (if enabled and is meeting source)
+        stakeholder_intelligence_task_exists = False
+        if (self.config.get("extract_stakeholder_intelligence", True) and
+            context.source_type in self.MEETING_SOURCES and
+            self.stakeholder_agent):
+            stakeholder_intelligence_task_exists = True
+            async def safe_stakeholder_intelligence_extraction():
+                try:
+                    return await self.stakeholder_agent.extract_comprehensive_stakeholder_intelligence(context.content)
+                except Exception as e:
+                    logger.error(f"Failed to extract stakeholder intelligence: {str(e)}")
+                    return {"error": str(e), "status": "failed"}
+            tasks.append(safe_stakeholder_intelligence_extraction())
+        
+        # Run tasks in parallel
+        # Using return_exceptions=True to handle individual task failures gracefully
+        try:
+            results_list = await asyncio.gather(*tasks, return_exceptions=True)
+        except Exception as e:
+            # This catches exceptions from asyncio.gather itself, not the tasks within
+            logger.error(f"An unexpected error occurred during parallel extraction: {str(e)}")
+            raise
+
+        # Process results
+        meddpic_result = results_list[0]
+        if isinstance(meddpic_result, Exception):
+            # If MEDDPIC extraction failed, re-raise it as it's a critical component
+            raise meddpic_result
+        else:
+            results["meddpic_analysis"] = meddpic_result
+
+        # Process action items results
+        if action_items_task_exists:
+            action_items_result = results_list[1]
+            if isinstance(action_items_result, dict) and action_items_result.get("status") == "failed":
+                results["action_items_error"] = action_items_result["error"]
+            else:
+                results["action_items"] = action_items_result
+                if self.metrics:
+                    self.metrics["action_items_extracted"] += len(action_items_result.get("action_items", []))
+
+        # Process stakeholder intelligence results
+        if stakeholder_intelligence_task_exists:
+            # Determine the index based on what tasks were run
+            stakeholder_index = 1
+            if action_items_task_exists:
+                stakeholder_index = 2
+                
+            stakeholder_result = results_list[stakeholder_index]
+            if isinstance(stakeholder_result, dict) and stakeholder_result.get("status") == "failed":
+                results["stakeholder_intelligence_error"] = stakeholder_result["error"]
+            else:
+                results["stakeholder_intelligence"] = stakeholder_result
+
         return results
     
     def _generate_recommendations(self, extraction_result: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -435,6 +494,7 @@ class MEDDPICOrchestrator:
                 "meeting_agent": "healthy" if self.meeting_agent else "unavailable",
                 "document_agent": "healthy" if self.document_agent else "unavailable",
                 "action_items_agent": "healthy" if self.action_items_agent else "unavailable",
+                "stakeholder_agent": "healthy" if self.stakeholder_agent else "unavailable",
                 "synthesis_agent": "not_implemented",
                 "campaign_agent": "not_implemented",
                 "pattern_agent": "not_implemented"

@@ -46,6 +46,8 @@ async def test_full_system():
     print(f"   ✓ Orchestrator: {health['orchestrator']}")
     print(f"   ✓ Meeting Agent: {health['agents']['meeting_agent']}")
     print(f"   ✓ Document Agent: {health['agents']['document_agent']}")
+    print(f"   ✓ Action Items Agent: {health['agents']['action_items_agent']}")
+    print(f"   ✓ Stakeholder Agent: {health['agents']['stakeholder_agent']}")
     
     # Test 2: Meeting transcript
     print("\n2. Testing Meeting Analysis...")
@@ -61,6 +63,14 @@ async def test_full_system():
     )
     print(f"   ✓ Status: {meeting_result['status']}")
     print(f"   ✓ Processing Time: {meeting_result['metadata']['processing_time_seconds']:.2f}s")
+    if "stakeholder_intelligence" in meeting_result.get("extraction_result", {}):
+        stakeholder_info = meeting_result["extraction_result"]["stakeholder_intelligence"]
+        if "stakeholders" in stakeholder_info:
+            print(f"   ✓ Stakeholder Analysis: Found {len(stakeholder_info['stakeholders'])} stakeholders.")
+        else:
+            print("   ✗ Stakeholder Analysis: No stakeholders found in result.")
+    else:
+        print("   ✗ Stakeholder Analysis: Not run or failed.")
     
     # Test 3: Cache hit
     print("\n3. Testing Cache...")
@@ -105,3 +115,4 @@ async def test_full_system():
 
 if __name__ == "__main__":
     asyncio.run(test_full_system()) 
+
