@@ -10,3 +10,10 @@ venv/
 db.sqlite3
 .vscode/
 .cursorignore
+
+# Database files
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+*.db
+*.sqlite
