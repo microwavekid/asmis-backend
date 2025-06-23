@@ -24,9 +24,9 @@ def test_database_connection():
             # Create a test prompt template
             template = prompt_template_repo.create(
                 session,
-                name="Test MEDDPIC Template",
-                description="A test template for MEDDPIC analysis",
-                content="Analyze the following content for MEDDPIC elements: {content}",
+                name="Test MEDDPICC Template",
+                description="A test template for MEDDPICC analysis",
+                content="Analyze the following content for MEDDPICC elements: {content}",
                 agent_type="meddpic",
                 version="1.0.0",
                 template_metadata={"test": True},
@@ -49,13 +49,13 @@ def test_database_connection():
             # Test querying the template
             retrieved_template = prompt_template_repo.get_by_id(session, template.id)
             assert retrieved_template is not None
-            assert retrieved_template.name == "Test MEDDPIC Template"
+            assert retrieved_template.name == "Test MEDDPICC Template"
             logger.info(f"✅ Retrieved template: {retrieved_template.name}")
             
             # Test querying by agent type
             meddpic_templates = prompt_template_repo.get_by_agent_type(session, "meddpic")
             assert len(meddpic_templates) >= 1
-            logger.info(f"✅ Found {len(meddpic_templates)} MEDDPIC templates")
+            logger.info(f"✅ Found {len(meddpic_templates)} MEDDPICC templates")
             
             # Test getting current version
             current_version = prompt_version_repo.get_current_version(session, template.id)

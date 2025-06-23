@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 import shutil
 from dotenv import load_dotenv
-from app.agents.meddpic_orchestrator import MEDDPICOrchestrator, SourceType
+from app.agents.meddpic_orchestrator import MEDDPICCOrchestrator, SourceType
 import anthropic
 import logging
 
@@ -30,7 +30,7 @@ try:
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         raise ValueError("ANTHROPIC_API_KEY environment variable is not set")
-    orchestrator = MEDDPICOrchestrator(
+    orchestrator = MEDDPICCOrchestrator(
         api_key=api_key,
         config={
             "enable_caching": True,

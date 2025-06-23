@@ -2,7 +2,7 @@ import asyncio
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from app.agents.meddpic_orchestrator import MEDDPICOrchestrator
+from app.agents.meddpic_orchestrator import MEDDPICCOrchestrator
 import logging
 
 # Configure logging
@@ -32,7 +32,7 @@ async def test_full_system():
     
     print("🔑 Using API key from environment variable")
     
-    orchestrator = MEDDPICOrchestrator(
+    orchestrator = MEDDPICCOrchestrator(
         api_key=api_key,
         config={
             "enable_caching": True,

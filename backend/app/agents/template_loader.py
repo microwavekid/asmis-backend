@@ -5,7 +5,7 @@ Template Loading Utility for ASMIS Agents
 Provides centralized template loading and validation for Template Imprinting Protocol.
 
 PATTERN_REF: TEMPLATE_IMPRINTING_PROTOCOL
-DECISION_REF: TIP_MEDDPIC_CONVERSION_001
+DECISION_REF: TIP_MEDDPICC_CONVERSION_001
 """
 
 import logging
@@ -138,7 +138,7 @@ async def template_context(agent_type: str):
         Loaded template or None
         
     PATTERN_REF: TEMPLATE_IMPRINTING_PROTOCOL
-    DECISION_REF: TIP_MEDDPIC_CONVERSION_001
+    DECISION_REF: TIP_MEDDPICC_CONVERSION_001
     """
     template = None
     try:
@@ -154,7 +154,7 @@ async def template_context(agent_type: str):
 
 # Convenience functions for common agent types
 async def load_orchestrator_template() -> Optional[ImprintingTemplate]:
-    """Load template for MEDDPIC orchestrator."""
+    """Load template for MEDDPICC orchestrator."""
     return await TemplateLoader.load_template("meddpic_orchestrator")
 
 
@@ -163,4 +163,4 @@ async def load_agent_template(agent_type: str) -> Optional[ImprintingTemplate]:
     return await TemplateLoader.load_template(agent_type)
 
 
-# DECISION_REF: TIP_MEDDPIC_CONVERSION_001 - Template loading system for neural-first agents
+# DECISION_REF: TIP_MEDDPICC_CONVERSION_001 - Template loading system for neural-first agents

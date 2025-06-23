@@ -1,63 +1,73 @@
 {
   "session_contract": {
     "version": 1,
-    "session_type": "template_imprinting_implementation",
+    "session_type": "asmis_core_features_enhancement",
     "neural_imprint_level": "fatal",
-    "headline": "Template Imprinting Protocol implementation — neural pattern mandatory",
-    "prime_directive": "Convert ASMIS from documentation-heavy to neural-first intelligence system"
+    "headline": "ASMIS intelligence enhancement — pattern-driven feature development mandatory",
+    "prime_directive": "Enhance MEDDPIC analysis accuracy and intelligence extraction capabilities using established patterns"
   },
   "behavioral_contract": {
     "template_mode": "mandatory",
     "pattern_enforcement": "strict",
     "decision_logging": "auto",
     "memory_updates": "template_driven",
-    "forbidden_actions": ["pattern_free_development", "undocumented_implementations", "manual_memory_updates"]
+    "forbidden_actions": ["pattern_free_development", "untested_implementations", "accuracy_reducing_changes"]
   },
   "session_constraints": {
-    "database_approach": "SQLAlchemy with TIP support",
-    "architecture_pattern": "Repository pattern with imprinting validation",
-    "testing_requirement": "Validate neural imprint loading and behavioral adherence",
-    "documentation_style": "Template-driven with pattern references",
-    "decision_requirement": "All architectural choices must be logged with pattern reference"
+    "development_approach": "Test-driven with validation metrics",
+    "architecture_pattern": "Extend existing agents with enhanced capabilities",
+    "testing_requirement": "Maintain or improve 8.74s processing baseline",
+    "quality_metrics": "Confidence scores, evidence extraction, accuracy validation",
+    "pattern_requirement": "All enhancements must reference existing patterns"
   },
   "current_focus": {
-    "epic_phase": "template_imprinting_implementation",
+    "epic_phase": "asmis_core_features",
     "active_tasks": [
-      "Convert MEDDPIC agent to imprinting template",
-      "Create test suite for imprinting validation",
-      "Integrate templates with agent initialization"
+      "Enhance MEDDPIC analysis accuracy",
+      "Improve stakeholder intelligence extraction",
+      "Add new intelligence extraction types",
+      "Enhance confidence scoring algorithms"
     ],
-    "blocking_issues": [],
-    "completion_criteria": "Neural imprinting system operational with validated behavioral adherence"
+    "success_criteria": "Measurable improvement in intelligence quality with maintained performance"
+  },
+  "enhancement_priorities": {
+    "high": [
+      "MEDDPIC completeness scoring",
+      "Stakeholder relationship mapping",
+      "Risk signal detection",
+      "Decision criteria extraction"
+    ],
+    "medium": [
+      "Competitive intelligence signals",
+      "Timeline extraction",
+      "Budget range detection"
+    ],
+    "future": [
+      "Sentiment analysis integration",
+      "Multi-document correlation"
+    ]
   },
   "pattern_requirements": {
     "code_generation": {
-      "template": "// PATTERN_REF: {PATTERN_ID}\n{IMPLEMENTATION}\n// DECISION_REF: {DECISION_ID}",
-      "mandatory_patterns": ["repository_pattern", "template_imprinting_protocol", "neural_validation"]
+      "template": "// PATTERN_REF: {PATTERN_ID}\n{IMPLEMENTATION}\n// ENHANCEMENT: {IMPROVEMENT_TYPE}",
+      "mandatory_patterns": ["AGENT_COMMUNICATION_PATTERN", "confidence_scoring", "evidence_extraction"]
     },
     "decision_logging": {
-      "template": "## DEC_{DATE}_{NUM}: {TITLE}\n**Pattern**: {PATTERN_REF}\n**TIP Context**: {IMPRINTING_RATIONALE}\n**Implementation**: {CODE_LOCATION}",
-      "auto_trigger": "architectural_decisions"
-    },
-    "progress_tracking": {
-      "template": "| ✅ | {TASK} | {PATTERN_REF} | {DECISION_REF} | {AUTO_TIMESTAMP} |",
-      "update_file": "track_progress/todo_tracker.md"
+      "template": "## DEC_ENHANCE_{NUM}: {ENHANCEMENT}\n**Pattern**: {PATTERN_REF}\n**Baseline**: {CURRENT_METRIC}\n**Target**: {IMPROVEMENT_TARGET}\n**Approach**: {IMPLEMENTATION_STRATEGY}",
+      "auto_trigger": "enhancement_decisions"
     }
   },
   "neural_anchors": {
-    "success_pattern": "✅ Applied: TEMPLATE_IMPRINTING_PROTOCOL",
-    "decision_pattern": "📋 Decision: TIP_{CATEGORY}_{NUM}",
-    "progress_pattern": "📊 Progress: {TASK_STATUS} | Pattern: {PATTERN_ID}",
-    "validation_pattern": "🧪 Validated: Neural imprint behavioral adherence"
+    "success_pattern": "✅ Enhanced: {FEATURE} | Improvement: {METRIC}",
+    "validation_pattern": "🧪 Validated: {ENHANCEMENT} maintains {BASELINE_METRIC}",
+    "quality_pattern": "📊 Quality: Confidence {SCORE} with {EVIDENCE_COUNT} evidence points"
   },
   "session_metadata": {
-    "created_at": "2025-06-22T12:00:00Z",
-    "last_updated": "2025-06-22T16:15:00Z", 
+    "created_at": "2025-06-23T08:00:00Z",
     "session_duration_target": "4_hours",
-    "completion_percentage": 100,
-    "pattern_adherence_score": 0.92,
-    "decisions_logged": 12,
-    "neural_imprint_violations": 0,
-    "session_status": "COMPLETED_SUCCESSFULLY"
+    "completion_percentage": 0,
+    "pattern_adherence_target": 0.95,
+    "performance_baseline": "8.74s",
+    "quality_baseline": "0.80 confidence average"
   }
 }

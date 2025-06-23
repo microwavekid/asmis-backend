@@ -1,13 +1,13 @@
 """
-✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN
-MEDDPIC Orchestrator - Central Intelligence Coordinator for ASMIS
+✅ Applied: MEDDPICC_ORCHESTRATOR_PATTERN
+MEDDPICC Orchestrator - Central Intelligence Coordinator for ASMIS
 
 This module serves as the meta-coordinator for the multi-agent sales intelligence
-system, orchestrating specialized agents to provide comprehensive MEDDPIC analysis
+system, orchestrating specialized agents to provide comprehensive MEDDPICC analysis
 from various content sources using Template Imprinting Protocol.
 
-PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN
-DECISION_REF: TIP_MEDDPIC_CONVERSION_001
+PATTERN_REF: MEDDPICC_ORCHESTRATOR_PATTERN
+DECISION_REF: TIP_MEDDPICC_CONVERSION_001
 """
 
 import asyncio
@@ -29,6 +29,9 @@ from .stakeholder_intelligence_agent import StakeholderIntelligenceAgent
 # PATTERN_REF: TEMPLATE_IMPRINTING_PROTOCOL imports
 from ..database.repository import imprinting_template_repo, db_manager
 from ..database.models import ImprintingTemplate
+
+# PATTERN_REF: MEDDPICC_COMPLETENESS_SCORING_PATTERN imports
+from ..intelligence.meddpicc_scoring import MEDDPICCScoring
 
 # Configure logging
 logging.basicConfig(
@@ -76,11 +79,11 @@ class AnalysisContext:
             self.timestamp = datetime.utcnow().isoformat()
 
 
-# PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN
-class MEDDPICOrchestrator:
+# PATTERN_REF: MEDDPICC_ORCHESTRATOR_PATTERN
+class MEDDPICCOrchestrator:
     """
     Central intelligence coordinator for ASMIS multi-agent system.
-    ✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN
+    ✅ Applied: MEDDPICC_ORCHESTRATOR_PATTERN
     
     Orchestrates specialized agents to provide comprehensive sales intelligence
     from meeting transcripts, documents, and other sources using Template Imprinting Protocol.
@@ -93,11 +96,11 @@ class MEDDPICOrchestrator:
         action_items_agent (ActionItemsAgent): Agent for extracting action items
         stakeholder_agent (StakeholderIntelligenceAgent): Agent for stakeholder analysis
         imprinting_template (Optional[ImprintingTemplate]): Active template for behavioral control
-        synthesis_agent (Optional[Any]): Future agent for cross-source MEDDPIC synthesis
+        synthesis_agent (Optional[Any]): Future agent for cross-source MEDDPICC synthesis
         campaign_agent (Optional[Any]): Future agent for campaign trigger detection
         pattern_agent (Optional[Any]): Future agent for pattern recognition
     
-    DECISION_REF: TIP_MEDDPIC_CONVERSION_001 - Converted to Template Imprinting Protocol
+    DECISION_REF: TIP_MEDDPICC_CONVERSION_001 - Converted to Template Imprinting Protocol
     """
     
     # Source type categorization
@@ -119,8 +122,8 @@ class MEDDPICOrchestrator:
     
     def __init__(self, api_key: str, config: Optional[Dict[str, Any]] = None):
         """
-        Initialize the MEDDPIC Orchestrator with Template Imprinting Protocol.
-        ✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN
+        Initialize the MEDDPICC Orchestrator with Template Imprinting Protocol.
+        ✅ Applied: MEDDPICC_ORCHESTRATOR_PATTERN
         
         Args:
             api_key: API key for AI services
@@ -132,12 +135,15 @@ class MEDDPICOrchestrator:
         self.api_key = api_key
         self.config = {**self.DEFAULT_CONFIG, **(config or {})}
         
-        # PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN - Initialize template system
+        # PATTERN_REF: MEDDPICC_ORCHESTRATOR_PATTERN - Initialize template system
         self.imprinting_template: Optional[ImprintingTemplate] = None
         self.template_loaded = False
         
         # Initialize agents
         self._initialize_agents()
+        
+        # Initialize scoring engine
+        self.scoring_engine = MEDDPICCScoring()
         
         # Initialize caching if enabled
         self._cache = {} if self.config["enable_caching"] else None
@@ -154,8 +160,8 @@ class MEDDPICOrchestrator:
             "template_adherence_score": 0.0  # PATTERN_REF: Template adherence tracking
         } if self.config["enable_metrics"] else None
         
-        logger.info("MEDDPICOrchestrator initialized successfully with Template Imprinting Protocol")
-        # DECISION_REF: TIP_MEDDPIC_CONVERSION_001
+        logger.info("MEDDPICCOrchestrator initialized successfully with Template Imprinting Protocol")
+        # DECISION_REF: TIP_MEDDPICC_CONVERSION_001
     
     def _initialize_agents(self):
         """Initialize extraction and intelligence agents."""
@@ -229,10 +235,15 @@ class MEDDPICOrchestrator:
             # Generate strategic recommendations
             recommendations = self._generate_recommendations(extraction_result)
             
+            # Calculate MEDDPICC completeness score
+            meddpicc_data = extraction_result.get("meddpic_analysis", {})
+            completeness_score = self.scoring_engine.calculate_completeness_score(meddpicc_data)
+            
             # Build final result
             result = self._build_result(
                 extraction_result=extraction_result,
                 recommendations=recommendations,
+                completeness_score=completeness_score,
                 context=context,
                 start_time=start_time
             )
@@ -336,7 +347,7 @@ class MEDDPICOrchestrator:
         if len(processed_content) != len(context.content):
             logger.info(f"Content preprocessed: {len(context.content)} -> {len(processed_content)} characters")
 
-        # Determine MEDDPIC task
+        # Determine MEDDPICC task
         meddpic_task = None
         if context.source_type in self.MEETING_SOURCES:
             if not self.meeting_agent:
@@ -408,7 +419,7 @@ class MEDDPICOrchestrator:
         for i, (task_name, result) in enumerate(zip(task_names, results_list)):
             if isinstance(result, Exception):
                 if task_name == "meddpic":
-                    # If MEDDPIC extraction failed, re-raise it as it's a critical component
+                    # If MEDDPICC extraction failed, re-raise it as it's a critical component
                     raise result
                 else:
                     results[f"{task_name}_error"] = str(result)
@@ -434,8 +445,8 @@ class MEDDPICOrchestrator:
         """Generate strategic recommendations based on extraction results."""
         recommendations = []
         
-        # Analyze MEDDPIC components for gaps
-        for component in ["metrics", "economic_buyer", "decision_criteria", "champion"]:
+        # Analyze MEDDPICC components for gaps
+        for component in ["metrics", "economic_buyer", "decision_criteria", "decision_process", "paper_process", "implicate_pain", "champion", "competition"]:
             if component in extraction_result:
                 confidence = extraction_result[component].get("confidence", 0)
                 if confidence < self.config["confidence_threshold"]:
@@ -451,7 +462,7 @@ class MEDDPICOrchestrator:
         return recommendations
     
     def _get_component_actions(self, component: str) -> List[str]:
-        """Get suggested actions for a MEDDPIC component."""
+        """Get suggested actions for a MEDDPICC component."""
         actions_map = {
             "metrics": [
                 "Schedule metrics definition session",
@@ -472,6 +483,26 @@ class MEDDPICOrchestrator:
                 "Identify potential champions",
                 "Build champion enablement plan",
                 "Schedule 1:1 with key influencers"
+            ],
+            "decision_process": [
+                "Map complete decision-making process",
+                "Identify all stakeholders involved",
+                "Clarify timeline and milestones"
+            ],
+            "paper_process": [
+                "Understand contracting requirements",
+                "Map procurement/legal approval steps",
+                "Identify compliance or security reviews needed"
+            ],
+            "implicate_pain": [
+                "Dig deeper into underlying business issues",
+                "Quantify business impact of problems",
+                "Connect pain to broader strategic initiatives"
+            ],
+            "competition": [
+                "Research competitive landscape",
+                "Develop differentiation strategy",
+                "Prepare competitive positioning materials"
             ]
         }
         return actions_map.get(component, ["Further discovery needed"])
@@ -480,6 +511,7 @@ class MEDDPICOrchestrator:
         self,
         extraction_result: Dict[str, Any],
         recommendations: List[Dict[str, Any]],
+        completeness_score: Any,
         context: AnalysisContext,
         start_time: datetime
     ) -> Dict[str, Any]:
@@ -492,6 +524,19 @@ class MEDDPICOrchestrator:
             "source_id": context.source_id,
             "extraction_result": extraction_result,
             "strategic_recommendations": recommendations,
+            "meddpicc_completeness": {
+                "overall_score": completeness_score.overall_score,
+                "qualification_status": completeness_score.qualification_status,
+                "element_scores": {k: {
+                    "score": v.total_score,
+                    "weight": v.weight,
+                    "gaps": v.gaps,
+                    "recommendations": v.recommendations
+                } for k, v in completeness_score.element_scores.items()},
+                "critical_gaps": completeness_score.critical_gaps,
+                "next_actions": completeness_score.next_actions,
+                "meeting_objectives": completeness_score.meeting_objectives
+            },
             "metadata": {
                 "timestamp": context.timestamp,
                 "processing_time_seconds": processing_time,
@@ -593,7 +638,7 @@ if __name__ == "__main__":
     async def example_usage():
         # Initialize orchestrator
         api_key = os.getenv("ANTHROPIC_API_KEY", "your-api-key")
-        orchestrator = MEDDPICOrchestrator(
+        orchestrator = MEDDPICCOrchestrator(
             api_key=api_key,
             config={
                 "enable_caching": True,

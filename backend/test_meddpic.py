@@ -3,7 +3,7 @@ import os
 from app.agents.meeting_intelligence_agent import MeetingIntelligenceAgent
 
 async def test_enhanced_meddpic():
-    print("🧪 Testing Enhanced MEDDPIC Extraction...")
+    print("🧪 Testing Enhanced MEDDPICC Extraction...")
     
     # Initialize agent
     api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -22,7 +22,7 @@ async def test_enhanced_meddpic():
     """
     
     try:
-        print("📊 Running MEDDPIC analysis...")
+        print("📊 Running MEDDPICC analysis...")
         
         # Test the enhanced method
         result = await agent.extract_meddpic_from_transcript(

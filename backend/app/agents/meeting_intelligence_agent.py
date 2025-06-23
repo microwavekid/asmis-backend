@@ -6,6 +6,9 @@ import json
 from datetime import datetime
 import warnings
 
+# PATTERN_REF: AGENT_COMMUNICATION_PATTERN - Competition inference integration
+from ..intelligence.competition_inference import CompetitionInferenceEngine
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -15,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class MeetingIntelligenceAgent:
     """
-    Agent for analyzing sales meeting transcripts using Claude API to extract MEDDPIC elements.
+    Agent for analyzing sales meeting transcripts using Claude API to extract MEDDPICC elements.
     
     Attributes:
         client (anthropic.Anthropic): Anthropic API client
@@ -33,7 +36,8 @@ class MeetingIntelligenceAgent:
         try:
             self.client = AsyncAnthropic(api_key=api_key)
             self.model = model
-            logger.info("Successfully initialized Anthropic client")
+            self.competition_engine = CompetitionInferenceEngine()
+            logger.info("Successfully initialized Anthropic client and competition engine")
         except Exception as e:
             logger.error(f"Failed to initialize Anthropic client: {str(e)}")
             raise
@@ -66,13 +70,13 @@ class MeetingIntelligenceAgent:
         Please use extract_meddpic_from_transcript() instead, which provides more comprehensive
         analysis including evidence and better structured output.
 
-        Extract MEDDPIC elements from a sales meeting transcript.
+        Extract MEDDPICC elements from a sales meeting transcript.
         
         Args:
             transcript_text (str): The meeting transcript text to analyze
             
         Returns:
-            Dict[str, Any]: Dictionary containing MEDDPIC elements with confidence scores
+            Dict[str, Any]: Dictionary containing MEDDPICC elements with confidence scores
             
         Raises:
             APIError: If there's an error with the Anthropic API
@@ -89,7 +93,7 @@ class MeetingIntelligenceAgent:
             
         try:
             # Construct the prompt for Claude
-            prompt = f"""Analyze this sales meeting transcript and extract MEDDPIC elements. 
+            prompt = f"""Analyze this sales meeting transcript and extract MEDDPICC elements. 
             For each element, provide the extracted information and a confidence score (0-1).
             Return the analysis in JSON format with the following structure:
             {{
@@ -128,7 +132,7 @@ class MeetingIntelligenceAgent:
                 model=self.model,
                 max_tokens=4000,
                 temperature=0.1,  # Low temperature for more consistent results
-                system="You are a sales intelligence expert. Extract MEDDPIC elements from sales meeting transcripts. Be precise and thorough.",
+                system="You are a sales intelligence expert. Extract MEDDPICC elements from sales meeting transcripts. Be precise and thorough.",
                 messages=[
                     {
                         "role": "user",
@@ -145,7 +149,7 @@ class MeetingIntelligenceAgent:
                 # Add timestamp to the response
                 meddpic_data["analysis_timestamp"] = datetime.utcnow().isoformat()
                 
-                logger.info("Successfully extracted MEDDPIC elements from transcript")
+                logger.info("Successfully extracted MEDDPICC elements from transcript")
                 return meddpic_data
                 
             except json.JSONDecodeError as e:
@@ -156,19 +160,19 @@ class MeetingIntelligenceAgent:
             logger.error(f"Anthropic API error: {str(e)}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error during MEDDPIC extraction: {str(e)}")
+            logger.error(f"Unexpected error during MEDDPICC extraction: {str(e)}")
             raise
 
     async def extract_meddpic_from_transcript(self, transcript: str, meeting_id: str) -> Dict[str, Any]:
         """
-        Extract comprehensive MEDDPIC data from a sales meeting transcript with evidence and confidence scores.
+        Extract comprehensive MEDDPICC data from a sales meeting transcript with evidence and confidence scores.
         
         Args:
             transcript (str): The meeting transcript text to analyze
             meeting_id (str): Unique identifier for the meeting
             
         Returns:
-            Dict[str, Any]: Dictionary containing detailed MEDDPIC analysis with evidence
+            Dict[str, Any]: Dictionary containing detailed MEDDPICC analysis with evidence
             
         Raises:
             APIError: If there's an error with the Anthropic API
@@ -181,7 +185,7 @@ class MeetingIntelligenceAgent:
             
         try:
             # Construct the prompt for Claude
-            prompt = f"""Analyze this sales meeting transcript and extract comprehensive MEDDPIC elements.
+            prompt = f"""Analyze this sales meeting transcript and extract comprehensive MEDDPICC elements.
             For each element, provide:
             1. The extracted information
             2. A confidence score (0-1)
@@ -213,9 +217,17 @@ class MeetingIntelligenceAgent:
                     "confidence": 0.0,
                     "evidence": ["supporting quotes"]
                 }},
-                "identified_pain": {{
-                    "pain_points": ["pain points mentioned"],
-                    "priority": ["high/medium/low for each pain"],
+                "paper_process": {{
+                    "steps": ["contracting/legal/procurement steps mentioned"],
+                    "timeline": "procurement timeline if mentioned",
+                    "requirements": ["legal or compliance requirements"],
+                    "confidence": 0.0,
+                    "evidence": ["supporting quotes"]
+                }},
+                "implicate_pain": {{
+                    "underlying_issues": ["deeper business problems implied"],
+                    "business_impact": ["impact on revenue, efficiency, growth"],
+                    "urgency_signals": ["indicators of pain severity"],
                     "confidence": 0.0,
                     "evidence": ["supporting quotes"]
                 }},
@@ -224,6 +236,16 @@ class MeetingIntelligenceAgent:
                     "strength": "none|developing|strong",
                     "confidence": 0.0,
                     "evidence": "supporting quote"
+                }},
+                "competition": {{
+                    "competitors": ["list of competitors mentioned or inferred"],
+                    "explicit_mentions": ["competitors explicitly mentioned"],
+                    "inferred_competitors": ["competitors inferred from context"],
+                    "strengths": ["their competitive strengths"],
+                    "weaknesses": ["their competitive weaknesses"],
+                    "positioning": "how we compare",
+                    "confidence": 0.0,
+                    "evidence": ["supporting quotes and inference signals"]
                 }}
             }}
 
@@ -243,11 +265,17 @@ class MeetingIntelligenceAgent:
                 model=self.model,
                 max_tokens=4000,
                 temperature=0.1,  # Low temperature for more consistent results
-                system="""You are a sales intelligence expert specializing in MEDDPIC analysis.
-                Extract detailed MEDDPIC elements from sales meeting transcripts.
+                system="""You are a sales intelligence expert specializing in MEDDPICC analysis.
+                Extract detailed MEDDPICC elements from sales meeting transcripts.
                 Be precise, thorough, and always provide supporting evidence.
                 For each element, assess confidence based on clarity and evidence strength.
-                Format all dates and times in ISO format.""",
+                Format all dates and times in ISO format.
+                
+                For Competition analysis:
+                - Identify explicitly mentioned competitors
+                - Look for implicit competitive signals (features, integrations, budget ranges)
+                - Assess competitive positioning and differentiation opportunities
+                - Note both strengths and weaknesses of competitors""",
                 messages=[
                     {
                         "role": "user",
@@ -261,7 +289,40 @@ class MeetingIntelligenceAgent:
                 response_text = message.content[0].text
                 meddpic_data = json.loads(response_text)
                 
-                logger.info(f"Successfully extracted comprehensive MEDDPIC data for meeting {meeting_id}")
+                # Enhance competition analysis with inference engine
+                competition_analysis = self.competition_engine.analyze_competition(
+                    transcript, 
+                    context={"meeting_id": meeting_id, "timestamp": datetime.utcnow().isoformat()}
+                )
+                
+                # Merge competition analysis with extracted data
+                if "competition" in meddpic_data:
+                    # Extract competition data from inference engine
+                    inference_data = competition_analysis.get("competition", {})
+                    
+                    # Combine explicit mentions with inferred competitors
+                    explicit_competitors = meddpic_data["competition"].get("competitors", [])
+                    inferred_competitors = [comp.competitor_name for comp in inference_data.get("inferred_competitors", [])]
+                    
+                    meddpic_data["competition"].update({
+                        "explicit_mentions": explicit_competitors,
+                        "inferred_competitors": inferred_competitors,
+                        "all_competitors": list(set(explicit_competitors + inferred_competitors)),
+                        "relevant_solutions": inference_data.get("relevant_solutions", []),
+                        "inference_signals": inference_data.get("competitive_signals", []),
+                        "competitive_intelligence": inference_data.get("competitive_analysis", {}),
+                        "threat_assessment": inference_data.get("threat_assessment", {})
+                    })
+                    
+                    # Update confidence based on both explicit and implicit signals
+                    if inferred_competitors:
+                        current_confidence = meddpic_data["competition"].get("confidence", 0.0)
+                        inference_confidence = inference_data.get("confidence_score", 0.0)
+                        # Weighted average: explicit mentions get higher weight
+                        combined_confidence = (current_confidence * 0.7) + (inference_confidence * 0.3)
+                        meddpic_data["competition"]["confidence"] = min(1.0, combined_confidence)
+                
+                logger.info(f"Successfully extracted comprehensive MEDDPICC data with competition inference for meeting {meeting_id}")
                 return meddpic_data
                 
             except json.JSONDecodeError as e:
@@ -272,5 +333,5 @@ class MeetingIntelligenceAgent:
             logger.error(f"Anthropic API error: {str(e)}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error during MEDDPIC extraction: {str(e)}")
+            logger.error(f"Unexpected error during MEDDPICC extraction: {str(e)}")
             raise 

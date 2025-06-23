@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentIntelligenceAgent:
     """
-    Agent for analyzing formal documents (RFPs, requirements docs, etc.) using Claude API to extract MEDDPIC elements.
+    Agent for analyzing formal documents (RFPs, requirements docs, etc.) using Claude API to extract MEDDPICC elements.
     Specializes in structured document analysis vs conversational analysis.
     
     Attributes:
@@ -66,7 +66,7 @@ class DocumentIntelligenceAgent:
         document_type: str
     ) -> Dict[str, Any]:
         """
-        Extract comprehensive MEDDPIC data from a formal document with evidence and confidence scores.
+        Extract comprehensive MEDDPICC data from a formal document with evidence and confidence scores.
         
         Args:
             document_content (str): The document text to analyze
@@ -74,7 +74,7 @@ class DocumentIntelligenceAgent:
             document_type (str): Type of document ("rfp" | "requirements_doc" | "proposal" | "sow")
             
         Returns:
-            Dict[str, Any]: Dictionary containing detailed MEDDPIC analysis with evidence
+            Dict[str, Any]: Dictionary containing detailed MEDDPICC analysis with evidence
             
         Raises:
             APIError: If there's an error with the Anthropic API
@@ -89,7 +89,7 @@ class DocumentIntelligenceAgent:
             
         try:
             # Construct the prompt for Claude
-            prompt = f"""Analyze this {document_type} document and extract comprehensive MEDDPIC elements.
+            prompt = f"""Analyze this {document_type} document and extract comprehensive MEDDPICC elements.
             Focus on formal document structure, numbered requirements, and explicit criteria.
             
             For each element, provide:
@@ -160,8 +160,8 @@ class DocumentIntelligenceAgent:
                 model=self.model,
                 max_tokens=4000,
                 temperature=0.1,  # Low temperature for more consistent results
-                system="""You are a document intelligence expert specializing in MEDDPIC analysis.
-                Extract detailed MEDDPIC elements from formal documents like RFPs and requirements docs.
+                system="""You are a document intelligence expert specializing in MEDDPICC analysis.
+                Extract detailed MEDDPICC elements from formal documents like RFPs and requirements docs.
                 Focus on structured content, numbered requirements, and explicit criteria.
                 Be precise, thorough, and always provide supporting evidence.
                 For each element, assess confidence based on clarity and evidence strength.
@@ -179,7 +179,7 @@ class DocumentIntelligenceAgent:
                 response_text = message.content[0].text
                 meddpic_data = json.loads(response_text)
                 
-                logger.info(f"Successfully extracted comprehensive MEDDPIC data from {document_type} document {document_id}")
+                logger.info(f"Successfully extracted comprehensive MEDDPICC data from {document_type} document {document_id}")
                 return meddpic_data
                 
             except json.JSONDecodeError as e:
@@ -190,5 +190,5 @@ class DocumentIntelligenceAgent:
             logger.error(f"Anthropic API error: {str(e)}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error during MEDDPIC extraction: {str(e)}")
+            logger.error(f"Unexpected error during MEDDPICC extraction: {str(e)}")
             raise 

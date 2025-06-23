@@ -5,6 +5,9 @@ import json
 from datetime import datetime
 import re
 
+# Enhanced relationship mapping
+from ..intelligence.stakeholder_relationship_mapping import enhance_stakeholder_relationships
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -377,7 +380,28 @@ class StakeholderIntelligenceAgent:
                     result["analysis_metadata"]["high_confidence_extractions"] = sum(1 for s in result["stakeholders"] if s.get("confidence", 0) >= 0.85)
                     result["analysis_metadata"]["auto_apply_ready"] = sum(1 for s in result["stakeholders"] if s.get("confidence", 0) >= 0.85)
                     result["analysis_metadata"]["review_queue_items"] = sum(1 for s in result["stakeholders"] if 0.5 <= s.get("confidence", 0) < 0.85)
-                logger.info(f"Successfully extracted comprehensive stakeholder intelligence from transcript")
+                # Enhance with relationship mapping
+                enhanced_result = enhance_stakeholder_relationships(result, prepared_transcript)
+                
+                # Merge enhanced data back into result
+                result['enhanced_stakeholder_analysis'] = enhanced_result
+                result['relationship_mapping'] = {
+                    'network_analysis': enhanced_result['network_analysis'],
+                    'decision_pathways': enhanced_result['decision_pathways'],
+                    'enhanced_relationships': enhanced_result['enhanced_relationships']
+                }
+                
+                # Update metadata with enhancement info
+                if 'analysis_metadata' not in result:
+                    result['analysis_metadata'] = {}
+                
+                result['analysis_metadata']['relationship_mapping_applied'] = True
+                result['analysis_metadata']['enhanced_stakeholders'] = len(enhanced_result['enhanced_stakeholders'])
+                result['analysis_metadata']['decision_pathways'] = len(enhanced_result['decision_pathways'])
+                result['analysis_metadata']['key_approvers'] = len(enhanced_result['network_analysis']['key_approvers'])
+                result['analysis_metadata']['champion_candidates'] = len(enhanced_result['network_analysis']['champion_candidates'])
+                
+                logger.info(f"Successfully extracted comprehensive stakeholder intelligence with relationship mapping")
                 return result
                 
             except json.JSONDecodeError as e:

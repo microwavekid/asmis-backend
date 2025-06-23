@@ -1,21 +1,28 @@
 """
-MEDDPIC analysis prompts for meeting transcripts.
+MEDDPICC analysis prompts for meeting transcripts.
 """
 from typing import Dict, Any
 from ..base import BasePrompt
 
-class MEDDPICPrompt(BasePrompt):
-    """Prompt template for MEDDPIC analysis of meeting transcripts."""
+class MEDDPICCPrompt(BasePrompt):
+    """Prompt template for MEDDPICC analysis of meeting transcripts."""
     
     def __init__(self, version: str = "1.0.0"):
         super().__init__(version)
-        self.system_prompt = """You are a sales intelligence expert specializing in MEDDPIC analysis.
-        Extract detailed MEDDPIC elements from sales meeting transcripts.
+        self.system_prompt = """You are a sales intelligence expert specializing in MEDDPICC analysis.
+        Extract detailed MEDDPICC elements from sales meeting transcripts.
         Be precise, thorough, and always provide supporting evidence.
         For each element, assess confidence based on clarity and evidence strength.
-        Format all dates and times in ISO format."""
+        Format all dates and times in ISO format.
         
-        self.user_prompt_template = """Analyze this sales meeting transcript and extract comprehensive MEDDPIC elements.
+        MEDDPICC Element Guidelines:
+        - Paper Process: Focus on contracting, legal, procurement steps and timelines
+        - Implicate Pain: Look for underlying business issues beyond stated problems
+        - Competition: Identify explicit mentions and implicit competitive signals
+        - Champion: Assess strength of internal advocacy and influence
+        - Economic Buyer: Identify budget authority and decision-making power"""
+        
+        self.user_prompt_template = """Analyze this sales meeting transcript and extract comprehensive MEDDPICC elements.
         For each element, provide:
         1. The extracted information
         2. A confidence score (0-1)
@@ -47,9 +54,17 @@ class MEDDPICPrompt(BasePrompt):
                 "confidence": 0.0,
                 "evidence": ["supporting quotes"]
             }},
-            "identified_pain": {{
-                "pain_points": ["pain points mentioned"],
-                "priority": ["high/medium/low for each pain"],
+            "paper_process": {{
+                "steps": ["contracting/legal/procurement steps mentioned"],
+                "timeline": "procurement timeline if mentioned",
+                "requirements": ["legal or compliance requirements"],
+                "confidence": 0.0,
+                "evidence": ["supporting quotes"]
+            }},
+            "implicate_pain": {{
+                "underlying_issues": ["deeper business problems implied"],
+                "business_impact": ["impact on revenue, efficiency, growth"],
+                "urgency_signals": ["indicators of pain severity"],
                 "confidence": 0.0,
                 "evidence": ["supporting quotes"]
             }},
@@ -58,6 +73,16 @@ class MEDDPICPrompt(BasePrompt):
                 "strength": "none|developing|strong",
                 "confidence": 0.0,
                 "evidence": "supporting quote"
+            }},
+            "competition": {{
+                "competitors": ["list of competitors mentioned or inferred"],
+                "explicit_mentions": ["competitors explicitly mentioned"],
+                "inferred_competitors": ["competitors inferred from context"],
+                "strengths": ["their competitive strengths"],
+                "weaknesses": ["their competitive weaknesses"],
+                "positioning": "how we compare",
+                "confidence": 0.0,
+                "evidence": ["supporting quotes and inference signals"]
             }}
         }}
 
