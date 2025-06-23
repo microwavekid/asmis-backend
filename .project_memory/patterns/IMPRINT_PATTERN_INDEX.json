@@ -1,0 +1,64 @@
+{
+  "imprint_registry": {
+    "version": 1,
+    "headline": "ASMIS Pattern Imprinting Registry — Neural pattern enforcement system",
+    "total_patterns": 4,
+    "last_updated": "2025-06-22T16:00:00Z"
+  },
+  "available_patterns": {
+    "DATABASE_ACCESS_PATTERN": {
+      "file": "DATABASE_ACCESS_IMPRINT.json",
+      "priority": "fatal",
+      "use_cases": ["database_operations", "repository_implementation", "connection_management"],
+      "token_count": 186,
+      "adherence_requirement": "mandatory"
+    },
+    "AGENT_COMMUNICATION_PATTERN": {
+      "file": "AGENT_COMMUNICATION_IMPRINT.json", 
+      "priority": "fatal",
+      "use_cases": ["ai_agent_implementation", "result_standardization", "error_handling"],
+      "token_count": 194,
+      "adherence_requirement": "mandatory"
+    },
+    "CACHING_PATTERN": {
+      "file": "CACHING_IMPRINT.json",
+      "priority": "fatal", 
+      "use_cases": ["performance_optimization", "expensive_operations", "ai_api_calls"],
+      "token_count": 192,
+      "adherence_requirement": "mandatory"
+    },
+    "MEDDPIC_ORCHESTRATOR_PATTERN": {
+      "file": "MEDDPIC_ORCHESTRATOR_IMPRINT.json",
+      "priority": "fatal",
+      "use_cases": ["multi_agent_coordination", "meddpic_analysis", "intelligence_synthesis"],
+      "token_count": 189,
+      "adherence_requirement": "mandatory"
+    }
+  },
+  "pattern_selection_rules": {
+    "database_work": "ALWAYS load DATABASE_ACCESS_PATTERN",
+    "agent_development": "ALWAYS load AGENT_COMMUNICATION_PATTERN", 
+    "expensive_operations": "ALWAYS load CACHING_PATTERN",
+    "meddpic_orchestration": "ALWAYS load MEDDPIC_ORCHESTRATOR_PATTERN",
+    "full_system_work": "Load ALL patterns for comprehensive adherence"
+  },
+  "neural_enforcement": {
+    "pattern_loading_sequence": [
+      "Check use_case → Select required patterns → Load imprinting tokens → Apply behavioral contract",
+      "All code generation MUST reference pattern_id in comments",
+      "All decisions MUST log pattern application with decision template",
+      "Adherence scoring MUST be calculated for pattern compliance"
+    ],
+    "violation_handling": {
+      "missing_pattern_reference": "FORBIDDEN - Code without pattern reference",
+      "low_adherence_score": "REVIEW_REQUIRED - Score below 0.7",
+      "pattern_deviation": "ESCALATE - Requires user clarification"
+    }
+  },
+  "integration_points": {
+    "neural_imprint": ".ai/NEURAL_IMPRINT.json references this registry",
+    "session_contract": "active_session.json enforces pattern usage",
+    "cursorrules": ".cursorrules validates pattern application",
+    "code_generation": "All implementations must include pattern markers"
+  }
+}

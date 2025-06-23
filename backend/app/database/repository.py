@@ -10,7 +10,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .base import Base
 from .connection import db_manager
-from .models import PromptTemplate, PromptVersion, AgentConfiguration, ProcessingSession
+from .models import PromptTemplate, PromptVersion, AgentConfiguration, ProcessingSession, ImprintingTemplate
+from .models import User
+from .imprinting import imprinting_validator, ImprintingValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -381,8 +383,262 @@ class ProcessingSessionRepository(BaseRepository[ProcessingSession]):
             raise
 
 
+class ImprintingTemplateRepository(BaseRepository[ImprintingTemplate]):
+    """Repository for Template Imprinting Protocol operations."""
+    
+    def __init__(self):
+        super().__init__(ImprintingTemplate)
+    
+    def create_imprinting_template(self, session: Session, name: str, agent_type: str,
+                                 template_mode: Dict[str, Any], template_structure: Dict[str, Any],
+                                 example_filled: Optional[Dict[str, Any]] = None,
+                                 **kwargs) -> ImprintingTemplate:
+        """Create a new imprinting template with validation.
+        
+        Args:
+            session: Database session
+            name: Template name
+            agent_type: Agent type
+            template_mode: Behavioral configuration
+            template_structure: Template structure
+            example_filled: Optional example
+            **kwargs: Additional fields
+            
+        Returns:
+            Created imprinting template
+            
+        Raises:
+            ValueError: If validation fails
+        """
+        # Validate Template Imprinting Protocol structure
+        validation_result = imprinting_validator.validate_imprinting_template(
+            template_mode, template_structure, example_filled
+        )
+        
+        if not validation_result.is_valid:
+            raise ValueError(f"Template Imprinting validation failed: {validation_result.errors}")
+        
+        # Generate imprinting tokens (first 200 chars)
+        import json
+        full_template = {
+            "template_mode": template_mode,
+            "template": template_structure
+        }
+        imprinting_tokens = json.dumps(full_template)[:200]
+        
+        try:
+            template = self.create(
+                session,
+                name=name,
+                agent_type=agent_type,
+                template_mode=template_mode,
+                template_structure=template_structure,
+                example_filled=example_filled,
+                imprinting_tokens=imprinting_tokens,
+                token_count=validation_result.token_count,
+                adherence_score=validation_result.adherence_score,
+                **kwargs
+            )
+            
+            # Log warnings if any
+            for warning in validation_result.warnings:
+                self.logger.warning(f"Template '{name}': {warning}")
+            
+            return template
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error creating imprinting template {name}: {e}")
+            raise
+    
+    def get_by_agent_type(self, session: Session, agent_type: str, 
+                         active_only: bool = True) -> List[ImprintingTemplate]:
+        """Get imprinting templates for an agent type.
+        
+        Args:
+            session: Database session
+            agent_type: Agent type
+            active_only: Only return active templates
+            
+        Returns:
+            List of imprinting templates
+        """
+        try:
+            query = select(ImprintingTemplate).where(
+                ImprintingTemplate.agent_type == agent_type
+            )
+            
+            if active_only:
+                query = query.where(ImprintingTemplate.is_active == True)
+            
+            query = query.order_by(
+                ImprintingTemplate.priority.desc(),
+                ImprintingTemplate.adherence_score.desc()
+            )
+            
+            result = session.execute(query)
+            return list(result.scalars().all())
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error getting imprinting templates for agent {agent_type}: {e}")
+            raise
+    
+    def get_best_template(self, session: Session, agent_type: str) -> Optional[ImprintingTemplate]:
+        """Get the best imprinting template for an agent type.
+        
+        Args:
+            session: Database session
+            agent_type: Agent type
+            
+        Returns:
+            Best imprinting template or None
+        """
+        templates = self.get_by_agent_type(session, agent_type, active_only=True)
+        return templates[0] if templates else None
+    
+    def update_performance_metrics(self, session: Session, template_id: str,
+                                 adherence_score: float, success: bool) -> None:
+        """Update performance metrics for an imprinting template.
+        
+        Args:
+            session: Database session
+            template_id: Template ID
+            adherence_score: Measured adherence score
+            success: Whether the imprinting was successful
+        """
+        try:
+            template = self.get_by_id(session, template_id)
+            if template:
+                # Update usage count
+                template.usage_count += 1
+                
+                # Update success rate
+                if template.success_rate is None:
+                    template.success_rate = 1.0 if success else 0.0
+                else:
+                    # Running average
+                    total_uses = template.usage_count
+                    current_successes = template.success_rate * (total_uses - 1)
+                    new_successes = current_successes + (1 if success else 0)
+                    template.success_rate = new_successes / total_uses
+                
+                # Update adherence score (running average)
+                if template.adherence_score is None:
+                    template.adherence_score = adherence_score
+                else:
+                    total_uses = template.usage_count
+                    current_total = template.adherence_score * (total_uses - 1)
+                    template.adherence_score = (current_total + adherence_score) / total_uses
+                
+                session.flush()
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error updating metrics for template {template_id}: {e}")
+            raise
+
+
+# PATTERN_REF: DATABASE_ACCESS_PATTERN
+class UserRepository(BaseRepository[User]):
+    """Repository for User entity operations (Template Imprinting Protocol enforced)."""
+
+    def __init__(self):
+        super().__init__(User)
+        # DECISION_REF: See DEC_2025-06-22_001 (Repository pattern, error handling, type safety)
+
+    def get_by_id(self, session: Session, user_id: str) -> Optional[User]:
+        """
+        Get a user by ID.
+        Args:
+            session: Database session
+            user_id: User ID
+        Returns:
+            User instance or None if not found
+        """
+        try:
+            return session.get(User, user_id)
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error getting User by ID {user_id}: {e}")
+            raise
+
+    def get_all(self, session: Session, limit: Optional[int] = None) -> List[User]:
+        """
+        Get all users.
+        Args:
+            session: Database session
+            limit: Optional limit on number of users
+        Returns:
+            List of User instances
+        """
+        try:
+            query = select(User)
+            if limit:
+                query = query.limit(limit)
+            result = session.execute(query)
+            return list(result.scalars().all())
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error getting all Users: {e}")
+            raise
+
+    def create(self, session: Session, **kwargs) -> User:
+        """
+        Create a new user.
+        Args:
+            session: Database session
+            **kwargs: User fields
+        Returns:
+            Created User instance
+        """
+        try:
+            user = User(**kwargs)
+            session.add(user)
+            session.flush()
+            return user
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error creating User: {e}")
+            raise
+
+    def update(self, session: Session, user_id: str, **kwargs) -> Optional[User]:
+        """
+        Update a user by ID.
+        Args:
+            session: Database session
+            user_id: User ID
+            **kwargs: Fields to update
+        Returns:
+            Updated User instance or None if not found
+        """
+        try:
+            user = self.get_by_id(session, user_id)
+            if user:
+                for key, value in kwargs.items():
+                    if hasattr(user, key):
+                        setattr(user, key, value)
+                session.flush()
+            return user
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error updating User {user_id}: {e}")
+            raise
+
+    def delete(self, session: Session, user_id: str) -> bool:
+        """
+        Delete a user by ID.
+        Args:
+            session: Database session
+            user_id: User ID
+        Returns:
+            True if deleted, False if not found
+        """
+        try:
+            user = self.get_by_id(session, user_id)
+            if user:
+                session.delete(user)
+                return True
+            return False
+        except SQLAlchemyError as e:
+            self.logger.error(f"Error deleting User {user_id}: {e}")
+            raise
+# DECISION_REF: DEC_2025-06-22_001 | Pattern: DATABASE_ACCESS_PATTERN | Rationale: Enforces repository, error handling, type safety, connection pooling
+
 # Repository instances for easy access
 prompt_template_repo = PromptTemplateRepository()
 prompt_version_repo = PromptVersionRepository()
 agent_config_repo = AgentConfigurationRepository()
 processing_session_repo = ProcessingSessionRepository()
+imprinting_template_repo = ImprintingTemplateRepository()
+user_repo = UserRepository()

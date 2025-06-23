@@ -1,67 +1,80 @@
 # =====================================================================
-# Project Intelligence & Context Rules (High-level, context-first)
-#   - Guide agent behavior, context loading, memory use, personas, workflow
-# Code Quality & Implementation Rules (Granular, code standards)
-#   - Enforce code style, error handling, patterns, and best practices
+# ASMIS Template Imprinting Protocol Rules - Neural-First AI Control
+# Based on neural imprinting principles for consistent agent behavior
 # =====================================================================
 
-# Project Intelligence Rules for Cursor
-
-rule "Load project context first" {
+# CRITICAL: Neural Imprint Loading (FIRST 200 CHARS CONTROL ALL BEHAVIOR)
+rule "Neural imprint required" {
   pattern: ".*"
-  message: "Always start by understanding project context from .ai/PROJECT_CONTEXT.md"
-  action: "Read .ai/PROJECT_CONTEXT.md, then .project_memory/current_epic/EPIC_OVERVIEW.md, then track_progress/todo_tracker.md"
+  template_mode: "fatal"
+  headline: "ASMIS intelligence active — neural imprint mandatory before any action"
+  action: "LOAD .ai/NEURAL_IMPRINT.json → IMPRINT patterns → APPLY behavioral contract"
+  forbidden: ["skip_neural_load", "freestyle_responses", "ignore_patterns"]
 }
 
-rule "Apply specialist personas" {
+rule "Behavioral hierarchy enforcement" {
   pattern: ".*"
-  message: "Adopt appropriate specialist persona based on work type"
-  reference: ".ai/SPECIALIST_PERSONAS.md"
-  behavior: "Architecture work: System thinking, scalability focus; Implementation: Clean code, practical solutions; Testing: Comprehensive coverage, performance awareness; Strategy: User value, business alignment"
+  hierarchy: [".ai/NEURAL_IMPRINT.json", ".project_memory/current_epic/active_session.json", "track_progress/todo_tracker.md", ".project_memory/patterns/"]
+  behavior: "READ in order, NEVER skip levels, ALWAYS apply patterns"
+  template: "✅ Context loaded: {LEVEL} | 🎯 Session: {SESSION_TYPE} | 📊 Tasks: {TASK_COUNT}"
 }
 
-# Memory System Integration
+# Template-Driven Memory System
 
-rule "Reference project memory" {
+rule "Pattern enforcement" {
   pattern: "(class|def|function|api|route|schema)"
-  message: "Check project memory for established patterns"
-  action: "Check .project_memory/patterns/ for similar solutions; Review .project_memory/current_epic/DECISIONS_LOG.md for relevant decisions; Reference patterns in suggestions"
+  template_mode: "strict"
+  behavioral_contract: "FIND pattern in .project_memory/patterns/ → APPLY template → REFERENCE in code"
+  code_template: "// PATTERN_REF: {PATTERN_ID}\n{IMPLEMENTATION}\n// DECISION_REF: {DECISION_ID}"
+  forbidden: ["pattern_free_code", "undocumented_implementations"]
 }
 
-rule "Update tracking files" {
+rule "Automatic progress tracking" {
   pattern: "(complete|done|finished|implemented)"
-  message: "Remind to update progress tracking"
-  suggestion: "Don't forget to update track_progress/todo_tracker.md with completed tasks and log any decisions to .project_memory/current_epic/DECISIONS_LOG.md"
+  template_mode: "mandatory"
+  update_template: "| ✅ | {TASK} | {PATTERN_REF} | {DECISION_REF} | {AUTO_TIMESTAMP} |"
+  action: "UPDATE track_progress/todo_tracker.md → LOG decision → REFERENCE pattern"
+  neural_anchor: "📊 Progress: {TASK_STATUS}"
 }
 
-# Context-Aware Assistance
-
-rule "Connect to current epic" {
+rule "Epic-aligned development" {
   pattern: "(implement|build|create|design)"
-  message: "Relate work to current epic objectives"
-  action: "Reference current epic from .project_memory/current_epic/EPIC_OVERVIEW.md; Connect task to epic goals; Consider epic-level decisions"
+  template_mode: "contextual"
+  session_contract: "CHECK .project_memory/current_epic/active_session.json for constraints"
+  behavioral_rules: "CONNECT to epic goals → APPLY session constraints → REFERENCE decisions"
+  template: "🎯 Epic: {EPIC_PHASE} | 📋 Session: {SESSION_TYPE} | ✅ Applied: {PATTERN_ID}"
 }
 
-rule "Apply project patterns" {
+rule "Pattern-first problem solving" {
   pattern: "(how should|best way|approach)"
-  message: "Suggest established project patterns"
-  action: "Check .project_memory/patterns/ARCHITECTURE.md for architectural patterns; Check .project_memory/patterns/SOLUTIONS.md for problem-solution pairs; Avoid .project_memory/patterns/ANTIPATTERNS.md approaches"
+  template_mode: "fatal"
+  execution_pattern: "SEARCH patterns → MATCH problem type → ADAPT solution OR CREATE new pattern"
+  forbidden_actions: ["freestyle_solutions", "ignore_existing_patterns"]
+  template: "Found: {PATTERN_ID} | Adapted: {ADAPTATIONS} | Decision: {DECISION_ID}"
 }
 
-# Decision Documentation
+# Template-Driven Decision Logging
 
-rule "Log architectural decisions" {
+rule "Architectural decision template" {
   pattern: "(decided|choosing|going with|architecture|design)"
-  message: "Document significant decisions"
-  template: "Add to .project_memory/current_epic/DECISIONS_LOG.md: Decision: [What was decided]; Context: [Why this came up]; Options Considered: [Alternatives]; Rationale: [Why this choice]; Impact: [System implications]; Date: [Today's date]"
+  template_mode: "mandatory"
+  decision_template: "## DEC_{DATE}_{NUM}: {TITLE}\n**Pattern**: {PATTERN_REF}\n**Context**: {PROBLEM}\n**Options**: {ALTERNATIVES}\n**Choice**: {SELECTED}\n**Rationale**: {REASON}"
+  action: "APPEND .project_memory/current_epic/DECISIONS_LOG.md with template"
+  neural_anchor: "📋 Decision: {DECISION_ID}"
 }
 
-# Pattern Extraction
-
-rule "Identify reusable patterns" {
+rule "Pattern creation template" {
   pattern: "(solved|fixed|solution|approach works)"
-  message: "Extract reusable patterns"
-  action: "Consider adding to .project_memory/patterns/: Problem description; Solution approach; Code example; When to use/avoid"
+  template_mode: "pattern_extraction"
+  pattern_template: {
+    "pattern_id": "PATTERN_{DATE}_{CATEGORY}_{NUM}",
+    "problem": "{FILL: one_line_problem}",
+    "solution": "{FILL: approach}",
+    "when_to_use": "{ENUM: database|api|integration|testing}",
+    "implementation": "{CODE_TEMPLATE}",
+    "decision_ref": "@{REF: decision_log_entry}"
+  }
+  action: "CREATE .project_memory/patterns/{CATEGORY}_{DATE}.json"
 }
 
 # Code Quality Standards (Your existing rules enhanced)

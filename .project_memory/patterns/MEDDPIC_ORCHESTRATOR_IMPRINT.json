@@ -1,0 +1,54 @@
+{
+  "imprint_mode": {
+    "pattern_id": "MEDDPIC_ORCHESTRATOR_PATTERN",
+    "version": 1,
+    "level": "fatal",
+    "headline": "MEDDPIC orchestration mandatory — multi-agent coordination, parallel processing, confidence scoring required",
+    "prime_directive": "All MEDDPIC orchestration must coordinate specialized agents with standardized results and comprehensive intelligence synthesis"
+  },
+  "behavioral_contract": {
+    "template_mode": "strict",
+    "pattern_enforcement": "mandatory", 
+    "code_structure": "AnalysisContext → Agent coordination → Parallel processing → Result synthesis → Confidence scoring",
+    "forbidden_actions": ["sequential_processing_only", "uncoordinated_agents", "missing_confidence_scores", "no_error_aggregation"]
+  },
+  "imprinting_tokens": "MEDDPIC orchestration mandatory — multi-agent coordination, parallel processing, confidence scoring required. All MEDDPIC orchestration must coordinate specialized agents.",
+  "token_count": 189,
+  "template_structure": {
+    "orchestrator_class": "class MEDDPICOrchestrator:\n    def __init__(self, agents: Dict[str, BaseAgent]):\n        self.agents = agents\n        self.logger = logging.getLogger(self.__class__.__name__)\n        self.cache = CacheManager()",
+    "analysis_method": "async def analyze_content(self, context: AnalysisContext) -> OrchestrationResult:\n    # Load imprinting template\n    template = await self._load_imprinting_template(context.source_type)\n    # Coordinate agents with template constraints\n    results = await self._orchestrate_agents(context, template)\n    return self._synthesize_results(results, template)",
+    "parallel_processing": "# Coordinate multiple agents in parallel\ntasks = [agent.process(context) for agent in selected_agents]\nresults = await asyncio.gather(*tasks, return_exceptions=True)",
+    "result_synthesis": "synthesis_result = OrchestrationResult(\n    status=ProcessingStatus.COMPLETED,\n    intelligence_data=synthesized_data,\n    agent_results=agent_results,\n    confidence_score=overall_confidence,\n    processing_metadata=metadata\n)"
+  },
+  "neural_anchors": {
+    "success_indicator": "✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN",
+    "implementation_marker": "// PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN",
+    "coordination_strategy": "// COORDINATION: Multi-agent parallel processing with template constraints",
+    "confidence_aggregation": "// CONFIDENCE: Weighted average across agent results with template adherence"
+  },
+  "decision_templates": {
+    "orchestration_strategy": "## DEC_ORCH_{NUM}: Orchestration Strategy\n**Pattern**: MEDDPIC_ORCHESTRATOR_PATTERN\n**Agents**: {AGENT_LIST}\n**Processing**: {PARALLEL|SEQUENTIAL}\n**Rationale**: {PERFORMANCE_VS_ACCURACY_TRADEOFF}",
+    "template_integration": "## DEC_ORCH_{NUM}: Template Integration\n**Pattern**: MEDDPIC_ORCHESTRATOR_PATTERN\n**Template Loading**: {DYNAMIC|STATIC}\n**Adherence Enforcement**: {STRICT|FLEXIBLE}\n**Implementation**: {VALIDATION_APPROACH}"
+  },
+  "validation_rules": {
+    "required_components": ["analysis_context", "agent_coordination", "parallel_processing", "result_synthesis", "confidence_scoring", "template_integration"],
+    "forbidden_patterns": ["single_agent_processing", "synchronous_blocking", "unvalidated_results"],
+    "mandatory_methods": ["analyze_content", "_orchestrate_agents", "_synthesize_results", "_load_imprinting_template"],
+    "template_requirement": "All agent coordination must reference loaded imprinting templates"
+  },
+  "usage_examples": {
+    "orchestrator_initialization": "orchestrator = MEDDPICOrchestrator({\n    'meeting': MeetingIntelligenceAgent(api_key),\n    'document': DocumentIntelligenceAgent(api_key),\n    'action_items': ActionItemsAgent(api_key)\n})",
+    "content_analysis": "context = AnalysisContext(content=transcript, source_type=SourceType.TRANSCRIPT, source_id='meeting_001')\nresult = await orchestrator.analyze_content(context)",
+    "template_loading": "template = await imprinting_template_repo.get_best_template(session, agent_type='meddpic_orchestrator')",
+    "confidence_aggregation": "overall_confidence = sum(r.confidence_score * r.weight for r in agent_results) / sum(r.weight for r in agent_results)"
+  },
+  "adherence_scoring": {
+    "full_compliance": 1.0,
+    "missing_parallel_processing": 0.8,
+    "no_template_integration": 0.7,
+    "missing_confidence_scoring": 0.6,
+    "sequential_only": 0.4,
+    "single_agent": 0.2,
+    "no_pattern_usage": 0.0
+  }
+}

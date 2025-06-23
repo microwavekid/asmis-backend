@@ -1,0 +1,51 @@
+{
+  "imprint_mode": {
+    "pattern_id": "DATABASE_ACCESS_PATTERN",
+    "version": 1,
+    "level": "fatal",
+    "headline": "Repository pattern mandatory — connection pooling, error handling, type safety required",
+    "prime_directive": "All database operations must use repository pattern with comprehensive error handling"
+  },
+  "behavioral_contract": {
+    "template_mode": "strict",
+    "pattern_enforcement": "mandatory",
+    "code_structure": "Repository class → Connection pool → Error handling → Type safety",
+    "forbidden_actions": ["direct_db_access", "hardcoded_connections", "unhandled_exceptions", "missing_types"]
+  },
+  "imprinting_tokens": "Repository pattern mandatory — connection pooling, error handling, type safety required. All database operations must use repository pattern with comprehensive error handling.",
+  "token_count": 186,
+  "template_structure": {
+    "class_template": "class {Entity}Repository:\n    def __init__(self, db_pool: DatabaseConnectionPool):\n        self.db_pool = db_pool\n        self.logger = logging.getLogger(self.__class__.__name__)",
+    "method_template": "async def {operation}(self, {params}) -> {return_type}:\n    try:\n        async with self.db_pool.acquire() as conn:\n            # Implementation\n    except {SpecificError} as e:\n        self.logger.error(f\"Error: {e}\")\n        raise {CustomError}(f\"Failed: {e}\")",
+    "connection_template": "class DatabaseConnectionPool:\n    def __init__(self, database_url: str, min_size: int = 5, max_size: int = 20):\n        # Pool configuration\n    @asynccontextmanager\n    async def acquire(self):\n        # Connection management"
+  },
+  "neural_anchors": {
+    "success_indicator": "✅ Applied: DATABASE_ACCESS_PATTERN",
+    "implementation_marker": "// PATTERN_REF: DATABASE_ACCESS_PATTERN",
+    "error_handling": "// ERROR_STRATEGY: Comprehensive with custom exceptions",
+    "type_safety": "// TYPE_SAFETY: Full type hints and validation"
+  },
+  "decision_templates": {
+    "orm_choice": "## DEC_DB_{NUM}: ORM Selection\n**Pattern**: DATABASE_ACCESS_PATTERN\n**Choice**: SQLAlchemy with async support\n**Rationale**: Type safety + migration support + connection pooling",
+    "error_strategy": "## DEC_DB_{NUM}: Error Handling Strategy\n**Pattern**: DATABASE_ACCESS_PATTERN\n**Approach**: Custom exceptions + comprehensive logging\n**Implementation**: Repository pattern with try-catch hierarchy"
+  },
+  "validation_rules": {
+    "required_components": ["repository_class", "connection_pool", "error_handling", "type_hints", "logging"],
+    "forbidden_patterns": ["Session.query", "engine.execute", "direct_sql_without_pool"],
+    "mandatory_methods": ["get", "create", "update", "delete", "list"],
+    "error_handling_requirement": "All database operations must have specific exception handling"
+  },
+  "usage_examples": {
+    "repository_initialization": "prompt_repo = PromptRepository(db_pool)",
+    "crud_operation": "prompt = await prompt_repo.get_prompt(prompt_id)",
+    "error_handling": "except DatabaseError as e: logger.error(f'DB error: {e}'); raise",
+    "type_annotation": "async def get_prompt(self, prompt_id: str) -> Optional[Prompt]:"
+  },
+  "adherence_scoring": {
+    "full_compliance": 1.0,
+    "missing_error_handling": 0.7,
+    "missing_types": 0.6,
+    "direct_db_access": 0.3,
+    "no_pattern_usage": 0.0
+  }
+}

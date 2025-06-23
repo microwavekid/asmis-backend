@@ -1,0 +1,52 @@
+{
+  "imprint_mode": {
+    "pattern_id": "CACHING_PATTERN",
+    "version": 1, 
+    "level": "fatal",
+    "headline": "Multi-level caching mandatory — TTL management, cache decorators, invalidation strategies required",
+    "prime_directive": "All expensive operations must implement caching with proper TTL and invalidation"
+  },
+  "behavioral_contract": {
+    "template_mode": "strict",
+    "pattern_enforcement": "mandatory",
+    "code_structure": "@cache_result decorator → TTL configuration → Invalidation strategy → Performance monitoring",
+    "forbidden_actions": ["uncached_expensive_ops", "infinite_cache", "no_invalidation_strategy", "missing_ttl"]
+  },
+  "imprinting_tokens": "Multi-level caching mandatory — TTL management, cache decorators, invalidation strategies required. All expensive operations must implement caching with proper TTL.",
+  "token_count": 192,
+  "template_structure": {
+    "decorator_usage": "@cache_result(ttl_seconds=600, key_prefix=\"{operation_type}\")\nasync def {expensive_operation}({params}) -> {return_type}:\n    # Expensive operation implementation",
+    "cache_manager": "cache_manager = CacheManager()\nresult = await cache_manager.get_or_set(\n    key=f\"{operation}:{identifier}\",\n    getter_func=expensive_function,\n    ttl_seconds={TTL}\n)",
+    "invalidation": "# Pattern-based invalidation\ninvalidated_count = cache_manager.invalidate_pattern(\"{pattern}\")\nlogger.info(f\"Invalidated {invalidated_count} cache entries\")"
+  },
+  "neural_anchors": {
+    "success_indicator": "✅ Applied: CACHING_PATTERN",
+    "implementation_marker": "// PATTERN_REF: CACHING_PATTERN",
+    "performance_gain": "// CACHE_BENEFIT: {HIT_RATE}% hit rate, {PERFORMANCE_GAIN}ms saved",
+    "invalidation_strategy": "// INVALIDATION: Pattern-based with TTL {SECONDS}s"
+  },
+  "decision_templates": {
+    "cache_strategy": "## DEC_CACHE_{NUM}: Caching Strategy\n**Pattern**: CACHING_PATTERN\n**TTL**: {SECONDS}s for {OPERATION_TYPE}\n**Rationale**: Balance between freshness and performance for {USE_CASE}",
+    "invalidation_approach": "## DEC_CACHE_{NUM}: Invalidation Strategy\n**Pattern**: CACHING_PATTERN\n**Method**: {PATTERN_BASED|TIME_BASED|EVENT_BASED}\n**Implementation**: {SPECIFIC_APPROACH}"
+  },
+  "validation_rules": {
+    "required_components": ["cache_decorator_or_manager", "ttl_configuration", "invalidation_strategy", "performance_monitoring"],
+    "forbidden_patterns": ["permanent_cache", "no_expiration", "memory_leaks"],
+    "mandatory_considerations": ["cache_hit_ratio", "memory_usage", "invalidation_triggers"],
+    "performance_requirement": "Cache operations must be faster than source operations"
+  },
+  "usage_examples": {
+    "ai_operation_caching": "@cache_result(ttl_seconds=600, key_prefix=\"meddpic\")\nasync def analyze_meddpic(content: str) -> Dict[str, Any]:",
+    "database_caching": "cached_prompt = await cache_manager.get_or_set(\n    key=f\"prompt:{prompt_id}\",\n    getter_func=lambda: prompt_repo.get_prompt(prompt_id),\n    ttl_seconds=300\n)",
+    "bulk_invalidation": "cache_manager.invalidate_pattern(\"prompt:\")  # Invalidate all prompts",
+    "performance_monitoring": "stats = cache_manager.get_stats()\nlogger.info(f\"Cache utilization: {stats['utilization']:.2%}\")"
+  },
+  "adherence_scoring": {
+    "full_compliance": 1.0,
+    "missing_ttl": 0.8,
+    "no_invalidation": 0.7,
+    "memory_leaks": 0.5,
+    "uncached_expensive_ops": 0.3,
+    "no_pattern_usage": 0.0
+  }
+}

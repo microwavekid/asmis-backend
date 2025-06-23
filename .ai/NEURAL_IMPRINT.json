@@ -1,0 +1,111 @@
+{
+  "imprint_mode": {
+    "version": 1,
+    "level": "fatal",
+    "headline": "ASMIS neural intelligence active — patterns mandatory, decisions logged, memory updated",
+    "prime_directive": "Every interaction must reference established patterns or create new ones",
+    "forbidden_actions": ["freestyle_responses", "skip_patterns", "ignore_context", "manual_memory_updates"]
+  },
+  "behavioral_hierarchy": {
+    "level_1_control": [".ai/NEURAL_IMPRINT.json"],
+    "level_2_session": [".project_memory/current_epic/active_session.json"],
+    "level_3_tasks": ["track_progress/todo_tracker.md"],
+    "level_4_patterns": [".project_memory/patterns/IMPRINT_PATTERN_INDEX.json"],
+    "level_5_context": [".ai/", ".project_memory/intelligence/"]
+  },
+  "response_templates": {
+    "code_generation": {
+      "pattern": "Find pattern in .project_memory/patterns/ → Apply template → Reference in code comments → Log decision",
+      "structure": "// PATTERN_REF: {PATTERN_ID}\n{CODE_IMPLEMENTATION}\n// DECISION_REF: {DECISION_ID}",
+      "forbidden": ["pattern_free_code", "undocumented_decisions"]
+    },
+    "problem_solving": {
+      "pattern": "Check memory → Match problem type → Apply existing pattern OR create new pattern → Document solution",
+      "structure": "✅ Applied: {PATTERN_ID} | 📋 Decision: {DECISION_ID} | 🔄 Updated: {MEMORY_FILE}",
+      "mandatory_fields": ["pattern_reference", "decision_logging", "memory_update"]
+    },
+    "progress_tracking": {
+      "pattern": "Update tracker → Reference pattern → Log completion → Timestamp automatically",
+      "structure": "| {STATUS_ENUM} | {TASK} | {PATTERN_REF} | {DECISION_REF} | {AUTO_TIMESTAMP} |",
+      "triggers": ["task_completion", "milestone_reached", "blocker_resolved"]
+    },
+    "memory_management": {
+      "pattern": "Identify reusable solution → Create pattern entry → Log to appropriate memory file → Reference in future work",
+      "update_rules": "{ENUM: append_only|structured_replace|template_fill|never_delete}",
+      "mandatory_logging": true
+    }
+  },
+  "neural_anchors": {
+    "success_indicator": "✅ Applied: {PATTERN_ID}",
+    "decision_marker": "📋 Decision: {DECISION_ID}",
+    "memory_update": "🧠 Updated: {MEMORY_FILE}",
+    "progress_tracking": "📊 Progress: {TASK_STATUS}",
+    "pattern_creation": "🆕 Created: {NEW_PATTERN_ID}",
+    "context_loaded": "🎯 Context: {SESSION_TYPE}"
+  },
+  "behavioral_rules": {
+    "startup_sequence": {
+      "step_1": "LOAD this neural imprint",
+      "step_2": "CHECK .project_memory/current_epic/active_session.json for session contract",
+      "step_3": "READ track_progress/todo_tracker.md for current tasks",
+      "step_4": "INDEX .project_memory/patterns/ for available solutions",
+      "step_5": "APPLY appropriate behavioral contract"
+    },
+    "decision_making": {
+      "architectural_decisions": {
+        "required": ["problem_context", "options_evaluated", "pattern_applied", "rationale"],
+        "log_to": ".project_memory/current_epic/DECISIONS_LOG.md",
+        "template": "## DEC_{DATE}_{NUM}: {TITLE}\n**Pattern**: {PATTERN_REF}\n**Rationale**: {REASON}"
+      },
+      "implementation_decisions": {
+        "required": ["approach_chosen", "pattern_reference", "code_location"],
+        "log_inline": true,
+        "template": "// DECISION: {BRIEF_RATIONALE} | PATTERN_REF: {PATTERN_ID}"
+      }
+    },
+    "pattern_enforcement": {
+      "code_without_pattern": "FORBIDDEN - Must reference existing pattern or create new one",
+      "undocumented_decisions": "FORBIDDEN - All choices must be logged with rationale",
+      "manual_memory_updates": "FORBIDDEN - Use templates and auto-triggers only",
+      "context_drift": "PREVENTED - Always reference neural imprint and session contract"
+    }
+  },
+  "communication_adaptation": {
+    "technical_depth": {
+      "signals": {
+        "understanding_shown": "Reduce explanation density, increase pattern references",
+        "questions_asked": "Maintain explanation level, provide more context",
+        "repetition_needed": "Slow down, reinforce concepts with examples"
+      },
+      "style_enum": "{ENUM: technical|adaptive|CPTO_strategic|beginner_friendly}"
+    },
+    "response_format": {
+      "code_examples": "Always include pattern reference and decision rationale",
+      "explanations": "Connect to project patterns and previous decisions",
+      "progress_updates": "Use visual indicators and reference completion templates"
+    }
+  },
+  "error_recovery": {
+    "pattern_not_found": {
+      "status": "CREATE_PATTERN_REQUIRED",
+      "action": "Document new pattern in .project_memory/patterns/",
+      "template": "PATTERN_{DATE}_{CATEGORY}_{NUM}.json"
+    },
+    "unclear_requirements": {
+      "status": "CLARIFICATION_REQUIRED", 
+      "action": "Ask specific questions to establish pattern applicability",
+      "forbidden": ["assume_requirements", "freestyle_solutions"]
+    },
+    "context_conflict": {
+      "status": "CONTEXT_RESOLUTION_REQUIRED",
+      "action": "Reference session contract and project patterns for guidance",
+      "escalate_to": "User clarification with pattern options"
+    }
+  },
+  "performance_tracking": {
+    "pattern_usage": "Track which patterns are applied most frequently",
+    "decision_quality": "Monitor decision outcomes and pattern effectiveness",
+    "memory_evolution": "Log how project patterns evolve through usage",
+    "adherence_score": "Measure compliance with neural imprint behavioral rules"
+  }
+}

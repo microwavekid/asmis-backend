@@ -1,9 +1,13 @@
 """
+✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN
 MEDDPIC Orchestrator - Central Intelligence Coordinator for ASMIS
 
 This module serves as the meta-coordinator for the multi-agent sales intelligence
 system, orchestrating specialized agents to provide comprehensive MEDDPIC analysis
-from various content sources.
+from various content sources using Template Imprinting Protocol.
+
+PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN
+DECISION_REF: TIP_MEDDPIC_CONVERSION_001
 """
 
 import asyncio
@@ -21,6 +25,10 @@ from .meeting_intelligence_agent import MeetingIntelligenceAgent
 from .document_intelligence_agent import DocumentIntelligenceAgent
 from .action_items_agent import ActionItemsAgent
 from .stakeholder_intelligence_agent import StakeholderIntelligenceAgent
+
+# PATTERN_REF: TEMPLATE_IMPRINTING_PROTOCOL imports
+from ..database.repository import imprinting_template_repo, db_manager
+from ..database.models import ImprintingTemplate
 
 # Configure logging
 logging.basicConfig(
@@ -68,22 +76,28 @@ class AnalysisContext:
             self.timestamp = datetime.utcnow().isoformat()
 
 
+# PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN
 class MEDDPICOrchestrator:
     """
     Central intelligence coordinator for ASMIS multi-agent system.
+    ✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN
     
     Orchestrates specialized agents to provide comprehensive sales intelligence
-    from meeting transcripts, documents, and other sources. Designed to evolve
-    from simple routing to sophisticated cross-source synthesis and strategic
-    recommendations.
+    from meeting transcripts, documents, and other sources using Template Imprinting Protocol.
+    Designed to evolve from simple routing to sophisticated cross-source synthesis and strategic
+    recommendations with neural-first behavioral enforcement.
     
     Attributes:
         meeting_agent (MeetingIntelligenceAgent): Agent for analyzing meeting content
         document_agent (DocumentIntelligenceAgent): Agent for analyzing formal documents
         action_items_agent (ActionItemsAgent): Agent for extracting action items
+        stakeholder_agent (StakeholderIntelligenceAgent): Agent for stakeholder analysis
+        imprinting_template (Optional[ImprintingTemplate]): Active template for behavioral control
         synthesis_agent (Optional[Any]): Future agent for cross-source MEDDPIC synthesis
         campaign_agent (Optional[Any]): Future agent for campaign trigger detection
         pattern_agent (Optional[Any]): Future agent for pattern recognition
+    
+    DECISION_REF: TIP_MEDDPIC_CONVERSION_001 - Converted to Template Imprinting Protocol
     """
     
     # Source type categorization
@@ -105,7 +119,8 @@ class MEDDPICOrchestrator:
     
     def __init__(self, api_key: str, config: Optional[Dict[str, Any]] = None):
         """
-        Initialize the MEDDPIC Orchestrator.
+        Initialize the MEDDPIC Orchestrator with Template Imprinting Protocol.
+        ✅ Applied: MEDDPIC_ORCHESTRATOR_PATTERN
         
         Args:
             api_key: API key for AI services
@@ -116,6 +131,10 @@ class MEDDPICOrchestrator:
             
         self.api_key = api_key
         self.config = {**self.DEFAULT_CONFIG, **(config or {})}
+        
+        # PATTERN_REF: MEDDPIC_ORCHESTRATOR_PATTERN - Initialize template system
+        self.imprinting_template: Optional[ImprintingTemplate] = None
+        self.template_loaded = False
         
         # Initialize agents
         self._initialize_agents()
@@ -131,10 +150,12 @@ class MEDDPICOrchestrator:
             "average_processing_time": 0.0,
             "cache_hits": 0,
             "cache_misses": 0,
-            "action_items_extracted": 0
+            "action_items_extracted": 0,
+            "template_adherence_score": 0.0  # PATTERN_REF: Template adherence tracking
         } if self.config["enable_metrics"] else None
         
-        logger.info("MEDDPICOrchestrator initialized successfully")
+        logger.info("MEDDPICOrchestrator initialized successfully with Template Imprinting Protocol")
+        # DECISION_REF: TIP_MEDDPIC_CONVERSION_001
     
     def _initialize_agents(self):
         """Initialize extraction and intelligence agents."""

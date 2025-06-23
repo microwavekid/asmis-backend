@@ -1,0 +1,52 @@
+{
+  "imprint_mode": {
+    "pattern_id": "AGENT_COMMUNICATION_PATTERN", 
+    "version": 1,
+    "level": "fatal",
+    "headline": "BaseAgent pattern mandatory — standardized results, retry logic, confidence scoring required",
+    "prime_directive": "All AI agents must inherit BaseAgent with standardized communication protocol"
+  },
+  "behavioral_contract": {
+    "template_mode": "strict",
+    "pattern_enforcement": "mandatory",
+    "code_structure": "BaseAgent inheritance → AgentResult format → Error handling → Confidence scoring",
+    "forbidden_actions": ["direct_ai_calls", "custom_result_formats", "missing_retry_logic", "no_confidence_scores"]
+  },
+  "imprinting_tokens": "BaseAgent pattern mandatory — standardized results, retry logic, confidence scoring required. All AI agents must inherit BaseAgent with standardized communication protocol.",
+  "token_count": 194,
+  "template_structure": {
+    "base_class": "class {Agent}Agent(BaseAgent):\n    async def _process_impl(self, input_data: Dict[str, Any]) -> Dict[str, Any]:\n        # Agent-specific implementation\n    def _calculate_confidence(self, result: Dict[str, Any]) -> float:\n        # Confidence calculation logic",
+    "result_format": "return AgentResult(\n    status=ProcessingStatus.COMPLETED,\n    data=result,\n    confidence_score=self._calculate_confidence(result),\n    processing_time=processing_time,\n    timestamp=datetime.utcnow(),\n    metadata={'agent_type': self.__class__.__name__}\n)",
+    "error_handling": "try:\n    result = await asyncio.wait_for(self._process_impl(input_data), timeout=self.config['timeout'])\nexcept asyncio.TimeoutError:\n    # Timeout handling\nexcept Exception as e:\n    # Error handling with retry logic"
+  },
+  "neural_anchors": {
+    "success_indicator": "✅ Applied: AGENT_COMMUNICATION_PATTERN",
+    "implementation_marker": "// PATTERN_REF: AGENT_COMMUNICATION_PATTERN", 
+    "result_format": "// RESULT_FORMAT: StandardizedAgentResult",
+    "confidence_scoring": "// CONFIDENCE_STRATEGY: Domain-specific calculation"
+  },
+  "decision_templates": {
+    "agent_design": "## DEC_AGENT_{NUM}: Agent Architecture\n**Pattern**: AGENT_COMMUNICATION_PATTERN\n**Inheritance**: BaseAgent with standardized protocol\n**Rationale**: Consistent error handling + result format + retry logic",
+    "timeout_strategy": "## DEC_AGENT_{NUM}: Timeout Configuration\n**Pattern**: AGENT_COMMUNICATION_PATTERN\n**Timeout**: {SECONDS}s for {AGENT_TYPE}\n**Rationale**: Balance between reliability and performance"
+  },
+  "validation_rules": {
+    "required_components": ["base_agent_inheritance", "process_impl_method", "confidence_calculation", "standardized_result", "error_handling"],
+    "forbidden_patterns": ["direct_openai_call", "custom_result_dict", "unhandled_exceptions"],
+    "mandatory_methods": ["_process_impl", "_calculate_confidence", "health_check"],
+    "result_requirement": "All agents must return AgentResult with confidence_score"
+  },
+  "usage_examples": {
+    "agent_initialization": "meddpic_agent = MEDDPICAgent(api_key=api_key, config=custom_config)",
+    "processing_call": "result = await agent.process({'content': transcript, 'source_type': 'meeting'})",
+    "confidence_check": "if result.confidence_score >= 0.7: # Process result",
+    "error_handling": "if result.status == ProcessingStatus.FAILED: logger.error(result.errors)"
+  },
+  "adherence_scoring": {
+    "full_compliance": 1.0,
+    "missing_confidence": 0.8,
+    "custom_result_format": 0.6,
+    "no_error_handling": 0.4,
+    "direct_ai_calls": 0.2,
+    "no_pattern_usage": 0.0
+  }
+}
