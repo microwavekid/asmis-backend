@@ -200,8 +200,44 @@ class MEDDPICCScoring:
             return 40.0 if identified and identified.strip() else 0.0
         
         elif element == "decision_criteria":
-            criteria = data.get("criteria", [])
-            return min(40.0, len(criteria) * 8.0) if criteria else 0.0
+            # Handle both old format (list) and new format (structured dict)
+            criteria_data = data.get("criteria", [])
+            
+            if isinstance(criteria_data, list):
+                # Old format - simple list
+                return min(40.0, len(criteria_data) * 8.0) if criteria_data else 0.0
+            elif isinstance(criteria_data, dict):
+                # New format - structured criteria
+                total_criteria = 0
+                quality_bonus = 0.0
+                
+                # Count criteria across all categories
+                for category, criteria_list in criteria_data.items():
+                    if isinstance(criteria_list, list):
+                        total_criteria += len(criteria_list)
+                        
+                        # Quality bonuses for structured criteria
+                        for criterion in criteria_list:
+                            if isinstance(criterion, dict):
+                                # Bonus for measurable criteria
+                                if criterion.get('measurable', False):
+                                    quality_bonus += 2.0
+                                # Bonus for priority specification
+                                if criterion.get('priority') in ['must_have', 'dealbreaker']:
+                                    quality_bonus += 1.0
+                                # Bonus for business unit mapping
+                                if criterion.get('business_unit'):
+                                    quality_bonus += 1.0
+                                # Bonus for stakeholder mapping
+                                if criterion.get('stakeholder'):
+                                    quality_bonus += 0.5
+                
+                # Base score from count + quality bonuses
+                base_score = min(25.0, total_criteria * 5.0)
+                bonus_score = min(15.0, quality_bonus)
+                return base_score + bonus_score
+            else:
+                return 0.0
         
         elif element == "decision_process":
             steps = data.get("steps", [])
@@ -306,6 +342,38 @@ class MEDDPICCScoring:
                 if champion_candidates:
                     detail_score += min(5.0, len(champion_candidates) * 2.0)
         
+        elif element == "decision_criteria":
+            # Enhanced scoring for new structured criteria format
+            criteria_data = data.get("criteria", [])
+            if isinstance(criteria_data, dict):
+                # New structured format
+                category_coverage = len(criteria_data)  # Number of categories covered
+                total_criteria = sum(len(criteria_list) for criteria_list in criteria_data.values() if isinstance(criteria_list, list))
+                
+                # Bonus for category diversity
+                detail_score = min(5.0, category_coverage * 2.0)
+                
+                # Bonus for criteria depth
+                detail_score += min(5.0, total_criteria * 1.0)
+                
+                # Check for business unit coverage
+                business_units = data.get("business_unit_involvement", [])
+                if business_units:
+                    detail_score += min(5.0, len(business_units) * 1.0)
+                
+                # Check for evaluation process
+                if data.get("evaluation_process") and data.get("evaluation_process") != "Not specified":
+                    detail_score += 2.0
+                
+                # Check for decision makers
+                decision_makers = data.get("decision_makers", [])
+                if decision_makers:
+                    detail_score += min(3.0, len(decision_makers) * 1.0)
+            else:
+                # Old format or simple list
+                criteria_list = criteria_data if isinstance(criteria_data, list) else []
+                detail_score = min(10.0, len(criteria_list) * 2.0)
+        
         elif element == "competition":
             # Check for competitive intelligence depth
             strengths = data.get("strengths", [])
@@ -360,6 +428,47 @@ class MEDDPICCScoring:
                 if data.get("confidence", 0) < 0.7:
                     gaps.append("metrics_not_quantified")
             
+            elif element == "decision_criteria":
+                criteria_data = data.get("criteria", [])
+                if isinstance(criteria_data, dict):
+                    # New structured format gaps
+                    total_criteria = sum(len(criteria_list) for criteria_list in criteria_data.values() if isinstance(criteria_list, list))
+                    if total_criteria == 0:
+                        gaps.append("no_decision_criteria_identified")
+                    elif total_criteria < 3:
+                        gaps.append("limited_criteria_depth")
+                    
+                    # Check for category coverage
+                    if len(criteria_data) < 2:
+                        gaps.append("limited_criteria_categories")
+                    
+                    # Check for business unit mapping
+                    business_units = data.get("business_unit_involvement", [])
+                    if not business_units:
+                        gaps.append("no_business_unit_ownership_identified")
+                    
+                    # Check for evaluation process
+                    if not data.get("evaluation_process") or data.get("evaluation_process") == "Not specified":
+                        gaps.append("evaluation_process_unclear")
+                    
+                    # Check for priority classification
+                    has_priorities = False
+                    for criteria_list in criteria_data.values():
+                        if isinstance(criteria_list, list):
+                            for criterion in criteria_list:
+                                if isinstance(criterion, dict) and criterion.get('priority'):
+                                    has_priorities = True
+                                    break
+                    if not has_priorities:
+                        gaps.append("criteria_priorities_unclear")
+                else:
+                    # Old format gaps
+                    criteria_list = criteria_data if isinstance(criteria_data, list) else []
+                    if not criteria_list:
+                        gaps.append("decision_criteria_not_identified")
+                    elif len(criteria_list) < 3:
+                        gaps.append("limited_criteria_identified")
+            
             elif element == "implicate_pain":
                 if not data.get("underlying_issues"):
                     gaps.append("underlying_pain_not_identified")
@@ -393,6 +502,22 @@ class MEDDPICCScoring:
                 recommendations.append("Develop strategy to address concerns of potential blockers")
             elif gap == "success_metrics_undefined":
                 recommendations.append("Conduct metrics definition workshop with stakeholders")
+            elif gap == "no_decision_criteria_identified":
+                recommendations.append("Conduct criteria discovery workshop with stakeholders")
+            elif gap == "limited_criteria_depth":
+                recommendations.append("Probe for additional evaluation criteria and requirements")
+            elif gap == "limited_criteria_categories":
+                recommendations.append("Explore technical, business, and financial requirements separately")
+            elif gap == "no_business_unit_ownership_identified":
+                recommendations.append("Map criteria ownership to specific business units and stakeholders")
+            elif gap == "evaluation_process_unclear":
+                recommendations.append("Clarify the evaluation process and timeline with key stakeholders")
+            elif gap == "criteria_priorities_unclear":
+                recommendations.append("Establish must-have vs nice-to-have criteria with stakeholders")
+            elif gap == "limited_criteria_identified":
+                recommendations.append("Conduct more detailed requirements gathering sessions")
+            elif gap == "decision_criteria_not_identified":
+                recommendations.append("Schedule discovery call to understand evaluation criteria")
             elif gap == "underlying_pain_not_identified":
                 recommendations.append("Ask deeper discovery questions about business challenges")
             elif gap == "contracting_process_unknown":

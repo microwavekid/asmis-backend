@@ -33,6 +33,9 @@ from ..database.models import ImprintingTemplate
 # PATTERN_REF: MEDDPICC_COMPLETENESS_SCORING_PATTERN imports
 from ..intelligence.meddpicc_scoring import MEDDPICCScoring
 
+# Evidence Service imports
+from ..services.evidence_service import evidence_service
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -254,6 +257,14 @@ class MEDDPICCOrchestrator:
             
             # Update metrics
             self._update_metrics(success=True, start_time=start_time)
+            
+            # Async evidence processing (fire and forget)
+            if source_type_enum == SourceType.TRANSCRIPT:
+                asyncio.create_task(
+                    self._process_evidence_async(
+                        result, content, source_id, context
+                    )
+                )
             
             logger.info(f"Successfully completed analysis for {source_id}")
             return result
@@ -629,6 +640,45 @@ class MEDDPICCOrchestrator:
         if self._cache is not None:
             self._cache.clear()
             logger.info("Cache cleared")
+    
+    async def _process_evidence_async(
+        self, 
+        analysis_result: Dict[str, Any], 
+        content: str, 
+        source_id: str, 
+        context: 'AnalysisContext'
+    ) -> None:
+        """
+        Process evidence extraction asynchronously.
+        
+        Args:
+            analysis_result: Complete analysis results
+            content: Original transcript content
+            source_id: Source identifier
+            context: Analysis context
+        """
+        try:
+            logger.info(f"Starting async evidence processing for {source_id}")
+            
+            # Extract MEDDPICC analysis from result
+            meddpicc_analysis = analysis_result.get("meddpic_analysis", {})
+            
+            # Generate unique analysis ID for this session
+            analysis_id = f"{source_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            
+            # Process evidence through evidence service
+            await evidence_service.process_analysis_evidence(
+                analysis_result=meddpicc_analysis,
+                transcript_content=content,
+                transcript_id=source_id,  # Using source_id as transcript_id for now
+                analysis_id=analysis_id
+            )
+            
+            logger.info(f"Evidence processing completed for {source_id}")
+            
+        except Exception as e:
+            logger.error(f"Error in async evidence processing for {source_id}: {e}")
+            # Don't raise - this is background processing
 
 
 # Example usage

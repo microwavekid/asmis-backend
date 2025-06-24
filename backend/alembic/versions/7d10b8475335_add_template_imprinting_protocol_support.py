@@ -51,7 +51,7 @@ def upgrade() -> None:
     op.add_column('processing_sessions', sa.Column('imprinting_adherence_score', sa.Float(), nullable=True))
     op.add_column('processing_sessions', sa.Column('pattern_violations', sa.Integer(), nullable=True))
     op.add_column('processing_sessions', sa.Column('first_token_effective', sa.Boolean(), nullable=True))
-    op.create_foreign_key(None, 'processing_sessions', 'imprinting_templates', ['imprinting_template_id'], ['id'])
+    # Foreign key constraint removed for SQLite compatibility
     op.add_column('prompt_templates', sa.Column('template_mode', sa.JSON(), nullable=True))
     op.add_column('prompt_templates', sa.Column('imprinting_tokens', sa.Text(), nullable=True))
     op.add_column('prompt_templates', sa.Column('pattern_adherence_score', sa.Float(), nullable=True))
@@ -75,7 +75,7 @@ def downgrade() -> None:
     op.drop_column('prompt_templates', 'pattern_adherence_score')
     op.drop_column('prompt_templates', 'imprinting_tokens')
     op.drop_column('prompt_templates', 'template_mode')
-    op.drop_constraint(None, 'processing_sessions', type_='foreignkey')
+    # Foreign key constraint removal not needed for SQLite
     op.drop_column('processing_sessions', 'first_token_effective')
     op.drop_column('processing_sessions', 'pattern_violations')
     op.drop_column('processing_sessions', 'imprinting_adherence_score')

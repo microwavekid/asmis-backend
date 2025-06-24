@@ -3,7 +3,7 @@
 from typing import Any, Dict, Optional
 from datetime import datetime
 
-from sqlalchemy import String, Text, JSON, ForeignKey, Index, UniqueConstraint, Boolean, Float
+from sqlalchemy import String, Text, JSON, ForeignKey, Index, UniqueConstraint, Boolean, Float, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, TimestampMixin, UUIDMixin, SoftDeleteMixin
@@ -235,6 +235,252 @@ class ProcessingSession(Base, UUIDMixin, TimestampMixin):
     
     def __repr__(self) -> str:
         return f"<ProcessingSession(session_type='{self.session_type}', status='{self.status}')>"
+
+
+# Multi-Source Evidence System Models
+
+class Transcript(Base, UUIDMixin, TimestampMixin):
+    """Model for meeting transcripts."""
+    __tablename__ = "transcripts"
+    
+    # Core transcript information
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    duration_minutes: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    
+    # Meeting metadata
+    meeting_date: Mapped[datetime] = mapped_column(nullable=False)
+    attendees: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
+    meeting_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    
+    # Source tracking
+    source_platform: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # "zoom", "teams", etc.
+    source_file_path: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    
+    # Business context
+    account_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    deal_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    
+    # Processing status
+    is_processed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    
+    # Relationships
+    segments: Mapped[list["TranscriptSegment"]] = relationship(
+        "TranscriptSegment", 
+        back_populates="transcript",
+        cascade="all, delete-orphan"
+    )
+    evidence: Mapped[list["IntelligenceEvidence"]] = relationship(
+        "IntelligenceEvidence",
+        back_populates="transcript",
+        cascade="all, delete-orphan"
+    )
+    
+    __table_args__ = (
+        Index('ix_transcript_date', 'meeting_date'),
+        Index('ix_transcript_account', 'account_id'),
+        Index('ix_transcript_deal', 'deal_id'),
+        Index('ix_transcript_processed', 'is_processed'),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<Transcript(title='{self.title}', date='{self.meeting_date}')>"
+
+
+class TranscriptSegment(Base, UUIDMixin, TimestampMixin):
+    """Model for structured transcript segments with precise positioning."""
+    __tablename__ = "transcript_segments"
+    
+    # Reference to parent transcript
+    transcript_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("transcripts.id"),
+        nullable=False
+    )
+    
+    # Speaker information
+    speaker: Mapped[str] = mapped_column(String(255), nullable=False)
+    
+    # Timing information
+    start_time: Mapped[str] = mapped_column(String(10), nullable=False)  # "00:15:32"
+    end_time: Mapped[str] = mapped_column(String(10), nullable=False)    # "00:15:45"
+    
+    # Content and positioning
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    start_position: Mapped[int] = mapped_column(Integer, nullable=False)  # Character position in full transcript
+    end_position: Mapped[int] = mapped_column(Integer, nullable=False)    # Character position in full transcript
+    word_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    
+    # Relationships
+    transcript: Mapped["Transcript"] = relationship(
+        "Transcript",
+        back_populates="segments"
+    )
+    
+    __table_args__ = (
+        Index('ix_segment_transcript', 'transcript_id'),
+        Index('ix_segment_position', 'start_position', 'end_position'),
+        Index('ix_segment_time', 'start_time'),
+        Index('ix_segment_speaker', 'speaker'),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<TranscriptSegment(speaker='{self.speaker}', time='{self.start_time}')>"
+
+
+class IntelligenceEvidence(Base, UUIDMixin, TimestampMixin):
+    """Model for evidence linking with precise positioning."""
+    __tablename__ = "intelligence_evidence"
+    
+    # Analysis reference
+    analysis_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    
+    # Element classification
+    element_type: Mapped[str] = mapped_column(String(50), nullable=False)  # "decision_criteria", "champion", etc.
+    element_key: Mapped[str] = mapped_column(String(100), nullable=False)  # Specific criterion ID or element identifier
+    
+    # Evidence content
+    evidence_text: Mapped[str] = mapped_column(Text, nullable=False)
+    
+    # Source information (transcript)
+    transcript_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("transcripts.id"),
+        nullable=True
+    )
+    segment_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("transcript_segments.id"),
+        nullable=True
+    )
+    
+    # Source information (document)
+    document_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("documents.id"),
+        nullable=True
+    )
+    
+    # Precise positioning
+    start_position: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    end_position: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    
+    # Context
+    speaker: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    timestamp: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+    context_before: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    context_after: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    
+    # Quality metrics
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    extraction_type: Mapped[str] = mapped_column(String(50), nullable=False, default="explicit")  # "explicit", "inferred", "sentiment"
+    
+    # Relationships
+    transcript: Mapped[Optional["Transcript"]] = relationship(
+        "Transcript",
+        back_populates="evidence"
+    )
+    document: Mapped[Optional["Document"]] = relationship(
+        "Document",
+        back_populates="evidence"
+    )
+    
+    __table_args__ = (
+        Index('ix_evidence_analysis_element', 'analysis_id', 'element_type', 'element_key'),
+        Index('ix_evidence_transcript', 'transcript_id', 'start_position'),
+        Index('ix_evidence_document', 'document_id'),
+        Index('ix_evidence_confidence', 'confidence'),
+        Index('ix_evidence_type', 'extraction_type'),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<IntelligenceEvidence(type='{self.element_type}', confidence={self.confidence})>"
+
+
+class Document(Base, UUIDMixin, TimestampMixin):
+    """Model for documents with structure."""
+    __tablename__ = "documents"
+    
+    # Business context
+    deal_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    account_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    
+    # Document information
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    document_type: Mapped[str] = mapped_column(String(50), nullable=False)  # "pdf", "docx", "pptx", "xlsx"
+    file_path: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    total_pages: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    
+    # Content
+    extracted_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    
+    # Metadata
+    document_metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
+    uploaded_by: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    uploaded_at: Mapped[datetime] = mapped_column(nullable=False, default=datetime.utcnow)
+    
+    # Processing status
+    is_processed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    
+    # Relationships
+    sections: Mapped[list["DocumentSection"]] = relationship(
+        "DocumentSection",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
+    evidence: Mapped[list["IntelligenceEvidence"]] = relationship(
+        "IntelligenceEvidence",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
+    
+    __table_args__ = (
+        Index('ix_document_deal', 'deal_id'),
+        Index('ix_document_account', 'account_id'),
+        Index('ix_document_type', 'document_type'),
+        Index('ix_document_uploaded', 'uploaded_at'),
+        Index('ix_document_processed', 'is_processed'),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<Document(title='{self.title}', type='{self.document_type}')>"
+
+
+class DocumentSection(Base, UUIDMixin, TimestampMixin):
+    """Model for document sections/pages."""
+    __tablename__ = "document_sections"
+    
+    # Reference to parent document
+    document_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("documents.id"),
+        nullable=False
+    )
+    
+    # Section information
+    section_type: Mapped[str] = mapped_column(String(50), nullable=False)  # 'page', 'chapter', 'section'
+    section_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    page_start: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    page_end: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    
+    # Content
+    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    content_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    
+    # Relationships
+    document: Mapped["Document"] = relationship(
+        "Document",
+        back_populates="sections"
+    )
+    
+    __table_args__ = (
+        Index('ix_section_document', 'document_id'),
+        Index('ix_section_type', 'section_type'),
+        Index('ix_section_pages', 'page_start', 'page_end'),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<DocumentSection(document_id='{self.document_id}', name='{self.section_name}')>"
 
 
 class User(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):

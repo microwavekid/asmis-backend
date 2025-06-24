@@ -11,7 +11,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from .base import Base
 from .connection import db_manager
 from .models import PromptTemplate, PromptVersion, AgentConfiguration, ProcessingSession, ImprintingTemplate
-from .models import User
+from .models import User, IntelligenceEvidence, Transcript, TranscriptSegment, Document, DocumentSection
 from .imprinting import imprinting_validator, ImprintingValidationResult
 
 logger = logging.getLogger(__name__)

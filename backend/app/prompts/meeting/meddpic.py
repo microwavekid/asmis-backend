@@ -44,7 +44,46 @@ class MEDDPICCPrompt(BasePrompt):
                 "evidence": "supporting quote"
             }},
             "decision_criteria": {{
-                "criteria": ["list of criteria mentioned"],
+                "criteria": {{
+                    "technical": [
+                        {{
+                            "criterion": "specific technical requirement",
+                            "priority": "high|medium|low|must_have|nice_to_have|dealbreaker",
+                            "measurable": true,
+                            "stakeholder": "person who mentioned it",
+                            "business_unit": "IT|Marketing|Finance|Sales|Operations|Legal|Security|Executive",
+                            "threshold": "specific threshold if mentioned"
+                        }}
+                    ],
+                    "business": [
+                        {{
+                            "criterion": "business requirement",
+                            "priority": "high|medium|low|must_have|nice_to_have|dealbreaker",
+                            "measurable": false,
+                            "stakeholder": "person who mentioned it",
+                            "business_unit": "Marketing|Sales|Operations|Executive",
+                            "threshold": null
+                        }}
+                    ],
+                    "financial": [
+                        {{
+                            "criterion": "cost or financial requirement",
+                            "priority": "high|medium|low|must_have|nice_to_have|dealbreaker",
+                            "measurable": true,
+                            "stakeholder": "CFO or finance person",
+                            "business_unit": "Finance",
+                            "threshold": "dollar amount or range"
+                        }}
+                    ]
+                }},
+                "prioritization": {{
+                    "must_have": ["critical requirements"],
+                    "nice_to_have": ["optional requirements"],
+                    "dealbreakers": ["absolute requirements"]
+                }},
+                "evaluation_process": "RFP vs demo vs trial vs pilot",
+                "decision_makers": ["who evaluates each type of criteria"],
+                "business_unit_involvement": ["IT", "Marketing", "Finance"],
                 "confidence": 0.0,
                 "evidence": ["supporting quotes"]
             }},

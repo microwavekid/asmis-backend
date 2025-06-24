@@ -25,8 +25,13 @@
   ```bash
   cd /Users/conor.leary/dev/asmis/backend && source venv/bin/activate && python <script>
   ```
-- **Common Issue**: Forgetting venv activation leads to module import errors
+- **Critical Symptoms of Missing venv**:
+  - `ModuleNotFoundError` for installed packages (e.g., networkx)
+  - `ANTHROPIC_API_KEY not set` (env file not loaded)
+  - Tests fail with import/dependency errors
+- **Quick Diagnostic**: `which python3` should show `/backend/venv/bin/python3`
 - **User Feedback**: Has corrected this multiple times - MUST remember venv activation
+- **Pattern**: Always run tests with `source venv/bin/activate &&` prefix
 
 ### Testing Best Practices
 - **Smart API Testing**: Use fake API keys for integration testing to validate code structure without API costs
@@ -72,6 +77,21 @@
 - **User Feedback Signals**: "Where did you document?" indicates failed documentation
 - **Documentation Validation**: If you can't reference it later from a file, it wasn't properly documented
 
+### Feature Enhancement Capture Pattern
+- **Enhancement Ideas**: Capture in `.project_memory/intelligence/ENHANCEMENT_ROADMAP.md`, NOT in WORKING_PATTERNS.md
+- **Individual Features**: Create detailed docs in appropriate directories (e.g., `app/intelligence/feature_name_enhancement.md`)
+- **Todo Integration**: Add as categorized pending tasks with appropriate priority
+- **Working Patterns**: Focus on HOW we work, not WHAT features to build
+
+### Todo List Organization Pattern
+- **Categorized Structure**: Use prefixes for clarity
+  - `COMPLETED:` - Major completed work (keep for context)
+  - `HIGH PRIORITY:` - Next immediate work
+  - `MEDIUM PRIORITY:` - Planned enhancements
+  - `FUTURE:` - Long-term ideas
+- **Benefits**: Easy scanning, clear priorities, manageable scope
+- **Retirement**: Archive completed todos periodically to prevent list bloat
+
 ### Technical Growth Tracking
 - **Current Comfort Level**: Learning developer with good instincts
 - **Strong Areas**: [AI will update based on demonstrated understanding]
@@ -98,3 +118,4 @@
 - Performance baselines before any optimization
 - Confidence scoring for all AI outputs
 - Multi-tenant considerations for all features
+
