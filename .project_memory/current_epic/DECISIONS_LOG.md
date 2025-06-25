@@ -38,4 +38,18 @@
 - Integrated with memory system for automatic pattern application
 **Date**: 2025-06-24
 
+## DEC_2025-06-24_002: Add date/time intelligence to session tracking system
+**Context**: Manual date entry in session files prone to errors (created 6-25 file when today is 6-24)
+**Options Considered**: Manual dating, basic timestamps, comprehensive date/time intelligence system
+**Decision**: Enhance intelligence system with automatic date/time awareness  
+**Pattern Applied**: AUTOMATION_ENHANCEMENT_PATTERN
+**Rationale**: Prevent human dating errors, improve session continuity tracking, support multi-session days
+**Impact**: More reliable session documentation, better context recovery, reduced manual errors
+**Implementation**: 
+- Auto-timestamp session file creation using system date
+- Multi-session numbering for same day (Part 1, Part 2, etc.)  
+- Date validation in progress tracker scripts
+- Timezone awareness for distributed work
+**Date**: 2025-06-24
+
 *Add new decisions above this line*
