@@ -1,5 +1,7 @@
 # ASMIS Linear Intelligence UI - Setup Guide
 
+> **Monorepo Integration**: This UI is now integrated into the main ASMIS repository with full intelligence system support.
+
 ## 🎯 Overview
 Modern Linear-inspired intelligence interface for ASMIS with MEDDPICC analysis, evidence tracking, and advanced deal management.
 
