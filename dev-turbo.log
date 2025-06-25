@@ -1,0 +1,20 @@
+
+> asmis-linear-ui@0.1.0 dev
+> next dev --turbo
+
+   ▲ Next.js 15.2.4 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.5.9:3000
+
+ ✓ Starting...
+ ✓ Ready in 923ms
+ ○ Compiling /deals ...
+ ✓ Compiled /deals in 1984ms
+ GET /deals 200 in 2344ms
+ ⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+   ▲ Next.js 15.2.4 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.5.9:3000
+
+ ✓ Starting...
+ ✓ Ready in 886ms

@@ -1,0 +1,23 @@
+
+> asmis-linear-ui@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.2.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.5.9:3000
+
+ ✓ Starting...
+ ✓ Ready in 1297ms
+ ○ Compiling /deals ...
+ ✓ Compiled /deals in 1560ms (1069 modules)
+ GET /deals 200 in 1921ms
+ ✓ Compiled in 438ms (495 modules)
+ GET /deals 200 in 153ms
+ ✓ Compiled in 582ms (1069 modules)
+ GET /deals 200 in 66ms
+ ✓ Compiled in 481ms (1069 modules)
+ GET /deals 200 in 53ms
+ GET /deals 200 in 232ms
+ ✓ Compiled in 273ms (495 modules)
+ GET /deals 200 in 38ms
+[?25h
