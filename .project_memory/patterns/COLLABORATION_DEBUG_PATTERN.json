@@ -1,0 +1,100 @@
+{
+  "pattern_id": "COLLABORATION_DEBUG_PATTERN",
+  "pattern_type": "behavioral_protocol", 
+  "version": 1,
+  "created_date": "2025-06-24",
+  "status": "active",
+  
+  "pattern_context": {
+    "problem_type": "Multi-repo debugging with environment conflicts",
+    "trigger_conditions": ["connection_refused", "repository_confusion", "version_incompatibility"],
+    "success_criteria": "UI restored, issues documented, patterns captured"
+  },
+
+  "behavioral_protocol": {
+    "startup_sequence": {
+      "step_1": "CONTEXT_FIRST: 'Help me understand current architecture before debugging'",
+      "step_2": "ENVIRONMENT_CHECK: Node version, repository structure, recent changes",
+      "step_3": "PROBLEM_ISOLATION: ONE root cause identification",
+      "step_4": "SYSTEMATIC_RESOLUTION: Fix-test-verify loop",
+      "step_5": "PATTERN_CAPTURE: Document solution for future"
+    },
+    
+    "forbidden_behaviors": [
+      "multiple_parallel_fixes",
+      "assumption_without_clarification", 
+      "context_skipping",
+      "scattered_debugging"
+    ],
+    
+    "communication_templates": {
+      "clarification_request": "Before debugging: {SPECIFIC_QUESTION_ABOUT_ARCHITECTURE}",
+      "status_update": "Found {N} issues: {LIST}. Tackling {SPECIFIC_ISSUE} first.",
+      "solution_validation": "Applied {FIX}. Testing... {RESULT}. Moving to next issue."
+    }
+  },
+
+  "technical_patterns": {
+    "multi_repo_debugging": {
+      "identification": "Check for multiple frontend directories or separate repositories",
+      "resolution": "Map repository structure, identify canonical source",
+      "prevention": "Document architecture clearly in project root"
+    },
+    
+    "environment_conflicts": {
+      "node_version_issues": {
+        "symptoms": "Server 'ready' but connection refused",
+        "resolution": "Downgrade to framework-compatible Node LTS",
+        "detection": "Node v23+ with Next.js 15 + React 19"
+      },
+      
+      "configuration_drift": {
+        "symptoms": "TypeScript errors, naming conflicts, hydration issues", 
+        "resolution": "Remove scaffold artifacts, align field names",
+        "prevention": "Clean template configs immediately after creation"
+      }
+    }
+  },
+
+  "success_validation": {
+    "resolution_criteria": [
+      "UI loading successfully",
+      "No console errors", 
+      "Performance metrics stable",
+      "All fixes documented"
+    ],
+    
+    "documentation_requirements": [
+      "Setup guide with environment requirements",
+      "Troubleshooting section with common issues",
+      "Git workflow with proper branching",
+      "Pattern capture in memory system"
+    ]
+  },
+
+  "memory_integration": {
+    "decision_logging": ".project_memory/current_epic/DECISIONS_LOG.md",
+    "pattern_updates": ".project_memory/patterns/",
+    "progress_tracking": "track_progress/todo_tracker.md",
+    "context_preservation": ".project_memory/intelligence/"
+  },
+
+  "pattern_evolution": {
+    "triggers_for_update": [
+      "new_debugging_scenario",
+      "improved_resolution_method", 
+      "additional_environment_conflicts"
+    ],
+    "update_method": "append_to_technical_patterns"
+  },
+
+  "quality_metrics": {
+    "adherence_indicators": [
+      "context_checked_before_debugging",
+      "systematic_vs_scattered_approach",
+      "proper_documentation_created",
+      "patterns_captured_in_memory"
+    ],
+    "success_rate_target": 0.95
+  }
+}
