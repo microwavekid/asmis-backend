@@ -1,37 +1,53 @@
-# Session: 2025-06-24 - v0 UI Cleanup & Routing Fix
+# Session: 2025-06-24 - Linear UI Debugging & Resolution
 
 ## ✅ Completed Tasks
 
-### 1. Resolved v0 Dev Server Issue
-- **Issue**: 404 error on root route
-- **Root Cause**: Missing `page.tsx` in app directory
-- **Solution**: Created root page with redirect to `/dashboard` → `/deals`
-- **Pattern Applied**: FRONTEND_ROUTING_PATTERN
-- **Decision**: DEC_2025-06-24_001, DEC_2025-06-24_002
+### 1. Major Linear UI Debugging Session
+- **Initial Issue**: "Cursor did something and screwed up the work we did for the ui"
+- **Symptoms**: ERR_CONNECTION_REFUSED, UI not loading, showing old interface instead of modern Linear UI
+- **User Feedback**: "we definitely built it" with GitHub link to separate asmis-frontend repository
 
-### 2. Identified Old vs New UI Conflict
-- **Discovery**: Project had both old traditional UI and new v0 intelligence UI
-- **Old UI**: Traditional dashboard at `/dashboard`, `/accounts`, etc.
-- **New v0 UI**: Modern intelligence-focused UI in `/(intelligence)/` directory
-- **Key Differences**:
-  - Old: Traditional sidebar layout
-  - New: Three-panel layout with AI features, evidence panel, command palette
+### 2. Repository Discovery & Cloning
+- **Key Discovery**: Linear UI was in separate repository (github.com/microwavekid/asmis-frontend)
+- **Action**: Cloned separate repository to debug the actual Linear UI
+- **Lesson**: Initial debugging was on wrong codebase (main repo vs separate Linear UI repo)
 
-### 3. Cleaned Up Old UI Files
-- **Removed**:
-  - Old page directories: dashboard, accounts, emails, tasks, documents, admin
-  - Old component directories: layout, dashboard
-  - Deprecated mock data in lib/deprecated
-  - Old layout.tsx with AppSidebar
-- **Created**: New minimal root layout.tsx
-- **Decision**: DEC_2025-06-24_003
+### 3. Critical Node.js Version Issue Resolution
+- **Root Cause**: Node.js v23 incompatibility with Next.js 15.2.4
+- **Error**: Server binding issues causing ERR_CONNECTION_REFUSED
+- **Solution**: Downgraded to Node 20 LTS via Homebrew
+```bash
+brew install node@20
+echo 'export PATH="/opt/homebrew/opt/node@20/bin:$PATH"' >> ~/.zshrc
+```
+- **Verification**: User confirmed "it's working!" after Node version fix
 
-### 4. Fixed Navigation Routes
-- **Issue**: Navigation links pointed to `/intelligence/*` but pages were at root
-- **Fixed**: Updated all navigation hrefs from `/intelligence/X` to `/X`
-- **Current State**:
-  - ✅ `/deals` page exists and works
-  - ❌ Other pages don't exist yet (expected for v0 prototype)
+### 4. React Hydration Error Resolution
+- **Issue**: "Hydration failed because the server rendered HTML didn't match the client"
+- **Root Cause**: ThemeProvider with defaultTheme="system" causing client/server mismatch
+- **Solution**: Changed to defaultTheme="light" + suppressHydrationWarning
+- **Additional Fix**: Added mounted state check in ThemeProvider component
+
+### 5. MEDDPICC Scoring Display Fix
+- **Issue**: NaN% display in MEDDPICC scores (user screenshot)
+- **Root Cause**: Mock data used camelCase (overallScore) but component expected snake_case (overall_score)
+- **Solution**: Updated all mock data field names to snake_case
+- **Files Fixed**: `app/(intelligence)/deals/page.tsx` with corrected mock data structure
+
+### 6. Performance Optimization
+- **Enhancement**: Added Turbopack support (--turbo flag)
+- **Result**: ~40% faster builds (923ms vs 1297ms)
+- **Configuration**: Updated package.json dev script
+
+### 7. Post-Mortem Documentation
+- **Created**: `.project_memory/patterns/COLLABORATION_DEBUG_PATTERN.json`
+- **Purpose**: Capture debugging session patterns for future sessions
+- **Decision**: Added DEC_2025-06-24_001 for pattern documentation
+
+### 8. Setup Documentation
+- **Created**: `frontend-linear/SETUP.md` with comprehensive setup guide
+- **Content**: Node 20 requirement, troubleshooting, performance features
+- **Purpose**: Prevent future version compatibility issues
 
 ## 📊 Current Project State
 
@@ -73,6 +89,25 @@ frontend/app/
 - All v0 UI components properly integrated with shadcn/ui
 - Frontend ready for backend integration
 
+## 🧠 Debugging Patterns Captured
+
+### Repository Confusion Pattern
+- **Problem**: Multiple frontend directories causing confusion
+- **Learning**: Always confirm correct repository when debugging UI issues
+- **Solution**: Clear separation of old vs new UI, focus on correct codebase
+
+### Node.js Compatibility Pattern  
+- **Problem**: Bleeding edge Node versions breaking Next.js compatibility
+- **Learning**: Stick to LTS versions for production stability
+- **Solution**: Documented Node 20 requirement, added setup verification
+
+### React Hydration Pattern
+- **Problem**: Server/client state mismatch with theme providers
+- **Learning**: Theme detection causes hydration issues
+- **Solution**: Default to static theme + mounted state checks
+
 ---
-Status: Paused for walk
-Time: 2025-06-24 07:45 AM PST
+**Status**: ✅ Complete - Linear UI fully functional
+**Duration**: ~3 hours (extensive debugging)
+**Outcome**: Working Linear Intelligence UI with all issues resolved
+**Next Session**: Integration planning and intelligence system enhancement
