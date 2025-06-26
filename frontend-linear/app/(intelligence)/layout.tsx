@@ -8,6 +8,7 @@ import { NavigationMenu } from "@/components/intelligence/navigation-menu"
 import { AIProcessingStatus } from "@/components/intelligence/ai-processing-status"
 import { EvidencePanel } from "@/components/intelligence/evidence-panel"
 import { CommandPalette } from "@/components/intelligence/command-palette"
+import { SmartCaptureDialog } from "@/components/intelligence/smart-capture-dialog"
 import { PanelToggleIcon } from "@/components/intelligence/panel-toggle-icon"
 import { ViewsDropdown } from "@/components/intelligence/views-dropdown"
 import { Plus, Brain } from "lucide-react"
@@ -19,14 +20,19 @@ export default function IntelligenceLayout({
 }) {
   const [evidencePanelOpen, setEvidencePanelOpen] = useState(true)
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+  const [smartCaptureOpen, setSmartCaptureOpen] = useState(false)
   const [currentView, setCurrentView] = useState('all')
 
-  // Global keyboard shortcut for command palette
+  // Global keyboard shortcuts
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault()
         setCommandPaletteOpen(true)
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "u") {
+        e.preventDefault()
+        setSmartCaptureOpen(true)
       }
     }
     
@@ -36,7 +42,15 @@ export default function IntelligenceLayout({
 
   return (
     <>
-      <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
+      <CommandPalette 
+        open={commandPaletteOpen} 
+        onOpenChange={setCommandPaletteOpen}
+        onSmartCaptureOpen={() => setSmartCaptureOpen(true)}
+      />
+      <SmartCaptureDialog 
+        open={smartCaptureOpen}
+        onOpenChange={setSmartCaptureOpen}
+      />
       
       <div className="h-screen bg-[var(--bg-sidebar)] p-[15px]">
         <div className="flex h-full bg-[var(--bg-base-color)] rounded-lg overflow-hidden shadow-sm">

@@ -151,7 +151,7 @@ def test_production_database():
                 title="Discovery Call - Sarah Johnson",
                 context_type="deal",
                 context_detected=True,
-                context_confidence=95.0,
+                context_confidence=0.95,
                 deal_id=deal.id,
                 account_id=account.id,
                 stakeholder_id=stakeholder.id,
@@ -160,7 +160,7 @@ def test_production_database():
                 entities_extracted=4,
                 relationships_extracted=2,
                 meddpicc_elements_extracted=3,
-                overall_extraction_confidence=91.5,
+                overall_extraction_confidence=0.915,
                 capture_method="manual",
                 capture_location="/deals/asmis-smart-capture-implementation",
                 created_by="test_user_123"
@@ -170,7 +170,7 @@ def test_production_database():
             
             print(f"   ✓ Smart Capture Note created: {note.title}")
             print(f"   ✓ Processing status: {note.processing_status}")
-            print(f"   ✓ Extraction confidence: {note.overall_extraction_confidence}%")
+            print(f"   ✓ Extraction confidence: {note.overall_extraction_confidence*100:.1f}%")
             
             # Test 7: Create Entity Extractions
             print("✅ Test 7: Entity Extraction Creation...")
@@ -191,11 +191,11 @@ def test_production_database():
                     "role": "champion",
                     "sentiment": "supportive"
                 },
-                confidence=96.0,
+                confidence=0.96,
                 extraction_method="nlp",
                 matched_entity_id=stakeholder.id,
                 matched_entity_table="stakeholders",
-                match_confidence=95.0,
+                match_confidence=0.95,
                 processed_by="smart_capture_nlp_agent",
                 processing_version="1.0"
             )
@@ -213,7 +213,7 @@ def test_production_database():
                     "target_value": "30%",
                     "category": "operational_improvement"
                 },
-                confidence=92.0,
+                confidence=0.92,
                 extraction_method="pattern_matching",
                 processed_by="smart_capture_metrics_agent"
             )
@@ -232,7 +232,7 @@ def test_production_database():
                 entity_type="deal",
                 entity_id=deal.id,
                 link_type="primary_context",
-                confidence=95.0,
+                confidence=0.95,
                 update_summary="Main subject of discovery call",
                 fields_updated={"stage": "technical_evaluation", "probability": 80.0}
             )
@@ -243,7 +243,7 @@ def test_production_database():
                 entity_type="stakeholder", 
                 entity_id=stakeholder.id,
                 link_type="updated",
-                confidence=94.0,
+                confidence=0.94,
                 update_summary="Confirmed as champion, highly supportive",
                 fields_updated={"role_champion": True, "engagement_level": "champion"}
             )
@@ -265,7 +265,7 @@ def test_production_database():
                 source_type="note",
                 source_id=note.id,
                 source_name="Discovery Call - Sarah Johnson", 
-                confidence=92.0,
+                confidence=0.92,
                 extraction_type="explicit",
                 business_implication="Clear quantifiable success metric defined",
                 extracted_by="smart_capture_agent",

@@ -24,11 +24,13 @@ import {
   Settings,
   Clock,
   Zap,
+  PenTool,
 } from "lucide-react"
 
 interface CommandPaletteProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSmartCaptureOpen?: () => void
 }
 
 // Mock data for search results
@@ -44,7 +46,7 @@ const mockDeals = [
   { id: "d3", name: "Team Expansion", account: "Linear" },
 ]
 
-export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+export function CommandPalette({ open, onOpenChange, onSmartCaptureOpen }: CommandPaletteProps) {
   const router = useRouter()
   const [searchValue, setSearchValue] = useState("")
 
@@ -56,6 +58,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         onOpenChange(!open)
       }
       
+      if (e.key === "u" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        onOpenChange(false)
+        onSmartCaptureOpen?.()
+      }
+      
       if (e.key === "Escape") {
         onOpenChange(false)
       }
@@ -63,7 +71,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
-  }, [open, onOpenChange])
+  }, [open, onOpenChange, onSmartCaptureOpen])
 
   const runCommand = (command: () => void) => {
     onOpenChange(false)
@@ -88,10 +96,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         
         {/* Quick Actions */}
         <CommandGroup heading="Quick Actions">
+          <CommandItem onSelect={() => runCommand(() => onSmartCaptureOpen?.())}>
+            <PenTool className="mr-2 h-4 w-4" />
+            <span>Smart Capture</span>
+            <CommandShortcut>⌘U</CommandShortcut>
+          </CommandItem>
           <CommandItem onSelect={() => runCommand(() => router.push("/intelligence/upload"))}>
             <Upload className="mr-2 h-4 w-4" />
             <span>Upload transcript</span>
-            <CommandShortcut>⌘U</CommandShortcut>
+            <CommandShortcut>⌘T</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => router.push("/intelligence/email-connect"))}>
             <Mail className="mr-2 h-4 w-4" />

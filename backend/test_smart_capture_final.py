@@ -87,7 +87,7 @@ def test_smart_capture_complete():
             title="Discovery Call - Alex Developer",
             context_type="deal",
             context_detected=True,
-            context_confidence=88.0,
+            context_confidence=0.88,
             deal_id=deal.id,
             account_id=account.id,
             stakeholder_id=stakeholder.id,
@@ -114,11 +114,11 @@ def test_smart_capture_complete():
                 "sentiment": "excited",
                 "role": "champion"
             },
-            confidence=94.0,
+            confidence=0.94,
             extraction_method="nlp",
             matched_entity_id=stakeholder.id,
             matched_entity_table="stakeholders",
-            match_confidence=96.0,
+            match_confidence=0.96,
             processed_by="smart_capture_agent"
         )
         
@@ -134,7 +134,7 @@ def test_smart_capture_complete():
                 "role": "decision_maker",
                 "status": "budget_approved"
             },
-            confidence=89.0,
+            confidence=0.89,
             extraction_method="nlp",
             requires_disambiguation=True,
             processed_by="smart_capture_agent"
@@ -152,7 +152,7 @@ def test_smart_capture_complete():
                 "value": "40%",
                 "category": "efficiency"
             },
-            confidence=92.0,
+            confidence=0.92,
             extraction_method="pattern_matching",
             processed_by="metrics_extraction_agent"
         )
@@ -188,7 +188,7 @@ def test_smart_capture_complete():
             source_type="note",
             source_id=note.id,
             source_name="Discovery Call - Alex Developer",
-            confidence=92.0,
+            confidence=0.92,
             extraction_type="explicit",
             extracted_by="smart_capture_agent",
             extraction_method="smart_capture"
@@ -203,7 +203,7 @@ def test_smart_capture_complete():
             source_type="note",
             source_id=note.id,
             source_name="Discovery Call - Alex Developer",
-            confidence=90.0,
+            confidence=0.90,
             extraction_type="sentiment",
             extracted_by="sentiment_analysis_agent"
         )
@@ -219,7 +219,7 @@ def test_smart_capture_complete():
             entity_type="deal",
             entity_id=deal.id,
             link_type="updated",
-            confidence=88.0,
+            confidence=0.88,
             update_summary="Updated with time savings metric and timeline",
             fields_updated={"stage": "discovery", "notes": "40% time savings target"}
         )
@@ -229,7 +229,7 @@ def test_smart_capture_complete():
             entity_type="stakeholder",
             entity_id=stakeholder.id,
             link_type="confirmed",
-            confidence=94.0,
+            confidence=0.94,
             update_summary="Confirmed as champion with high enthusiasm",
             fields_updated={"role_champion": True, "engagement_level": "champion"}
         )
@@ -242,12 +242,12 @@ def test_smart_capture_complete():
         note.processing_completed_at = datetime.now()
         note.entities_extracted = 3
         note.meddpicc_elements_extracted = 2
-        note.overall_extraction_confidence = 91.7
+        note.overall_extraction_confidence = 0.917
         
         session.commit()
         
         print(f"   ✓ Created {len([deal_link, stakeholder_link])} entity links")
-        print(f"   ✓ Note processing completed with {note.overall_extraction_confidence}% confidence")
+        print(f"   ✓ Note processing completed with {note.overall_extraction_confidence*100:.1f}% confidence")
         
         # Test 2: Verify Complete Workflow Results
         print("✅ Test 2: Workflow Results Verification...")
@@ -302,9 +302,9 @@ def test_smart_capture_complete():
         print("   ✓ Foreign key integrity verified")
         
         # Verify confidence scores are reasonable
-        assert 0 <= note.overall_extraction_confidence <= 100
-        assert all(0 <= ext.confidence <= 100 for ext in note.entity_extractions)
-        assert all(0 <= ev.confidence <= 100 for ev in analysis.evidence_items)
+        assert 0.0 <= note.overall_extraction_confidence <= 1.0
+        assert all(0.0 <= ext.confidence <= 1.0 for ext in note.entity_extractions)
+        assert all(0.0 <= ev.confidence <= 1.0 for ev in analysis.evidence_items)
         print("   ✓ Confidence score ranges verified")
         
         # Test 5: Cleanup and Final Verification

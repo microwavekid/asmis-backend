@@ -151,8 +151,9 @@ Always consider these project-specific requirements:
 - Agent changes require parallel testing
 - Database migrations need rollback procedures
 - Performance baselines before any optimization
-- Confidence scoring for all AI outputs
+- Confidence scoring for all AI outputs (0.0-1.0 scale, not 0-100)
 - Multi-tenant considerations for all features
+- Use `python3` command for Python execution (not `python`)
 
 ## Example Interactions
 

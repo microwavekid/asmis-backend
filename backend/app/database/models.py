@@ -372,7 +372,7 @@ class IntelligenceEvidence(Base, UUIDMixin, TimestampMixin):
     context_after: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
     # Quality metrics
-    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0.0-1.0
     extraction_type: Mapped[str] = mapped_column(String(50), nullable=False, default="explicit")  # "explicit", "inferred", "sentiment"
     
     # Relationships
@@ -891,7 +891,7 @@ class MEDDPICCEvidence(Base, UUIDMixin, TimestampMixin):
     end_position: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     
     # Quality metrics
-    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0-100
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0.0-1.0
     extraction_type: Mapped[str] = mapped_column(String(50), nullable=False, default="explicit")  # "explicit", "inferred", "sentiment"
     business_implication: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
@@ -932,7 +932,7 @@ class SmartCaptureNote(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     # Context detection
     context_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # "deal", "account", "stakeholder", "partner", "global"
     context_detected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    context_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 0-100
+    context_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 0.0-1.0
     
     # Entity relationships (nullable - may reference one or multiple)
     account_id: Mapped[Optional[str]] = mapped_column(
@@ -966,7 +966,7 @@ class SmartCaptureNote(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     entities_extracted: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     relationships_extracted: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     meddpicc_elements_extracted: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    overall_extraction_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 0-100
+    overall_extraction_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 0.0-1.0
     
     # Source and capture context
     capture_method: Mapped[str] = mapped_column(String(50), nullable=False, default="manual")  # "manual", "voice_to_text", "email_import"
@@ -1052,13 +1052,13 @@ class EntityExtraction(Base, UUIDMixin, TimestampMixin):
     # {"criteria": "site performance", "priority": "must_have", "our_position": "meets"}
     
     # Confidence and quality
-    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0-100
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0.0-1.0
     extraction_method: Mapped[str] = mapped_column(String(50), nullable=False)  # "nlp", "regex", "manual", "llm"
     
     # Matching and linking
     matched_entity_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # ID of matched existing entity
     matched_entity_table: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # "accounts", "stakeholders", etc.
-    match_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 0-100
+    match_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 0.0-1.0
     requires_disambiguation: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     
     # Processing metadata
@@ -1107,7 +1107,7 @@ class EntityLink(Base, UUIDMixin, TimestampMixin):
     
     # Link metadata
     link_type: Mapped[str] = mapped_column(String(50), nullable=False)  # "mentioned", "primary_context", "updated", "created"
-    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0-100
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)  # 0.0-1.0
     
     # What was updated or extracted about this entity
     update_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
