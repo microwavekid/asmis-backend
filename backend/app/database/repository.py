@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 # Generic type for model classes
 ModelType = TypeVar("ModelType", bound=Base)
 
-
 class BaseRepository(Generic[ModelType]):
     """Base repository class with common database operations."""
     

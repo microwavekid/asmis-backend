@@ -130,7 +130,7 @@ export function CommandPalette({ open, onOpenChange, onSmartCaptureOpen }: Comma
             <span>Go to Accounts</span>
             <CommandShortcut>G A</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => router.push("/intelligence/deals"))}>
+          <CommandItem onSelect={() => runCommand(() => router.push("/deals"))}>
             <Target className="mr-2 h-4 w-4" />
             <span>Go to Deals</span>
             <CommandShortcut>G D</CommandShortcut>
@@ -174,7 +174,7 @@ export function CommandPalette({ open, onOpenChange, onSmartCaptureOpen }: Comma
             {mockDeals.map((deal) => (
               <CommandItem
                 key={deal.id}
-                onSelect={() => runCommand(() => router.push(`/intelligence/deals/${deal.id}`))}
+                onSelect={() => runCommand(() => router.push(`/deals`))}
               >
                 <Target className="mr-2 h-4 w-4" />
                 <span>{deal.name}</span>
