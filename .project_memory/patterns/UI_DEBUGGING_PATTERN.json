@@ -1,0 +1,148 @@
+{
+  "pattern_id": "UI_DEBUGGING_PATTERN_2025",
+  "version": 1,
+  "pattern_type": "troubleshooting",
+  "title": "Frontend Development Error Recovery Pattern",
+  "description": "Systematic approach to debugging recurring UI development issues in Next.js React applications",
+  "context": "This pattern addresses the frequent occurrence of dev server failures, dependency conflicts, and compilation errors when making UI changes",
+  "problem_indicators": [
+    "ERR_CONNECTION_REFUSED in browser",
+    "Internal Server Error on localhost",
+    "Module not found errors",
+    "React dependency conflicts",
+    "Turbopack runtime errors",
+    "Build manifest missing errors",
+    "CSS parsing failures",
+    "Undefined variable references in components"
+  ],
+  "systematic_debugging_steps": {
+    "step_1_immediate_check": {
+      "commands": [
+        "ps aux | grep 'next dev'",
+        "netstat -an | grep :3000",
+        "curl -I http://localhost:3000"
+      ],
+      "purpose": "Verify if server is actually running and responding"
+    },
+    "step_2_process_cleanup": {
+      "commands": [
+        "pkill -f 'next dev'",
+        "pkill -f 'node.*next'",
+        "ps aux | grep next"
+      ],
+      "purpose": "Clean up zombie processes that may be blocking ports"
+    },
+    "step_3_cache_cleanup": {
+      "commands": [
+        "rm -rf .next",
+        "rm -rf node_modules/.cache",
+        "rm -rf .turbo"
+      ],
+      "purpose": "Clear build cache that may contain stale artifacts"
+    },
+    "step_4_dependency_resolution": {
+      "commands": [
+        "rm -rf node_modules package-lock.json",
+        "npm install --legacy-peer-deps"
+      ],
+      "purpose": "Resolve React 19 compatibility issues and dependency conflicts",
+      "note": "Use --legacy-peer-deps for React 19 projects"
+    },
+    "step_5_turbopack_disable": {
+      "commands": [
+        "Edit package.json: Change 'next dev --turbo' to 'next dev'",
+        "npm run dev"
+      ],
+      "purpose": "Disable Turbopack if causing runtime errors",
+      "note": "Turbopack is experimental and often causes issues"
+    },
+    "step_6_error_logging": {
+      "commands": [
+        "npm run dev 2>&1 | tee dev.log",
+        "tail -f dev.log"
+      ],
+      "purpose": "Capture detailed error output for debugging"
+    },
+    "step_7_code_validation": {
+      "checks": [
+        "Undefined variable references (mentions vs linkedEntities)",
+        "Import statement conflicts",
+        "TypeScript type mismatches",
+        "Missing dependency imports",
+        "CSS parsing errors"
+      ],
+      "purpose": "Fix compilation errors preventing server start"
+    }
+  },
+  "common_fixes": {
+    "react_19_compatibility": {
+      "issue": "peer dependency conflicts with React 19",
+      "solution": "Use --legacy-peer-deps flag in npm install",
+      "frequency": "High"
+    },
+    "turbopack_errors": {
+      "issue": "Runtime errors with Turbopack experimental features",
+      "solution": "Remove --turbo flag from dev script",
+      "frequency": "High"
+    },
+    "variable_reference_errors": {
+      "issue": "Undefined variables after refactoring (e.g., mentions -> linkedEntities)",
+      "solution": "Search and replace all references systematically",
+      "frequency": "Medium"
+    },
+    "port_conflicts": {
+      "issue": "Port already in use by zombie processes",
+      "solution": "Kill all Next.js processes and restart",
+      "frequency": "Medium"
+    },
+    "cache_corruption": {
+      "issue": "Stale build cache causing module resolution errors",
+      "solution": "Remove .next directory and rebuild",
+      "frequency": "Medium"
+    }
+  },
+  "prevention_strategies": {
+    "pre_change_checklist": [
+      "Run 'npm run build' before making UI changes to ensure baseline works",
+      "Use TypeScript strict mode to catch variable reference errors",
+      "Test changes incrementally rather than large refactors",
+      "Keep dev server logs visible during development"
+    ],
+    "component_refactoring": [
+      "Use IDE find/replace for variable renames across files",
+      "Update TypeScript interfaces when changing prop types", 
+      "Test imports/exports after moving components",
+      "Verify all dependency updates with --legacy-peer-deps"
+    ],
+    "deployment_readiness": [
+      "Test with 'npm run build' before considering complete",
+      "Verify all pages load without console errors",
+      "Check network tab for failed resource loads",
+      "Test Command+U Smart Capture functionality"
+    ]
+  },
+  "emergency_recovery": {
+    "nuclear_option": [
+      "git stash (save current work)",
+      "git reset --hard HEAD~1 (revert to last working state)",
+      "rm -rf node_modules package-lock.json .next",
+      "npm install --legacy-peer-deps",
+      "npm run dev",
+      "git stash pop (reapply changes incrementally)"
+    ],
+    "when_to_use": "When multiple debugging steps fail and you need to return to known working state"
+  },
+  "success_indicators": [
+    "Server starts within 2-3 seconds",
+    "Browser shows UI without errors",
+    "Command+U opens Smart Capture dialog",
+    "No console errors in browser dev tools",
+    "Hot reload works for subsequent changes"
+  ],
+  "pattern_usage": {
+    "when_to_apply": "Every time dev server won't start or shows connection refused",
+    "estimated_time": "5-15 minutes following all steps",
+    "success_rate": "95% when following complete pattern",
+    "escalation": "If pattern fails, check for system-level issues (port conflicts, file permissions)"
+  }
+}

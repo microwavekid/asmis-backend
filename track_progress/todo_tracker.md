@@ -17,6 +17,13 @@
 | ✅ | Apply systematic debugging approach | COLLABORATION_DEBUG_PATTERN | DEC_2025-06-24_001 | 2025-06-24T17:00:00Z |
 | ✅ | Capture debugging patterns in memory | INTELLIGENCE_CAPTURE_PATTERN | DEC_2025-06-24_001 | 2025-06-24T17:00:00Z |
 | ✅ | Document Node 20 requirement for Linear UI | COLLABORATION_DEBUG_PATTERN | DEC_2025-06-24_001 | 2025-06-24T17:00:00Z |
+| ✅ | Implement Smart Capture foundation with Command+U | LINEAR_UI_PATTERN | DEC_2025-06-26_001 | 2025-06-26T23:15:00Z |
+| ✅ | Fix multiple mentions in Smart Capture (@/#/+ triggers) | COLLABORATION_DEBUG_PATTERN | DEC_2025-06-26_002 | 2025-06-26T23:15:00Z |
+| ✅ | Implement auto-selection of accounts when deals selected | LINEAR_UI_PATTERN | DEC_2025-06-26_003 | 2025-06-26T23:15:00Z |
+| ✅ | Fix Smart Capture navigation routing issues | COLLABORATION_DEBUG_PATTERN | DEC_2025-06-26_004 | 2025-06-26T23:15:00Z |
+| ✅ | Improve deals page layout with compact filters | LINEAR_UI_PATTERN | DEC_2025-06-26_005 | 2025-06-26T23:15:00Z |
+| ⏳ | Fix deals table data mapping issues | COLLABORATION_DEBUG_PATTERN | DEC_2025-06-26_006 | 2025-06-26T23:15:00Z |
+| ⏳ | Refine dropdown positioning to not cover text | LINEAR_UI_PATTERN | DEC_2025-06-26_007 | 2025-06-26T23:15:00Z |
 
 ## 📋 INTEGRATION TASKS COMPLETED
 - [x] Added StakeholderIntelligenceAgent import to orchestrator
