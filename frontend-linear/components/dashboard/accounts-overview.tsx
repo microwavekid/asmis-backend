@@ -81,9 +81,9 @@ export function AccountsOverview() {
                   <Badge
                     variant={
                       account.health === "healthy"
-                        ? "success"
+                        ? "outline"
                         : account.health === "at-risk"
-                          ? "warning"
+                          ? "secondary"
                           : "destructive"
                     }
                   >

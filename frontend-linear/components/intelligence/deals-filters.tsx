@@ -91,16 +91,18 @@ export function DealsFilters({ filters, onFiltersChange, onClearFilters }: Deals
   return (
     <div className="space-y-4">
       {/* Search and Filter Toggle */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <div className="relative flex-1 sm:max-w-sm lg:max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--content-secondary)]" />
           <Input
             placeholder="Search deals..."
             value={filters.search}
             onChange={(e) => updateFilters('search', e.target.value)}
-            className="pl-10"
+            className="pl-10 h-9"
           />
         </div>
+        
+        <div className="flex items-center gap-2">
         
         <Button
           variant={showFilters ? "secondary" : "outline"}
@@ -128,6 +130,7 @@ export function DealsFilters({ filters, onFiltersChange, onClearFilters }: Deals
             Clear
           </Button>
         )}
+        </div>
       </div>
 
       {/* Active Filters Display */}
@@ -197,8 +200,8 @@ export function DealsFilters({ filters, onFiltersChange, onClearFilters }: Deals
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="p-4 bg-[var(--bg-subtle)] rounded-lg border border-[var(--bg-border)]">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="p-3 lg:p-4 bg-[var(--bg-subtle)] rounded-lg border border-[var(--bg-border)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
             {/* Stage Filter */}
             <div>
               <label className="text-sm font-medium text-[var(--content-primary)] mb-2 block">

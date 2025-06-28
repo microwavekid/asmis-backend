@@ -220,77 +220,77 @@ export default function DealsPage() {
   }
 
   return (
-    <div className="flex h-full">
+    <div className="flex flex-col h-full">
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="p-6 space-y-6 max-w-none">
+        <div className="p-3 lg:p-4 xl:p-6 space-y-3 lg:space-y-4 xl:space-y-6">
 
       {/* Summary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 xl:gap-4">
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-[var(--content-secondary)]">
+          <CardHeader className="pb-2 pt-3 lg:pt-4 px-3 lg:px-4">
+            <CardTitle className="text-xs lg:text-sm font-medium text-[var(--content-secondary)]">
               Total Pipeline
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[var(--content-primary)]">
+          <CardContent className="px-3 lg:px-4 pb-3 lg:pb-4">
+            <div className="text-lg lg:text-2xl font-bold text-[var(--content-primary)]">
               {formatValue(totalPipeline)}
             </div>
-            <div className="flex items-center text-sm text-[var(--confidence-high)]">
-              <TrendingUp className="mr-1 h-4 w-4" />
-              {filteredDeals.length} active deals
+            <div className="flex items-center text-xs lg:text-sm text-[var(--confidence-high)]">
+              <TrendingUp className="mr-1 h-3 w-3 lg:h-4 lg:w-4" />
+              <span className="truncate">{filteredDeals.length} active deals</span>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-[var(--content-secondary)]">
+          <CardHeader className="pb-2 pt-3 lg:pt-4 px-3 lg:px-4">
+            <CardTitle className="text-xs lg:text-sm font-medium text-[var(--content-secondary)]">
               Average Health
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[var(--content-primary)]">
+          <CardContent className="px-3 lg:px-4 pb-3 lg:pb-4">
+            <div className="text-lg lg:text-2xl font-bold text-[var(--content-primary)]">
               {averageHealth}%
             </div>
-            <div className="flex items-center text-sm text-[var(--confidence-high)]">
-              <CheckCircle className="mr-1 h-4 w-4" />
-              {highHealthDeals} high health deals
+            <div className="flex items-center text-xs lg:text-sm text-[var(--confidence-high)]">
+              <CheckCircle className="mr-1 h-3 w-3 lg:h-4 lg:w-4" />
+              <span className="truncate">{highHealthDeals} high health deals</span>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-[var(--content-secondary)]">
+          <CardHeader className="pb-2 pt-3 lg:pt-4 px-3 lg:px-4">
+            <CardTitle className="text-xs lg:text-sm font-medium text-[var(--content-secondary)]">
               Closing Soon
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[var(--content-primary)]">
+          <CardContent className="px-3 lg:px-4 pb-3 lg:pb-4">
+            <div className="text-lg lg:text-2xl font-bold text-[var(--content-primary)]">
               {filteredDeals.filter(d => d.stage === 'closing' || d.stage === 'negotiation').length}
             </div>
-            <div className="flex items-center text-sm text-[var(--confidence-medium)]">
-              <Clock className="mr-1 h-4 w-4" />
-              Next 30 days
+            <div className="flex items-center text-xs lg:text-sm text-[var(--confidence-medium)]">
+              <Clock className="mr-1 h-3 w-3 lg:h-4 lg:w-4" />
+              <span className="truncate">Next 30 days</span>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-[var(--content-secondary)]">
+          <CardHeader className="pb-2 pt-3 lg:pt-4 px-3 lg:px-4">
+            <CardTitle className="text-xs lg:text-sm font-medium text-[var(--content-secondary)]">
               At Risk
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[var(--content-primary)]">
+          <CardContent className="px-3 lg:px-4 pb-3 lg:pb-4">
+            <div className="text-lg lg:text-2xl font-bold text-[var(--content-primary)]">
               {atRiskDeals}
             </div>
-            <div className="flex items-center text-sm text-[var(--confidence-low)]">
-              <AlertTriangle className="mr-1 h-4 w-4" />
-              Needs attention
+            <div className="flex items-center text-xs lg:text-sm text-[var(--confidence-low)]">
+              <AlertTriangle className="mr-1 h-3 w-3 lg:h-4 lg:w-4" />
+              <span className="truncate">Needs attention</span>
             </div>
           </CardContent>
         </Card>
@@ -360,16 +360,6 @@ export default function DealsPage() {
           isLoading={meddpiccLoading || evidenceLoading}
         />
       )}
-        </div>
-      </div>
-      
-      {/* Right Sidebar Space */}
-      <div className="w-80 border-l bg-gray-50/50 overflow-y-auto flex-shrink-0">
-        {/* This space is reserved for evidence/context sidebar */}
-        <div className="p-4">
-          <div className="text-sm text-gray-500 text-center">
-            Evidence sidebar will appear here when viewing deal details
-          </div>
         </div>
       </div>
     </div>

@@ -7,7 +7,8 @@ import {
   DialogContent,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { MentionAutocomplete, MentionEntity } from "@/components/ui/mention-autocomplete"
+import { InlineAutocomplete } from "@/components/ui/inline-autocomplete"
+import { Entity } from "@/components/ui/entity-chip"
 import { LinearDropdown, DropdownOption } from "@/components/ui/linear-dropdown"
 import { cn } from "@/lib/utils"
 import {
@@ -30,7 +31,7 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
   const router = useRouter()
   const [noteContent, setNoteContent] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
-  const [mentions, setMentions] = useState<MentionEntity[]>([])
+  const [linkedEntities, setLinkedEntities] = useState<Entity[]>([])
   const [selectedDealId, setSelectedDealId] = useState<string>("")
   const [selectedAccountId, setSelectedAccountId] = useState<string>("")
   const [title, setTitle] = useState("")
@@ -40,7 +41,7 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
   useEffect(() => {
     if (open) {
       setNoteContent("")
-      setMentions([])
+      setLinkedEntities([])
       setSelectedDealId("")
       setSelectedAccountId("")
       setIsProcessing(false)
@@ -69,20 +70,21 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
     "d3": "a3"  // Q4 Renewal -> Linear Software
   }
 
-  // Handle mentions change - auto-select deal/account if mentioned
-  const handleMentionsChange = useCallback((newMentions: MentionEntity[]) => {
-    setMentions(newMentions)
+  // Handle content and linked entities change
+  const handleContentChange = useCallback((content: string, entities: Entity[]) => {
+    setNoteContent(content)
+    setLinkedEntities(entities)
     
     // Auto-select deal if mentioned
-    const dealMention = newMentions.find(m => m.type === "deal")
-    if (dealMention && !selectedDealId) {
-      setSelectedDealId(dealMention.id)
+    const dealEntity = entities.find(e => e.type === "deal")
+    if (dealEntity && !selectedDealId) {
+      setSelectedDealId(dealEntity.id)
     }
     
     // Auto-select account if mentioned
-    const accountMention = newMentions.find(m => m.type === "account")
-    if (accountMention && !selectedAccountId) {
-      setSelectedAccountId(accountMention.id)
+    const accountEntity = entities.find(e => e.type === "account")
+    if (accountEntity && !selectedAccountId) {
+      setSelectedAccountId(accountEntity.id)
     }
   }, [selectedDealId, selectedAccountId])
 
@@ -113,11 +115,11 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
         title: title || generateTitle(),
         deal_id: selectedDealId || null,
         account_id: selectedAccountId || null,
-        linked_entities: mentions.map(m => ({
-          id: m.id,
-          type: m.type,
-          name: m.name,
-          confidence: m.confidence || 0.9
+        linked_entities: linkedEntities.map(e => ({
+          id: e.id,
+          type: e.type,
+          name: e.name,
+          confidence: e.confidence || 0.9
         })),
         capture_method: "manual",
         capture_location: window.location.pathname
@@ -160,7 +162,7 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
   const generateTitle = useCallback(() => {
     if (!noteContent) return ""
     
-    const stakeholders = mentions.filter(m => m.type === "stakeholder")
+    const stakeholders = linkedEntities.filter(e => e.type === "stakeholder")
     const dealOption = dealOptions.find(d => d.id === selectedDealId)
     const accountOption = accountOptions.find(a => a.id === selectedAccountId)
     
@@ -185,13 +187,13 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
     }
     
     return "Sales Note"
-  }, [noteContent, mentions, selectedDealId, selectedAccountId, dealOptions, accountOptions])
+  }, [noteContent, linkedEntities, selectedDealId, selectedAccountId, dealOptions, accountOptions])
 
   useEffect(() => {
-    if ((mentions.length > 0 || selectedDealId || selectedAccountId) && !title) {
+    if ((linkedEntities.length > 0 || selectedDealId || selectedAccountId) && !title) {
       setTitle(generateTitle())
     }
-  }, [mentions, selectedDealId, selectedAccountId, title, generateTitle])
+  }, [linkedEntities, selectedDealId, selectedAccountId, title, generateTitle])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -229,10 +231,11 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
 
           {/* Note Content */}
           <div className="flex-1">
-            <MentionAutocomplete
+            <InlineAutocomplete
               value={noteContent}
-              onChange={setNoteContent}
-              onMentionsChange={handleMentionsChange}
+              onChange={handleContentChange}
+              linkedEntities={linkedEntities}
+              placeholder="Type your notes here. Use @ for people, # for deals, + for accounts..."
               className={cn(
                 "border-0 shadow-none resize-none",
                 isExpanded ? "min-h-[400px]" : "min-h-[300px]"
@@ -275,7 +278,7 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
           <div className="flex items-center gap-2">
             {noteContent.length > 0 && (
               <span className="text-xs text-gray-500 mr-2">
-                {mentions.length} linked • {noteContent.length} chars
+                {linkedEntities.length} linked • {noteContent.length} chars
               </span>
             )}
             <Button

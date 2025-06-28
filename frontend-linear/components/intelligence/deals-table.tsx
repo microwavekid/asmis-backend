@@ -165,8 +165,8 @@ export function DealsTable({ deals, meddpiccData, onDealClick, onMEDDPICCClick }
   }
 
   return (
-    <div className="border border-[var(--bg-border)] rounded-lg bg-[var(--bg-base-color)]">
-      <Table>
+    <div className="border border-[var(--bg-border)] rounded-lg bg-[var(--bg-base-color)] overflow-x-auto">
+      <Table className="min-w-[700px] lg:min-w-[800px]">
         <TableHeader>
           <TableRow className="border-b border-[var(--bg-border)] hover:bg-transparent">
             <TableHead className="font-medium text-[var(--content-primary)]">

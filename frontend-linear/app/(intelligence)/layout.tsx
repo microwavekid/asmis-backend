@@ -52,10 +52,10 @@ export default function IntelligenceLayout({
         onOpenChange={setSmartCaptureOpen}
       />
       
-      <div className="h-screen bg-[var(--bg-sidebar)] p-[15px]">
-        <div className="flex h-full bg-[var(--bg-base-color)] rounded-lg overflow-hidden shadow-sm">
+      <div className="h-screen bg-[var(--bg-sidebar)] p-0 lg:p-2 xl:p-[15px]">
+        <div className="flex h-full bg-[var(--bg-base-color)] lg:rounded-lg overflow-hidden shadow-sm">
           {/* Left Navigation - Separate Column */}
-          <nav className="w-[var(--sidebar-width)] bg-[var(--bg-sidebar)] flex flex-col border-r border-[var(--bg-border)]">
+          <nav className="hidden lg:flex w-[180px] xl:w-[200px] 2xl:w-[var(--sidebar-width)] bg-[var(--bg-sidebar)] flex-col border-r border-[var(--bg-border)]">
             <WorkspaceSelector />
             <NavigationMenu />
             <div className="mt-auto">
@@ -68,8 +68,8 @@ export default function IntelligenceLayout({
             {/* Workspace Header - FIXED WIDTH - spans main content + evidence panel ALWAYS */}
             <div className="h-[52px] border-b border-[var(--bg-border)] bg-[var(--bg-base)] flex items-center">
               {/* Main header content */}
-              <div className="flex-1 px-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex-1 px-3 lg:px-4 xl:px-6 flex items-center justify-between">
+                <div className="flex items-center gap-2 lg:gap-3">
                   <h1 className="text-lg font-semibold text-[var(--content-primary)]">
                     Deals
                   </h1>
@@ -85,13 +85,13 @@ export default function IntelligenceLayout({
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="h-7">
+                  <Button variant="outline" size="sm" className="h-7 hidden md:flex">
                     <Plus className="mr-2 h-3.5 w-3.5" />
-                    Create Deal
+                    <span className="hidden xl:inline">Create Deal</span>
                   </Button>
                   <Button size="sm" className="h-7">
                     <Brain className="mr-2 h-3.5 w-3.5" />
-                    Generate Insights
+                    <span className="hidden xl:inline">Generate Insights</span>
                   </Button>
                   <div className="w-3" />
                   <Button
@@ -116,7 +116,8 @@ export default function IntelligenceLayout({
               {/* Evidence Panel - Collapsible */}
               <aside 
                 className={cn(
-                  "bg-[var(--bg-base)] border-l border-[var(--bg-border)] transition-all duration-300 overflow-hidden flex flex-col",
+                  "bg-[var(--bg-base)] border-l border-[var(--bg-border)] transition-all duration-300 overflow-hidden flex-col",
+                  "hidden", // Always hidden now to prevent layout cutoff
                   evidencePanelOpen ? "w-[280px]" : "w-0"
                 )}
               >

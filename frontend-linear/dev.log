@@ -1,23 +1,127 @@
 
 > asmis-linear-ui@0.1.0 dev
-> next dev --turbo
+> next dev
 
-   ▲ Next.js 15.2.4 (Turbopack)
+   ▲ Next.js 15.2.4
    - Local:        http://localhost:3000
    - Network:      http://192.168.5.9:3000
 
  ✓ Starting...
- ✓ Ready in 902ms
+ ✓ Ready in 1934ms
  ○ Compiling / ...
- ✓ Compiled / in 1598ms
- GET / 307 in 1795ms
+ ✓ Compiled / in 1689ms (769 modules)
+ GET / 307 in 2021ms
  ○ Compiling /deals ...
- ✓ Compiled /deals in 742ms
- GET /deals 200 in 929ms
- HEAD / 307 in 234ms
- GET /deals 200 in 447ms
- ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
- GET / 307 in 408ms
- GET /deals 200 in 253ms
- GET /deals 200 in 926ms
+ ✓ Compiled /deals in 1191ms (1208 modules)
+ GET /deals 200 in 1387ms
+ GET / 307 in 1042ms
+ GET /deals 200 in 342ms
+ ✓ Compiled in 1648ms (1211 modules)
+ GET /deals 200 in 142ms
+ GET /deals 200 in 22ms
+ ✓ Compiled in 672ms (1211 modules)
+ GET /deals 200 in 59ms
+ GET /deals 200 in 27ms
+ ✓ Compiled in 1411ms (1211 modules)
+ GET /deals 200 in 47ms
+ GET /deals 200 in 27ms
+ ✓ Compiled in 475ms (1211 modules)
+ GET /deals 200 in 94ms
+ GET /deals 200 in 59ms
+ ✓ Compiled in 1048ms (1211 modules)
+ GET /deals 200 in 88ms
+ GET /deals 200 in 32ms
+ GET /deals 200 in 441ms
+ ✓ Compiled in 3.7s (1211 modules)
+ GET /deals 200 in 414ms
+ GET /deals 200 in 485ms
+ GET /deals 200 in 208ms
+ ✓ Compiled in 388ms (1211 modules)
+ GET /deals 200 in 117ms
+ GET /deals 200 in 44ms
+ GET /deals 200 in 30ms
+ ✓ Compiled in 728ms (1211 modules)
+ GET /deals 200 in 52ms
+ GET /deals 200 in 32ms
+ GET /deals 200 in 101ms
+ ✓ Compiled in 617ms (1211 modules)
+ GET /deals 200 in 51ms
+ GET /deals 200 in 28ms
+ GET /deals 200 in 64ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 2.2s (1215 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 2622ms
+ GET /deals 200 in 390ms
+ GET /deals 200 in 53ms
+ GET /deals 200 in 71ms
+ ✓ Compiled in 1675ms (1211 modules)
+ GET /deals 200 in 164ms
+ GET /deals 200 in 93ms
+ GET /deals 200 in 86ms
+ ✓ Compiled in 1008ms (1211 modules)
+ ⨯ ./components/ui/inline-autocomplete.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/conor.leary/dev/asmis/frontend-linear/components/ui/inline-autocomplete.tsx[0m:538:1]
+ [2m535[0m |   }
+ [2m536[0m | 
+ [2m537[0m |   return (
+ [2m538[0m |     <div className="space-y-3">
+     : [35;1m     ^^^[0m
+ [2m539[0m |       {/* Entity Type Selector Buttons */}
+ [2m540[0m |       <EntitySelectorButtons
+ [2m541[0m |         onEntityTypeSelect={handleEntityTypeSelect}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/ui/inline-autocomplete.tsx
+./components/intelligence/smart-capture-dialog.tsx
+./app/(intelligence)/layout.tsx
+ ○ Compiling /_error ...
+ ⨯ ./components/ui/inline-autocomplete.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/conor.leary/dev/asmis/frontend-linear/components/ui/inline-autocomplete.tsx[0m:538:1]
+ [2m535[0m |   }
+ [2m536[0m | 
+ [2m537[0m |   return (
+ [2m538[0m |     <div className="space-y-3">
+     : [35;1m     ^^^[0m
+ [2m539[0m |       {/* Entity Type Selector Buttons */}
+ [2m540[0m |       <EntitySelectorButtons
+ [2m541[0m |         onEntityTypeSelect={handleEntityTypeSelect}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/ui/inline-autocomplete.tsx
+./components/intelligence/smart-capture-dialog.tsx
+./app/(intelligence)/layout.tsx
+ GET /deals 500 in 2491ms
+ ⨯ ./components/ui/inline-autocomplete.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/conor.leary/dev/asmis/frontend-linear/components/ui/inline-autocomplete.tsx[0m:538:1]
+ [2m535[0m |   }
+ [2m536[0m | 
+ [2m537[0m |   return (
+ [2m538[0m |     <div className="space-y-3">
+     : [35;1m     ^^^[0m
+ [2m539[0m |       {/* Entity Type Selector Buttons */}
+ [2m540[0m |       <EntitySelectorButtons
+ [2m541[0m |         onEntityTypeSelect={handleEntityTypeSelect}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/ui/inline-autocomplete.tsx
+./components/intelligence/smart-capture-dialog.tsx
+./app/(intelligence)/layout.tsx
+ GET /.well-known/appspecific/com.chrome.devtools.json 500 in 386ms
+ GET /deals 500 in 18ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 500 in 25ms
+[?25h
