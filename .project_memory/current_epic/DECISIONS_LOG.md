@@ -52,4 +52,58 @@
 - Timezone awareness for distributed work
 **Date**: 2025-06-24
 
+## DEC_2025-06-28_001: Entity Color System Architecture
+**Context**: Smart Capture UI requires consistent color theming across multiple components  
+**Options Considered**: Inline colors, CSS variables, centralized color system
+**Decision**: Create centralized color system in `lib/utils/colors.ts`  
+**Pattern Applied**: CENTRALIZED_COLOR_MANAGEMENT_PATTERN  
+**Rationale**: 
+- Prevents color inconsistencies across 5+ components
+- Enables easy theme updates from single location
+- Provides type safety for color usage
+- Follows DRY principles for maintainability
+**Impact**: Unified visual language across Smart Capture interface
+**Implementation**: Color assignments - Stakeholder: Blue (#3B82F6), Account: Green (#10B981), Deal: Purple (#8B5CF6)
+**Date**: 2025-06-28
+
+## DEC_2025-06-28_002: Responsive Breakpoint Strategy  
+**Context**: Layout cutoff issues at 90-100% zoom levels affecting usability  
+**Options Considered**: Fixed layouts, simple responsive, 5-tier progressive enhancement
+**Decision**: Implement 5-tier responsive architecture with CSS variables  
+**Pattern Applied**: PROGRESSIVE_ENHANCEMENT_PATTERN  
+**Rationale**: Addresses user-reported zoom problems, provides graceful degradation, maintains functionality across all devices
+**Impact**: Eliminated content cutoff issues, improved mobile experience
+**Implementation**: Mobile (< 768px) → Tablet (768-1023px) → Small Desktop (1024-1279px) → Large Desktop (1280-1535px) → Extra Large (1536px+)
+**Date**: 2025-06-28
+
+## DEC_2025-06-28_003: TypeScript Import Architecture
+**Context**: Module resolution conflict between `Deal` and `DealIntelligence` types  
+**Options Considered**: Shared type imports, component-based imports, type aliasing
+**Decision**: Import UI types from component files, backend types from shared type files  
+**Pattern Applied**: TYPE_SEPARATION_PATTERN  
+**Rationale**: Separates UI/backend concerns, prevents circular dependencies, allows independent type evolution
+**Impact**: Resolved TypeScript compilation errors, improved type architecture
+**Implementation**: `Deal` from `@/components/intelligence/deals-table`, `DealIntelligence` from `@/types/intelligence`
+**Date**: 2025-06-28
+
+## DEC_2025-06-28_004: UI Debugging Systematic Approach
+**Context**: Recurring UI issues requiring consistent troubleshooting approach  
+**Options Considered**: Ad-hoc debugging, basic checklist, comprehensive systematic process
+**Decision**: Document 7-step systematic debugging process  
+**Pattern Applied**: SYSTEMATIC_DEBUGGING_PATTERN  
+**Rationale**: Reduces debugging time from 30+ minutes to 5-10 minutes, provides team consistency, captures institutional knowledge
+**Impact**: Standardized debugging workflow, reduced time to resolution
+**Implementation**: Created `.project_memory/patterns/UI_DEBUGGING_PATTERN.json` with 7-step recovery process
+**Date**: 2025-06-28
+
+## DEC_2025-06-28_005: Bonusly UI Pattern Adoption
+**Context**: Smart Capture needs intuitive entity selection interface  
+**Options Considered**: Custom dropdown, standard form inputs, Bonusly-inspired design
+**Decision**: Adopt Bonusly-inspired entity selector design  
+**Pattern Applied**: EXTERNAL_UI_INSPIRATION_PATTERN  
+**Rationale**: Proven UX pattern, visual feedback enhances understanding, color-coded system reduces cognitive load
+**Impact**: Significantly improved Smart Capture user experience
+**Implementation**: Entity type selector buttons, color-coded activation states, inline highlighting, cursor-positioned autocomplete
+**Date**: 2025-06-28
+
 *Add new decisions above this line*

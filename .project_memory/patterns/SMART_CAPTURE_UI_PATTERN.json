@@ -1,0 +1,256 @@
+{
+  "pattern_id": "SMART_CAPTURE_UI_PATTERN",
+  "version": "1.0",
+  "created_date": "2025-06-28",
+  "category": "ui_enhancement",
+  "title": "Bonusly-Inspired Smart Capture UI Implementation",
+  "description": "Complete UI pattern for implementing Bonusly-style entity selection and inline highlighting in Smart Capture interface",
+  
+  "problem_context": {
+    "challenge": "Create intuitive entity linking interface with visual feedback for Smart Capture notes",
+    "inspiration_source": "Bonusly giving experience UI patterns",
+    "user_requirements": [
+      "Entity type selector buttons (@Stakeholder, #Deal, +Account)",
+      "Color-coded activation states when entities are linked",
+      "Inline text highlighting for linked entities",
+      "Cursor-positioned autocomplete dropdown",
+      "Visual polish with smooth transitions"
+    ]
+  },
+
+  "solution_architecture": {
+    "core_components": [
+      {
+        "name": "EntitySelectorButtons",
+        "file": "components/ui/entity-selector-buttons.tsx",
+        "purpose": "Top-level entity type selection with visual state indicators",
+        "pattern_ref": "ENTITY_TYPE_SELECTION_PATTERN"
+      },
+      {
+        "name": "InlineAutocomplete", 
+        "file": "components/ui/inline-autocomplete.tsx",
+        "purpose": "Smart text input with real-time entity detection and suggestion",
+        "pattern_ref": "CURSOR_POSITIONED_AUTOCOMPLETE_PATTERN"
+      },
+      {
+        "name": "EntityChip",
+        "file": "components/ui/entity-chip.tsx", 
+        "purpose": "Visual representation of linked entities with removal capability",
+        "pattern_ref": "ENTITY_DISPLAY_PATTERN"
+      },
+      {
+        "name": "ColorSystem",
+        "file": "lib/utils/colors.ts",
+        "purpose": "Centralized entity type theming and color management",
+        "pattern_ref": "CENTRALIZED_THEMING_PATTERN"
+      }
+    ],
+
+    "color_mapping": {
+      "stakeholder": {
+        "primary": "#3B82F6",
+        "background": "bg-blue-100", 
+        "text": "text-blue-800",
+        "trigger": "@"
+      },
+      "account": {
+        "primary": "#10B981",
+        "background": "bg-green-100",
+        "text": "text-green-800", 
+        "trigger": "+"
+      },
+      "deal": {
+        "primary": "#8B5CF6",
+        "background": "bg-purple-100",
+        "text": "text-purple-800",
+        "trigger": "#"
+      }
+    },
+
+    "interaction_flow": [
+      "User clicks entity type button OR types trigger character",
+      "Button shows active state with entity type color",
+      "Autocomplete dropdown appears at cursor position",
+      "User selects entity from suggestions",
+      "Entity chip appears in linked entities section",
+      "Text highlighting applied with entity type color",
+      "Button state updates to show linked entity count"
+    ]
+  },
+
+  "implementation_details": {
+    "trigger_detection": {
+      "characters": ["@", "#", "+"],
+      "algorithm": "Look backwards from cursor for trigger + word boundary",
+      "debounce": "300ms for search queries"
+    },
+
+    "autocomplete_positioning": {
+      "method": "Absolute positioning relative to textarea",
+      "fallback": "Below textarea if cursor position unavailable",
+      "z_index": "50 for proper layering"
+    },
+
+    "state_management": {
+      "linked_entities": "Array of Entity objects with id, type, name, confidence",
+      "active_entity_type": "Currently triggered entity type or null",
+      "search_results": "Debounced API results for autocomplete"
+    },
+
+    "responsive_considerations": {
+      "mobile": "Touch-friendly button sizes, simplified dropdown",
+      "tablet": "Maintained full functionality with adjusted spacing",
+      "desktop": "Full feature set with hover states"
+    }
+  },
+
+  "technical_requirements": {
+    "dependencies": [
+      "React hooks for state management",
+      "Tailwind CSS for styling",
+      "TypeScript for type safety"
+    ],
+    
+    "api_integration": {
+      "entity_search": "GET /api/entities/search?q={query}&type={type}",
+      "mock_data": "Included for development without backend",
+      "response_format": "Array of {id, type, name, confidence, attributes}"
+    },
+
+    "performance_optimizations": [
+      "Debounced search queries (300ms)",
+      "Memoized search results",
+      "Virtualized dropdown for large result sets",
+      "Optimistic UI updates for better perceived performance"
+    ]
+  },
+
+  "ui_patterns_applied": {
+    "bonusly_inspiration": [
+      "Entity type selector buttons at top",
+      "Color-coded activation states",
+      "Inline highlighting of linked content",
+      "Confidence indicators in autocomplete",
+      "Smooth transitions and hover effects"
+    ],
+
+    "accessibility": [
+      "Keyboard navigation support (Tab, Enter, Escape)",
+      "ARIA labels for screen readers",
+      "High contrast color choices",
+      "Focus indicators for all interactive elements"
+    ],
+
+    "visual_polish": [
+      "Micro-interactions on button hover",
+      "Fade-in animations for autocomplete",
+      "Color transitions for state changes",
+      "Loading states during API calls"
+    ]
+  },
+
+  "testing_approach": {
+    "unit_tests": [
+      "Trigger character detection",
+      "Entity search functionality", 
+      "Color mapping correctness",
+      "State management edge cases"
+    ],
+
+    "integration_tests": [
+      "Full entity linking workflow",
+      "Autocomplete positioning accuracy",
+      "Multiple entity type interactions",
+      "Responsive behavior across breakpoints"
+    ],
+
+    "user_experience_validation": [
+      "Entity selection feels intuitive",
+      "Visual feedback is clear and immediate",
+      "No lag in autocomplete responsiveness",
+      "Keyboard shortcuts work as expected"
+    ]
+  },
+
+  "known_limitations": {
+    "current_constraints": [
+      "Mock data only - no real backend integration",
+      "Limited entity attributes displayed",
+      "No entity relationship detection",
+      "Basic confidence scoring algorithm"
+    ],
+
+    "future_enhancements": [
+      "Voice-to-text entity detection",
+      "Bulk entity import capabilities", 
+      "Smart entity relationship suggestions",
+      "Advanced search with fuzzy matching",
+      "Entity deduplication and merging"
+    ]
+  },
+
+  "reusability_guidelines": {
+    "when_to_apply": [
+      "Any interface requiring entity linking",
+      "Note-taking applications with smart suggestions",
+      "CRM systems with relationship mapping",
+      "Knowledge bases with entity recognition"
+    ],
+
+    "customization_points": [
+      "Entity types and trigger characters",
+      "Color schemes and visual styling", 
+      "Autocomplete data sources",
+      "Search algorithms and ranking",
+      "UI layout and positioning"
+    ],
+
+    "anti_patterns": [
+      "Don't use for simple dropdown selections",
+      "Avoid for interfaces without text input",
+      "Not suitable for high-frequency data entry",
+      "Don't implement without proper API caching"
+    ]
+  },
+
+  "success_metrics": {
+    "quantitative": [
+      "Entity linking completion rate > 85%",
+      "Autocomplete response time < 300ms",
+      "User error rate < 5%",
+      "Mobile usability score > 90%"
+    ],
+
+    "qualitative": [
+      "Users find entity selection intuitive",
+      "Visual feedback enhances understanding",
+      "Workflow feels natural and efficient",
+      "Interface reduces cognitive load"
+    ]
+  },
+
+  "related_patterns": [
+    "UI_DEBUGGING_PATTERN",
+    "RESPONSIVE_LAYOUT_OPTIMIZATION_PATTERN", 
+    "FRONTEND_API_MOCK_PATTERN",
+    "ENTITY_RELATIONSHIP_PATTERN"
+  ],
+
+  "decision_log": [
+    {
+      "date": "2025-06-28",
+      "decision": "Use Bonusly-style button selector over dropdown",
+      "rationale": "More discoverable and visually appealing than hidden dropdown"
+    },
+    {
+      "date": "2025-06-28", 
+      "decision": "Implement cursor-positioned autocomplete",
+      "rationale": "Better UX than fixed-position dropdown, follows user's attention"
+    },
+    {
+      "date": "2025-06-28",
+      "decision": "Separate entity colors by type rather than status",
+      "rationale": "More intuitive categorization, easier to learn and remember"
+    }
+  ]
+}
