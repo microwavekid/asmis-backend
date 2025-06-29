@@ -1,9 +1,9 @@
 {
   "imprint_registry": {
-    "version": 1,
+    "version": 2,
     "headline": "ASMIS Pattern Imprinting Registry — Neural pattern enforcement system",
-    "total_patterns": 4,
-    "last_updated": "2025-06-22T16:00:00Z"
+    "total_patterns": 5,
+    "last_updated": "2025-06-28T23:40:00Z"
   },
   "available_patterns": {
     "DATABASE_ACCESS_PATTERN": {
@@ -33,13 +33,22 @@
       "use_cases": ["multi_agent_coordination", "meddpic_analysis", "intelligence_synthesis"],
       "token_count": 189,
       "adherence_requirement": "mandatory"
+    },
+    "MEMORY_SYSTEM_NAVIGATION_PATTERN": {
+      "file": "MEMORY_SYSTEM_NAVIGATION_PATTERN.json",
+      "priority": "fatal",
+      "use_cases": ["session_start", "task_transition", "pattern_application", "persona_selection"],
+      "token_count": 247,
+      "adherence_requirement": "mandatory"
     }
   },
   "pattern_selection_rules": {
+    "session_start": "ALWAYS load MEMORY_SYSTEM_NAVIGATION_PATTERN first",
     "database_work": "ALWAYS load DATABASE_ACCESS_PATTERN",
     "agent_development": "ALWAYS load AGENT_COMMUNICATION_PATTERN", 
     "expensive_operations": "ALWAYS load CACHING_PATTERN",
     "meddpic_orchestration": "ALWAYS load MEDDPIC_ORCHESTRATOR_PATTERN",
+    "task_transition": "ALWAYS reference MEMORY_SYSTEM_NAVIGATION_PATTERN",
     "full_system_work": "Load ALL patterns for comprehensive adherence"
   },
   "neural_enforcement": {

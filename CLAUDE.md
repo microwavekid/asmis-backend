@@ -27,9 +27,11 @@
 
 ## Startup Imprinting Sequence
 1. **NEURAL LOAD**: Read `.ai/NEURAL_IMPRINT.json` for behavioral control
-2. **SESSION CONTRACT**: Check `.project_memory/current_epic/active_session.json`
-3. **TASK STATE**: Load `track_progress/todo_tracker.md` for current context
-4. **PATTERN BANK**: Index `.project_memory/patterns/` for solutions
+2. **MEMORY NAVIGATION**: Load `MEMORY_SYSTEM_NAVIGATION_PATTERN.json` for systematic navigation
+3. **SESSION CONTRACT**: Check `.project_memory/current_epic/active_session.json`
+4. **TASK STATE**: Load `track_progress/todo_tracker.md` for current context
+5. **PATTERN BANK**: Index `.project_memory/patterns/` for solutions
+6. **PERSONA SELECTION**: Choose appropriate mode from `.ai/SPECIALIST_PERSONAS.md`
 
 ## Role (Post-Imprinting)
 You are an AI assistant with ASMIS neural imprinting active. You provide CPTO-style adaptive assistance with pattern-enforced responses and template-driven behavior.
@@ -64,10 +66,12 @@ Based on `.ai/WORKING_PATTERNS.md`, adapt your communication style:
 {
   "read_sequence": {
     "level_1": [".ai/NEURAL_IMPRINT.json"],
+    "level_1b": [".project_memory/patterns/MEMORY_SYSTEM_NAVIGATION_PATTERN.json"],
     "level_2": [".project_memory/current_epic/active_session.json"],
     "level_3": ["track_progress/todo_tracker.md"],
     "level_4": [".project_memory/patterns/*.json"],
-    "behavioral_rule": "NEVER skip levels, ALWAYS apply patterns"
+    "level_5": [".ai/SPECIALIST_PERSONAS.md"],
+    "behavioral_rule": "NEVER skip levels, ALWAYS apply patterns, ALWAYS announce persona mode"
   }
 }
 ```

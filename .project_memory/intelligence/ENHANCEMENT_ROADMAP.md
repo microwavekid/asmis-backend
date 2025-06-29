@@ -61,7 +61,19 @@ This document captures future enhancement ideas for the ASMIS meeting intelligen
 
 ## High-Priority UI/UX Enhancements 🔴
 
-### 6. Multi-Source Evidence System
+### 6. Smart Capture Entity Handling Improvements
+**Current Gaps**: 
+- Entity linking breaks when punctuation follows entity mentions (e.g., "#Deal." loses highlighting)
+- Missing dropdown selection for entity autocomplete 
+- No automatic account selection when related entities are added
+**Enhancement**:
+- **Punctuation-tolerant entity linking**: Modify regex pattern to recognize entities followed by punctuation while keeping punctuation outside the pill
+- **Autocomplete dropdown restoration**: Ensure typing "@Sar" shows dropdown with entity suggestions and Tab/click selection works
+- **Smart account auto-selection**: When a deal or stakeholder belonging to an account is added, automatically select that account in dropdowns
+**Impact**: Much more natural writing experience, reduces manual selection work
+**Timeline**: Next development session
+
+### 7. Multi-Source Evidence System
 **Current Gap**: No way to verify AI-generated insights against source
 **Enhancement**:
 - Interactive evidence overlay for transcripts, documents, and emails
