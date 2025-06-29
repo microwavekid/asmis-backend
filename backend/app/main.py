@@ -1,10 +1,13 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import os
 from datetime import datetime
 import shutil
 from dotenv import load_dotenv
 from app.agents.meddpic_orchestrator import MEDDPICCOrchestrator, SourceType
+from app.routers import deals
+from app.database.connection import async_db_manager
 import anthropic
 import logging
 
@@ -12,7 +15,44 @@ import logging
 load_dotenv()
 
 # Create the FastAPI application
-app = FastAPI(title="ASMIS Backend", version="1.0.0")
+app = FastAPI(
+    title="ASMIS Backend", 
+    version="1.0.0",
+    description="ASMIS - AI Sales Intelligence System"
+)
+
+# Add CORS middleware for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Frontend dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include API routers
+app.include_router(deals.router)
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database connections on startup."""
+    try:
+        async_db_manager.initialize()
+        logger.info("Database connections initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        raise
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close database connections on shutdown."""
+    try:
+        await async_db_manager.close()
+        logger.info("Database connections closed")
+    except Exception as e:
+        logger.error(f"Error closing database: {e}")
 
 # Create uploads directory if it doesn't exist
 UPLOAD_DIR = "uploads"
