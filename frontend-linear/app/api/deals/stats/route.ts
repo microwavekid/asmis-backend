@@ -1,8 +1,23 @@
 import { NextResponse } from 'next/server'
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000'
+
 export async function GET() {
   try {
-    // Mock stats data
+    const res = await fetch(`${backendUrl}/api/v1/deals/stats`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (!res.ok) {
+      throw new Error(`Backend returned status ${res.status}`)
+    }
+    const data = await res.json()
+    return NextResponse.json(data)
+  } catch (error) {
+    console.error('Error proxying to backend (deals stats):', error)
+    // Fallback to mock stats data if backend is unavailable
     const stats = {
       totalDeals: 2,
       totalValue: 430000,
@@ -13,10 +28,6 @@ export async function GET() {
         'negotiation': 1
       }
     }
-
     return NextResponse.json(stats)
-  } catch (error) {
-    console.error('Error in deals stats API:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

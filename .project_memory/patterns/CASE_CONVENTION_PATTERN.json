@@ -1,0 +1,109 @@
+{
+  "pattern_id": "CASE_CONVENTION_PATTERN_2025",
+  "version": 1,
+  "pattern_type": "api_integration",
+  "title": "Frontend-Backend Case Convention Alignment Pattern",
+  "description": "Pattern for handling snake_case to camelCase conversions between Python backend and JavaScript frontend",
+  "context": "Python backends typically use snake_case while JavaScript frontends use camelCase, causing property access errors",
+  "problem_indicators": [
+    "Icon component undefined errors",
+    "Missing properties in UI components",
+    "Only partial data displaying (e.g., 3 of 7 MEDDPICC components)",
+    "Console errors about undefined keys",
+    "TypeScript property access errors"
+  ],
+  "root_cause": {
+    "backend_convention": "Python uses snake_case (economic_buyer, decision_criteria)",
+    "frontend_convention": "JavaScript uses camelCase (economicBuyer, decisionCriteria)",
+    "mismatch_impact": "Frontend object key lookups fail when cases don't match"
+  },
+  "solution_approach": {
+    "option_1_transform_backend": {
+      "description": "Convert snake_case to camelCase in backend API responses",
+      "implementation": "Update response formatting functions to use camelCase keys",
+      "pros": "Frontend works without changes, consistent with JS conventions",
+      "cons": "Backend code less Pythonic"
+    },
+    "option_2_transform_frontend": {
+      "description": "Add transformation layer in frontend API routes",
+      "implementation": "Transform responses in Next.js API route handlers",
+      "pros": "Backend remains Pythonic, centralized transformation",
+      "cons": "Extra processing layer, potential performance impact"
+    },
+    "option_3_accept_both": {
+      "description": "Make frontend components accept both conventions",
+      "implementation": "Check for both snake_case and camelCase variants",
+      "pros": "Most flexible, works with any backend",
+      "cons": "Verbose code, harder to maintain"
+    }
+  },
+  "recommended_solution": "option_1_transform_backend",
+  "implementation_steps": {
+    "step_1_identify_mismatches": {
+      "action": "Add console.log to see actual vs expected keys",
+      "code": "console.log('Actual keys:', Object.keys(data))\nconsole.log('Expected keys:', Object.keys(EXPECTED_MAP))"
+    },
+    "step_2_update_backend_formatter": {
+      "action": "Change snake_case keys to camelCase in response formatters",
+      "example": {
+        "before": "\"economic_buyer\": { ... }",
+        "after": "\"economicBuyer\": { ... }"
+      },
+      "files": [
+        "backend/app/routers/deals.py - _format_meddpicc_analysis",
+        "backend/app/api/deals/[id]/meddpicc/route.ts - fallback response"
+      ]
+    },
+    "step_3_restart_backend": {
+      "action": "Backend must be restarted for Python changes to take effect",
+      "commands": [
+        "ps aux | grep uvicorn | grep -v grep | awk '{print $2}' | xargs kill -9",
+        "uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &"
+      ],
+      "important": "Python doesn't hot-reload like Node.js - always restart!"
+    },
+    "step_4_verify_fix": {
+      "action": "Test the API endpoint directly",
+      "command": "curl -s http://localhost:8000/api/v1/[endpoint] | python3 -m json.tool"
+    }
+  },
+  "common_case_mappings": {
+    "meddpicc_components": {
+      "economic_buyer": "economicBuyer",
+      "decision_criteria": "decisionCriteria", 
+      "decision_process": "decisionProcess",
+      "identify_pain": "identifyPain"
+    },
+    "general_patterns": {
+      "snake_case": "camelCase",
+      "long_snake_case_name": "longSnakeCaseName",
+      "id": "id",
+      "url": "url",
+      "api": "api"
+    }
+  },
+  "debugging_checklist": [
+    "Check browser console for key mismatch logs",
+    "Verify backend is actually restarted (check PID changed)",
+    "Test API endpoint directly with curl",
+    "Check both frontend API route AND backend response",
+    "Ensure TypeScript interfaces match the case convention"
+  ],
+  "prevention_strategies": [
+    "Establish case convention early in project",
+    "Use automated transformation utilities (e.g., humps library)",
+    "Add TypeScript interfaces that enforce conventions",
+    "Document API contracts with clear examples",
+    "Add integration tests that verify key names"
+  ],
+  "related_patterns": [
+    "UI_DEBUGGING_PATTERN - for frontend troubleshooting",
+    "API_CONTRACT_PATTERN - for API design consistency"
+  ],
+  "success_indicators": [
+    "All expected UI components render",
+    "No undefined property errors in console",
+    "API responses match frontend TypeScript interfaces",
+    "Consistent case convention throughout codebase"
+  ]
+}

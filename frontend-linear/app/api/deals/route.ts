@@ -1,175 +1,109 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000'
+
 export async function GET(request: NextRequest) {
   try {
-    // For now, return mock data since backend is not running
-    const mockResponse = {
-      deals: [
-        {
-          accountId: "acc_1",
-          accountName: "Optimizely Inc",
-          dealId: "deal_1",
-          dealName: "Q4 Implementation",
-          dealValue: 150000,
-          stage: "technical_evaluation",
-          health: {
-            score: 85,
-            trend: "improving",
-            factors: {
-              positive: ["Strong champion", "Clear decision criteria"],
-              negative: ["Technical concerns"],
-              neutral: ["Budget approved"]
-            },
-            lastCalculated: new Date().toISOString()
+    // Fetch from backend
+    const response = await fetch(`${backendUrl}/api/v1/deals/`)
+    
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`)
+    }
+    
+    const backendDeals = await response.json()
+    
+    // Transform backend response to match frontend expectations
+    const transformedData = {
+      deals: backendDeals.map((deal: any) => ({
+        // Core fields
+        dealId: deal.id,
+        dealName: deal.name,
+        accountId: deal.id, // Using deal ID temporarily
+        accountName: deal.account,
+        dealValue: deal.value,
+        stage: deal.stage || 'discovery',
+        
+        // Health data
+        health: {
+          score: deal.health || 0,
+          trend: 'stable',
+          factors: {
+            positive: [],
+            negative: [],
+            neutral: []
           },
-          momentum: {
-            velocity: "accelerating",
-            daysSinceLastActivity: 2,
-            activitiesLast30Days: 15,
-            engagementLevel: "high",
-            keyMilestones: [
-              { name: "Technical Demo", completed: true, completedAt: new Date().toISOString() },
-              { name: "Security Review", completed: false, dueDate: new Date().toISOString() }
-            ]
+          lastCalculated: new Date().toISOString()
+        },
+        
+        // Momentum data
+        momentum: {
+          velocity: 'steady',
+          daysSinceLastActivity: 0,
+          activitiesLast30Days: 0,
+          engagementLevel: 'medium',
+          keyMilestones: []
+        },
+        
+        // MEDDPICC analysis
+        meddpiccAnalysis: {
+          dealId: deal.id,
+          accountId: deal.id,
+          overallScore: deal.meddpiccScore || 0,
+          completenessScore: 0,
+          lastUpdated: new Date().toISOString(),
+          processingStatus: {
+            status: deal.meddpiccScore > 0 ? 'complete' : 'not_started',
+            progress: deal.meddpiccScore > 0 ? 100 : 0
           },
-          meddpiccAnalysis: {
-            dealId: "deal_1",
-            accountId: "acc_1",
-            overallScore: 85,
-            completenessScore: 78,
-            lastUpdated: new Date().toISOString(),
-            processingStatus: {
-              status: "complete",
-              progress: 100
-            },
-            metrics: {
-              status: "complete",
-              confidence: 90,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              identifiedMetrics: [
-                { type: "cost_reduction", value: "25% reduction in processing time", target: "Q1 2025", timeline: "3 months" }
-              ],
-              quantified: true,
-              businessImpact: "Significant cost savings and efficiency gains"
-            },
-            economicBuyer: {
-              status: "complete",
-              confidence: 85,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              identified: true,
-              person: {
-                name: "Sarah Johnson",
-                title: "CFO",
-                email: "sarah.johnson@optimizely.com"
-              },
-              accessLevel: "through_champion",
-              buyingAuthority: "confirmed"
-            },
-            decisionCriteria: {
-              status: "complete",
-              confidence: 80,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              criteria: [
-                { category: "technical", requirement: "Cloud-native architecture", priority: "must_have", ourPosition: "meets" },
-                { category: "business", requirement: "ROI within 12 months", priority: "must_have", ourPosition: "meets" }
-              ],
-              formalRequirements: true,
-              evaluationProcess: "RFP with technical and business evaluation phases"
-            },
-            decisionProcess: {
-              status: "partial",
-              confidence: 75,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              steps: [
-                { name: "Technical evaluation", owner: "CTO", timeline: "2 weeks", status: "in_progress" },
-                { name: "Business case review", owner: "CFO", timeline: "1 week", status: "upcoming" }
-              ],
-              timelineIdentified: true,
-              estimatedCloseDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            identifyPain: {
-              status: "complete",
-              confidence: 90,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              pains: [
-                { description: "Manual processes causing delays", impact: "high", currentState: "90% manual", desiredState: "80% automated", costOfInaction: "$50k quarterly loss" }
-              ],
-              urgency: "quarterly",
-              businessDrivers: ["Digital transformation", "Cost reduction"]
-            },
-            champion: {
-              status: "complete",
-              confidence: 95,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              identified: true,
-              person: {
-                name: "Alex Chen",
-                title: "VP Engineering",
-                email: "alex.chen@optimizely.com"
-              },
-              strength: "strong",
-              influence: "high",
-              engagement: {
-                lastContact: new Date().toISOString(),
-                frequency: "weekly",
-                quality: "proactive"
-              }
-            },
-            competition: {
-              status: "partial",
-              confidence: 70,
-              evidence: [],
-              lastUpdated: new Date().toISOString(),
-              competitors: [
-                { name: "CompetitorX", status: "evaluating", strengths: ["Lower price"], weaknesses: ["Limited features"], ourAdvantages: ["Better integration"] }
-              ],
-              competitiveLandscape: "competitive",
-              differentiators: ["Superior API", "Better support"]
-            },
-            keyInsights: [],
-            riskFactors: [],
-            recommendations: []
-          },
-          nextActions: [
-            {
-              id: "action_1",
-              type: "call",
-              priority: "high",
-              title: "Follow up on technical questions",
-              description: "Address remaining technical concerns from evaluation",
-              suggestedBy: "ai",
-              status: "pending",
-              createdAt: new Date().toISOString()
-            }
-          ],
-          opportunities: [],
-          processingQueue: {
-            items: [],
-            activeCount: 0,
-            queuedCount: 0,
-            completedCount: 5,
-            failedCount: 0
-          },
-          timeline: [],
-          createdAt: new Date().toISOString(),
-          lastUpdated: new Date().toISOString()
-        }
-      ],
-      total: 1,
+          metrics: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          economicBuyer: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          decisionCriteria: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          decisionProcess: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          identifyPain: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          champion: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          competition: { status: 'missing', confidence: 0, evidence: [], lastUpdated: new Date().toISOString() },
+          keyInsights: [],
+          riskFactors: [],
+          recommendations: []
+        },
+        
+        // Actions and opportunities
+        nextActions: deal.nextActions || [],
+        opportunities: [],
+        
+        // Processing queue
+        processingQueue: {
+          items: [],
+          activeCount: 0,
+          queuedCount: 0,
+          completedCount: 0,
+          failedCount: 0
+        },
+        
+        // Timeline and metadata
+        timeline: [],
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
+      })),
+      total: backendDeals.length,
       offset: 0,
       limit: 50,
       hasMore: false
     }
-
-    return NextResponse.json(mockResponse)
+    
+    return NextResponse.json(transformedData)
+    
   } catch (error) {
-    console.error('Error in deals API:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching from backend:', error)
+    
+    // Return fallback mock data
+    return NextResponse.json({
+      deals: [],
+      total: 0,
+      offset: 0,
+      limit: 50,
+      hasMore: false
+    })
   }
 }

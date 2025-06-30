@@ -63,12 +63,11 @@ export default function IntelligenceLayout({
             </div>
           </nav>
           
-          {/* Workspace Area - Header + Body */}
+          {/* Main Content Area - Header spans full width */}
           <div className="flex-1 flex flex-col">
-            {/* Workspace Header - FIXED WIDTH - spans main content + evidence panel ALWAYS */}
-            <div className="h-[52px] border-b border-[var(--bg-border)] bg-[var(--bg-base)] flex items-center">
-              {/* Main header content */}
-              <div className="flex-1 px-3 lg:px-4 xl:px-6 flex items-center justify-between">
+            {/* Workspace Header - Spans entire width */}
+            <div className="h-[52px] border-b border-[var(--bg-border)] bg-[var(--bg-base)] flex items-center px-3 lg:px-4 xl:px-6">
+              <div className="flex-1 flex items-center justify-between">
                 <div className="flex items-center gap-2 lg:gap-3">
                   <h1 className="text-lg font-semibold text-[var(--content-primary)]">
                     Deals
@@ -108,20 +107,21 @@ export default function IntelligenceLayout({
             
             {/* Workspace Body - Main content + Evidence panel */}
             <div className="flex flex-1 overflow-hidden">
-              {/* Main Content Area */}
+              {/* Main Content */}
               <main className="flex-1 overflow-hidden">
                 {children}
               </main>
               
-              {/* Evidence Panel - Collapsible */}
+              {/* Evidence Panel - Collapsible with smooth transition */}
               <aside 
                 className={cn(
-                  "bg-[var(--bg-base)] border-l border-[var(--bg-border)] transition-all duration-300 overflow-hidden flex-col",
-                  "hidden", // Always hidden now to prevent layout cutoff
-                  evidencePanelOpen ? "w-[280px]" : "w-0"
+                  "bg-[var(--bg-base)] border-l border-[var(--bg-border)] transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0",
+                  evidencePanelOpen ? "w-[280px] lg:w-[280px] xl:w-[320px] 2xl:w-[360px]" : "w-0 border-l-0"
                 )}
               >
-                {evidencePanelOpen && <EvidencePanel onToggle={() => setEvidencePanelOpen(!evidencePanelOpen)} isOpen={evidencePanelOpen} />}
+                <div className="w-[280px] lg:w-[280px] xl:w-[320px] 2xl:w-[360px]">
+                  <EvidencePanel onToggle={() => setEvidencePanelOpen(!evidencePanelOpen)} isOpen={evidencePanelOpen} />
+                </div>
               </aside>
             </div>
           </div>

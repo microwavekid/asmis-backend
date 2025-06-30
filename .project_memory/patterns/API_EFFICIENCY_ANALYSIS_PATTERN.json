@@ -1,0 +1,168 @@
+{
+  "pattern_id": "API_EFFICIENCY_ANALYSIS_PATTERN_2025",
+  "version": 1,
+  "pattern_type": "performance_debugging",
+  "title": "AI API Efficiency Analysis and Optimization Pattern",
+  "description": "Systematic approach to identifying and resolving API inefficiencies that cause rate limiting and overload errors",
+  "context": "When AI services return 529 'Overloaded' or rate limiting errors, need systematic analysis of API usage patterns",
+  "problem_indicators": [
+    "HTTP 529 'Overloaded' errors from AI APIs",
+    "Rate limiting responses (HTTP 429)",
+    "Slow response times from AI services",
+    "Multiple simultaneous API calls failing",
+    "Unexpected API quota consumption"
+  ],
+  "analysis_methodology": {
+    "step_1_call_pattern_analysis": {
+      "description": "Analyze how and when API calls are made",
+      "investigation_areas": [
+        "Parallel vs sequential API calls",
+        "Request payload sizes and complexity",
+        "Retry logic and exponential backoff",
+        "Connection pooling and reuse",
+        "Batch processing opportunities"
+      ],
+      "tools": [
+        "Backend logs analysis with timestamps",
+        "API response time tracking",
+        "Network request inspection",
+        "Token count estimation"
+      ]
+    },
+    "step_2_content_optimization": {
+      "description": "Optimize content sent to AI APIs",
+      "optimization_targets": [
+        "Prompt length and complexity",
+        "Context window utilization",
+        "Redundant information removal",
+        "Preprocessing and chunking strategies",
+        "Response format specifications"
+      ],
+      "metrics": [
+        "Input token count",
+        "Output token count", 
+        "Processing time per request",
+        "Success/failure rates"
+      ]
+    },
+    "step_3_orchestration_efficiency": {
+      "description": "Analyze multi-agent orchestration patterns",
+      "focus_areas": [
+        "Agent initialization overhead",
+        "Parallel execution bottlenecks",
+        "Resource sharing between agents",
+        "Caching opportunities",
+        "Task dependency optimization"
+      ]
+    }
+  },
+  "common_inefficiency_patterns": {
+    "agent_re_initialization": {
+      "issue": "Creating new agent instances for each request",
+      "solution": "Implement agent pooling or singleton patterns",
+      "impact": "Reduces initialization overhead and connection setup"
+    },
+    "oversized_prompts": {
+      "issue": "Sending full transcript content multiple times",
+      "solution": "Preprocess content, extract relevant sections",
+      "impact": "Reduces token consumption and processing time"
+    },
+    "synchronous_blocking": {
+      "issue": "Waiting for slow API calls sequentially",
+      "solution": "Implement proper async/await patterns",
+      "impact": "Improves overall throughput and reduces timeouts"
+    },
+    "missing_retry_logic": {
+      "issue": "No handling of temporary API unavailability",
+      "solution": "Exponential backoff with jitter",
+      "impact": "Better resilience to temporary overload conditions"
+    },
+    "excessive_parallelism": {
+      "issue": "Too many simultaneous API calls overwhelming service",
+      "solution": "Rate limiting and queue management",
+      "impact": "Prevents triggering API overload responses"
+    }
+  },
+  "optimization_strategies": {
+    "content_preprocessing": {
+      "technique": "Clean and optimize input before sending to API",
+      "implementation": [
+        "Remove redundant whitespace and formatting",
+        "Extract only relevant sections for each analysis type",
+        "Implement smart chunking for long content",
+        "Cache preprocessed content"
+      ]
+    },
+    "intelligent_caching": {
+      "technique": "Cache API responses and intermediate results",
+      "implementation": [
+        "Content-based cache keys",
+        "TTL-based invalidation",
+        "Partial result caching",
+        "Cross-request result sharing"
+      ]
+    },
+    "adaptive_rate_limiting": {
+      "technique": "Dynamically adjust request rate based on API responses",
+      "implementation": [
+        "Monitor response times and error rates",
+        "Implement circuit breaker pattern",
+        "Queue management with priority",
+        "Graceful degradation strategies"
+      ]
+    }
+  },
+  "debugging_checklist": [
+    "Log all API request timestamps and durations",
+    "Track token counts for input and output",
+    "Monitor agent initialization frequency",
+    "Measure parallel execution bottlenecks",
+    "Analyze content size and complexity",
+    "Check for unnecessary duplicate calls",
+    "Verify proper async/await implementation",
+    "Review retry and timeout configurations"
+  ],
+  "performance_metrics": {
+    "efficiency_indicators": [
+      "Requests per minute sustainable rate",
+      "Average response time per agent",
+      "Token utilization ratio",
+      "Cache hit rate",
+      "Error rate by API endpoint"
+    ],
+    "optimization_targets": [
+      "< 2 API calls per analysis component",
+      "< 5000 tokens per request average",
+      "< 10 second response time",
+      "> 95% success rate",
+      "> 80% cache hit rate for repeat content"
+    ]
+  },
+  "implementation_steps": {
+    "immediate": [
+      "Add comprehensive API call logging",
+      "Implement request/response timing",
+      "Add token count tracking",
+      "Monitor parallel execution patterns"
+    ],
+    "short_term": [
+      "Optimize content preprocessing",
+      "Implement intelligent caching",
+      "Add exponential backoff retry logic",
+      "Optimize agent initialization"
+    ],
+    "long_term": [
+      "Implement adaptive rate limiting",
+      "Add circuit breaker patterns",
+      "Optimize orchestration workflows",
+      "Add predictive caching"
+    ]
+  },
+  "success_indicators": [
+    "Elimination of 529 overload errors",
+    "Consistent sub-10 second analysis times",
+    "Successful analysis of full-length transcripts",
+    "Reduced API costs through efficiency gains",
+    "Improved user experience with reliable analysis"
+  ]
+}

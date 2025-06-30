@@ -164,6 +164,20 @@ class AccountResponse(BaseModel):
     employee_count: Optional[int]
 
 
+# Deal Statistics Response
+class DealStatsResponse(BaseModel):
+    """Response model for deal statistics dashboard."""
+    total_deals: int = Field(..., ge=0)
+    total_value: float = Field(..., ge=0)
+    average_deal_size: float = Field(..., ge=0)
+    deals_by_stage: Dict[str, int] = Field(default_factory=dict)
+    deals_by_priority: Dict[str, int] = Field(default_factory=dict)
+    health_score_distribution: Dict[str, int] = Field(default_factory=dict)
+    meddpicc_score_distribution: Dict[str, int] = Field(default_factory=dict)
+    recent_activity: Dict[str, int] = Field(default_factory=dict)
+    conversion_rates: Dict[str, float] = Field(default_factory=dict)
+
+
 # Error Response
 class ErrorResponse(BaseModel):
     """Standard error response format."""

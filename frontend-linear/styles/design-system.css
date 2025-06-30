@@ -143,14 +143,14 @@
 @media (min-width: 1024px) and (max-width: 1279px) {
   :root {
     --sidebar-width: 180px;
-    --evidence-panel-width: 0;
+    --evidence-panel-width: 280px;
   }
 }
 
 @media (min-width: 1280px) and (max-width: 1535px) {
   :root {
     --sidebar-width: 200px;
-    --evidence-panel-width: 0;
+    --evidence-panel-width: 280px;
   }
 }
 

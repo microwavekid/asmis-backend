@@ -23,30 +23,53 @@ export interface MEDDPICCAnalysis {
   accountId: string;
   overallScore: number; // 0-100
   completenessScore: number; // 0-100
-  lastUpdated: Date;
+  lastUpdated: Date | string;
   processingStatus: ProcessingStatus;
   
-  // MEDDPICC components with evidence
-  metrics: MetricEvidence;
-  economicBuyer: EconomicBuyerEvidence;
-  decisionCriteria: DecisionCriteriaEvidence;
-  decisionProcess: DecisionProcessEvidence;
-  identifyPain: PainPointEvidence;
-  champion: ChampionEvidence;
-  competition: CompetitionEvidence;
+  // Components structure (new format)
+  components: {
+    metrics: MEDDPICCComponent;
+    economicBuyer: MEDDPICCComponent;
+    decisionCriteria: MEDDPICCComponent;
+    decisionProcess: MEDDPICCComponent;
+    identifyPain: MEDDPICCComponent;
+    champion: MEDDPICCComponent;
+    competition: MEDDPICCComponent;
+  };
+  
+  // Legacy individual components (for backward compatibility)
+  metrics?: MetricEvidence;
+  economicBuyer?: EconomicBuyerEvidence;
+  decisionCriteria?: DecisionCriteriaEvidence;
+  decisionProcess?: DecisionProcessEvidence;
+  identifyPain?: PainPointEvidence;
+  champion?: ChampionEvidence;
+  competition?: CompetitionEvidence;
   
   // Aggregated insights
   keyInsights: Insight[];
-  riskFactors: Risk[];
+  riskFactors: string[]; // Simplified to strings for UI rendering
   recommendations: Recommendation[];
+  strategic_recommendations: string[]; // Add missing property
 }
 
 export interface ProcessingStatus {
-  status: 'idle' | 'processing' | 'complete' | 'error';
+  status: 'idle' | 'processing' | 'complete' | 'error' | 'not_started';
   progress?: number; // 0-100
   estimatedTimeRemaining?: number; // seconds
   currentStep?: string; // "Extracting stakeholders..."
   lastError?: string;
+  message?: string; // Add message field
+}
+
+// New simplified component interface for UI compatibility
+export interface MEDDPICCComponent {
+  status: 'complete' | 'partial' | 'not_started' | 'missing';
+  confidence: number; // 0-100
+  evidence: Evidence[];
+  gaps: string[]; // Information gaps identified
+  lastUpdated: string | Date;
+  score?: number; // Component score (0-100)
 }
 
 export interface BaseEvidence {
@@ -148,8 +171,10 @@ export interface CompetitionEvidence extends BaseEvidence {
 export interface Evidence {
   id: string;
   type: 'transcript' | 'email' | 'document' | 'note';
+  title: string; // Title/summary of the evidence
   content: string;
   excerpt: string; // The specific highlighted portion
+  meddpicc_category?: MEDDPICCCategory; // Which MEDDPICC component this evidence supports
   source: {
     id: string;
     name: string; // "Demo Call - Oct 23"

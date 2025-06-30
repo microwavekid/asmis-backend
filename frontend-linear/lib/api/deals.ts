@@ -34,13 +34,16 @@ export const dealsAPI = {
         }
       })
       
-      const response = await apiClient.get<DealsListResponse>(
-        `/api/deals?${searchParams.toString()}`
-      )
+      // Use fetch directly for Next.js API routes
+      const response = await fetch(`/api/deals?${searchParams.toString()}`)
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`)
+      }
+      const data = await response.json() as DealsListResponse
       
       return {
-        ...response,
-        deals: response.deals.map(transformDateStrings)
+        ...data,
+        deals: data.deals.map(transformDateStrings)
       }
     } catch (error) {
       // Fallback to mock data when API is unavailable
@@ -59,10 +62,12 @@ export const dealsAPI = {
 
   // Get MEDDPICC analysis for a deal
   async getMEDDPICC(dealId: string): Promise<MEDDPICCAnalysis> {
-    const response = await apiClient.get<MEDDPICCAnalysis>(
-      `/api/deals/${dealId}/meddpicc`
-    )
-    return transformDateStrings(response)
+    const response = await fetch(`/api/deals/${dealId}/meddpicc`)
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`)
+    }
+    const data = await response.json()
+    return transformDateStrings(data)
   },
 
   // Get deal timeline
@@ -150,7 +155,11 @@ export const dealsAPI = {
     byStage: Record<string, number>
   }> {
     try {
-      return apiClient.get('/api/deals/stats')
+      const response = await fetch('/api/deals/stats')
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`)
+      }
+      return response.json()
     } catch (error) {
       console.warn('API unavailable, using mock stats:', error)
       return {

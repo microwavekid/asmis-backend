@@ -7,6 +7,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { QueryProvider } from "@/components/providers/query-provider"
+import { SidebarProvider } from "@/components/ui/sidebar"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,7 +27,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-            {children}
+            <SidebarProvider>
+              {children}
+            </SidebarProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>

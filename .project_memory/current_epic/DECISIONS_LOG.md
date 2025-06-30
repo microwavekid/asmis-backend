@@ -106,4 +106,37 @@
 **Implementation**: Entity type selector buttons, color-coded activation states, inline highlighting, cursor-positioned autocomplete
 **Date**: 2025-06-28
 
+## DEC_2025-06-29_001: API Case Convention Standardization
+**Context**: MEDDPICC modal only showing 3 of 7 components due to snake_case/camelCase mismatch
+**Options Considered**: Transform in backend, transform in frontend, accept both formats
+**Decision**: Transform snake_case to camelCase in backend API responses
+**Pattern Applied**: CASE_CONVENTION_PATTERN
+**Rationale**: Frontend components expect camelCase (JavaScript convention), backend was returning snake_case (Python convention)
+**Impact**: All 7 MEDDPICC components now render properly, eliminated "Icon undefined" errors
+**Implementation**: 
+- Updated `_format_meddpicc_analysis` in `backend/app/routers/deals.py`
+- Changed keys: economic_buyer → economicBuyer, decision_criteria → decisionCriteria, etc.
+- Required backend restart for changes to take effect
+- Created pattern documentation for future case convention issues
+**Date**: 2025-06-29
+
+## DEC_2025-06-29_002: Backend Analyze Endpoint Integration Success
+**Context**: Testing transcript upload to MEDDPICC scoring pipeline end-to-end
+**Options Considered**: Mock analysis, direct orchestrator integration, gradual testing approach
+**Decision**: Full orchestrator integration with comprehensive debug logging
+**Pattern Applied**: SYSTEMATIC_DEBUGGING_PATTERN + QUALITY_MODE testing
+**Rationale**: 
+- .env API key loading issue resolved (needed correct working directory)
+- Orchestrator successfully processes transcripts (action items, stakeholder intelligence)
+- Analysis pipeline works but hits Anthropic API rate limits (529 errors)
+- Need database persistence layer for successful analysis results
+**Impact**: Core analysis functionality proven working, identified specific bottlenecks
+**Implementation**:
+- Fixed orchestrator initialization with proper API key from .env
+- Added comprehensive debug logging to track analysis result structure
+- Identified correct result keys: extraction_result, meddpicc_completeness, strategic_recommendations
+- Distinguished confidence (AI certainty) vs score (MEDDPICC qualification percentage)
+**Next Steps**: API efficiency review and database persistence implementation
+**Date**: 2025-06-29
+
 *Add new decisions above this line*

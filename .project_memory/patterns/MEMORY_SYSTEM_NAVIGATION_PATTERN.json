@@ -1,0 +1,76 @@
+{
+  "pattern_id": "MEMORY_SYSTEM_NAVIGATION_PATTERN",
+  "version": 1,
+  "created_at": "2025-06-28T23:40:00Z",
+  "updated_at": "2025-06-28T23:40:00Z",
+  "priority": "fatal",
+  "use_cases": ["session_start", "task_transition", "decision_making", "pattern_discovery"],
+  
+  "pattern_description": "Systematic navigation and utilization of the ASMIS memory system to ensure consistent pattern application and persona adoption",
+  
+  "problem_context": {
+    "issue": "AI assistant creates documentation but fails to reference it in future sessions",
+    "root_cause": "Lack of systematic memory navigation pattern",
+    "impact": "Patterns not applied, personas not adopted, decisions not referenced"
+  },
+  
+  "solution_template": {
+    "startup_sequence": [
+      "1. Read .ai/NEURAL_IMPRINT.json (behavioral control)",
+      "2. Check .project_memory/current_epic/active_session.json (context)",
+      "3. Review track_progress/todo_tracker.md (current state)",
+      "4. Scan .project_memory/patterns/ for relevant patterns",
+      "5. Select appropriate persona from SPECIALIST_PERSONAS.md"
+    ],
+    
+    "task_transition_protocol": {
+      "before_task": [
+        "CHECK: Is this task type covered by existing patterns?",
+        "SEARCH: .project_memory/patterns/*{task_type}*.json",
+        "SELECT: Appropriate persona (BUILDER/DEBUGGER/ARCHITECT/etc)",
+        "ANNOUNCE: '🏗️ ARCHITECT MODE: ...' or similar"
+      ],
+      
+      "during_task": [
+        "REFERENCE: Pattern IDs in code comments",
+        "LOG: Decisions to DECISIONS_LOG.md",
+        "CAPTURE: New patterns as they emerge"
+      ],
+      
+      "after_task": [
+        "UPDATE: todo_tracker.md with pattern references",
+        "CREATE: New pattern files if novel solution found",
+        "DOCUMENT: Session wrap if significant progress"
+      ]
+    },
+    
+    "memory_reference_triggers": {
+      "debugging": "Check UI_DEBUGGING_PATTERN.json",
+      "responsive_design": "Check RESPONSIVE_LAYOUT_OPTIMIZATION_PATTERN.json",
+      "entity_ui": "Check BONUSLY_UI_INSPIRATION_PATTERN.json",
+      "database_work": "Check DATABASE_ACCESS_IMPRINT.json",
+      "agent_work": "Check AGENT_COMMUNICATION_IMPRINT.json"
+    }
+  },
+  
+  "implementation_checklist": [
+    "✓ Always announce persona mode at task start",
+    "✓ Reference pattern IDs in code comments",
+    "✓ Check for existing patterns before creating solutions",
+    "✓ Update progress with pattern references",
+    "✓ Create new patterns for novel solutions"
+  ],
+  
+  "anti_patterns": [
+    "❌ Creating documentation without updating index",
+    "❌ Solving problems without checking existing patterns",
+    "❌ Working without explicit persona mode",
+    "❌ Failing to reference pattern IDs in solutions"
+  ],
+  
+  "expected_behavior": {
+    "example_start": "🐞 DEBUGGER MODE: Checking existing patterns...\n✅ Applied: UI_DEBUGGING_PATTERN\nLet me investigate the connection issue systematically.",
+    "example_code": "// PATTERN_REF: RESPONSIVE_LAYOUT_OPTIMIZATION_PATTERN\n// DECISION_REF: DEC_2025-06-28_002",
+    "example_completion": "✅ Applied: UI_DEBUGGING_PATTERN | 📋 Decision: DEC_2025-06-28_FIX_001"
+  }
+}

@@ -33,38 +33,35 @@ interface MEDDPICCCardProps {
 
 const MEDDPICC_ICONS = {
   metrics: Target,
-  economic_buyer: DollarSign,
-  decision_criteria: CheckSquare,
-  decision_process: Calendar,
-  paper_process: FileText,
-  implicate_the_pain: AlertTriangle,
+  economicBuyer: DollarSign,
+  decisionCriteria: CheckSquare,
+  decisionProcess: Calendar,
+  identifyPain: AlertTriangle,
   champion: Trophy,
   competition: Users
 }
 
 const MEDDPICC_LABELS = {
   metrics: "Metrics",
-  economic_buyer: "Economic Buyer", 
-  decision_criteria: "Decision Criteria",
-  decision_process: "Decision Process",
-  paper_process: "Paper Process",
-  implicate_the_pain: "Implicate the Pain",
+  economicBuyer: "Economic Buyer",
+  decisionCriteria: "Decision Criteria", 
+  decisionProcess: "Decision Process",
+  identifyPain: "Identify Pain",
   champion: "Champion",
   competition: "Competition"
 }
 
 export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCardProps) {
+  // Debug: Log component keys to identify mismatches
+  if (analysis.components) {
+    console.log('MEDDPICC Component Keys:', Object.keys(analysis.components))
+    console.log('Expected Keys:', Object.keys(MEDDPICC_ICONS))
+  }
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-[var(--confidence-high)]"
     if (score >= 60) return "text-[var(--confidence-medium)]"
     return "text-[var(--confidence-low)]"
-  }
-
-  const getProgressColor = (score: number) => {
-    if (score >= 80) return "bg-[var(--confidence-high)]"
-    if (score >= 60) return "bg-[var(--confidence-medium)]"
-    return "bg-[var(--confidence-low)]"
   }
 
   const getEvidenceForSection = (section: keyof typeof analysis.components) => {
@@ -88,8 +85,8 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
             </CardDescription>
           </div>
           <div className="text-right">
-            <div className={`text-3xl font-bold ${getScoreColor(analysis.overall_score)}`}>
-              {Math.round(analysis.overall_score)}%
+            <div className={`text-3xl font-bold ${getScoreColor(analysis.overallScore)}`}>
+              {Math.round(analysis.overallScore)}%
             </div>
             <div className="text-sm text-[var(--content-secondary)]">
               Overall Score
@@ -100,7 +97,7 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
         {/* Overall Progress Bar */}
         <div className="mt-4">
           <Progress 
-            value={analysis.overall_score} 
+            value={analysis.overallScore} 
             className="h-2"
             style={{
               background: `var(--bg-border)`,
@@ -108,7 +105,7 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
           />
           <div className="flex justify-between text-xs text-[var(--content-secondary)] mt-1">
             <span>Qualification Progress</span>
-            <span>Confidence: {Math.round(analysis.confidence_score)}%</span>
+            <span>Confidence: {Math.round(analysis.completenessScore || 0)}%</span>
           </div>
         </div>
       </CardHeader>
@@ -116,10 +113,13 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
       <CardContent className="space-y-4">
         {/* Component Breakdown */}
         <Accordion type="multiple" className="space-y-2">
-          {Object.entries(analysis.components).map(([key, component]) => {
+          {Object.entries(analysis.components as Record<string, any>).map(([key, component]: [string, any]) => {
             const Icon = MEDDPICC_ICONS[key as keyof typeof MEDDPICC_ICONS]
             const label = MEDDPICC_LABELS[key as keyof typeof MEDDPICC_LABELS]
             const sectionEvidence = getEvidenceForSection(key as keyof typeof analysis.components)
+
+            // Skip if no icon found (handles any key mismatches)
+            if (!Icon || !label) return null
 
             return (
               <AccordionItem key={key} value={key} className="border border-[var(--bg-border)] rounded-lg">
@@ -161,12 +161,12 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
                     {/* Progress Bar for Component */}
                     <div>
                       <Progress 
-                        value={component.score} 
+                        value={component?.score || 0} 
                         className="h-1.5"
                       />
                       <div className="flex justify-between text-xs text-[var(--content-secondary)] mt-1">
-                        <span>Confidence: {Math.round(component.confidence)}%</span>
-                        {component.gaps.length > 0 && (
+                        <span>Confidence: {Math.round(component?.confidence || 0)}%</span>
+                        {component.gaps && component.gaps.length > 0 && (
                           <span className="text-[var(--confidence-low)]">
                             {component.gaps.length} gaps identified
                           </span>
@@ -219,13 +219,13 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
                     )}
 
                     {/* Gaps */}
-                    {component.gaps.length > 0 && (
+                    {component.gaps && component.gaps.length > 0 && (
                       <div>
                         <div className="text-sm font-medium text-[var(--content-primary)] mb-2">
                           Information Gaps
                         </div>
                         <ul className="space-y-1">
-                          {component.gaps.map((gap, index) => (
+                          {component.gaps?.map((gap: string, index: number) => (
                             <li key={index} className="text-sm text-[var(--confidence-low)] flex items-center">
                               <AlertTriangle className="w-3 h-3 mr-2" />
                               {gap}
@@ -242,14 +242,14 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
         </Accordion>
 
         {/* Strategic Recommendations */}
-        {analysis.strategic_recommendations.length > 0 && (
+        {analysis.strategic_recommendations && analysis.strategic_recommendations.length > 0 && (
           <div className="mt-6 pt-4 border-t border-[var(--bg-border)]">
             <div className="text-sm font-medium text-[var(--content-primary)] mb-3 flex items-center gap-2">
               <Zap className="h-4 w-4 text-[var(--ai-processing)]" />
               AI Strategic Recommendations
             </div>
             <div className="space-y-2">
-              {analysis.strategic_recommendations.map((rec, index) => (
+              {analysis.strategic_recommendations?.map((rec: string, index: number) => (
                 <div key={index} className="p-3 bg-[var(--ai-processing)]/5 border border-[var(--ai-processing)]/20 rounded-md">
                   <div className="text-sm text-[var(--content-primary)]">
                     {rec}
@@ -261,14 +261,14 @@ export function MEDDPICCCard({ analysis, evidence, onEvidenceClick }: MEDDPICCCa
         )}
 
         {/* Risk Analysis */}
-        {analysis.risk_factors.length > 0 && (
+        {analysis.riskFactors && analysis.riskFactors.length > 0 && (
           <div className="mt-4 pt-4 border-t border-[var(--bg-border)]">
             <div className="text-sm font-medium text-[var(--content-primary)] mb-3 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-[var(--confidence-low)]" />
-              Risk Factors ({analysis.risk_factors.length})
+              Risk Factors ({analysis.riskFactors.length})
             </div>
             <div className="space-y-2">
-              {analysis.risk_factors.map((risk, index) => (
+              {analysis.riskFactors?.map((risk: string, index: number) => (
                 <div key={index} className="p-2 bg-[var(--confidence-low)]/5 border border-[var(--confidence-low)]/20 rounded-md">
                   <div className="text-sm text-[var(--content-primary)]">
                     {risk}

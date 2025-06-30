@@ -1,0 +1,79 @@
+# Smart Capture POC - Discovery Call Transcript
+**Date**: June 29, 2025  
+**Duration**: 45 minutes  
+**Participants**: 
+- Sarah Chen (VP Operations, Smart Capture Test Co)
+- Alex Developer (Senior Developer, Smart Capture Test Co) 
+- Mike Rodriguez (Sales Rep, Our Company)
+- Jordan Kim (Solutions Engineer, Our Company)
+
+---
+
+**Mike Rodriguez**: Thanks everyone for joining today's call. Sarah, Alex, great to meet you both. I understand you're evaluating solutions to help reduce your processing costs by about 40%. Can you tell me more about your current challenges?
+
+**Sarah Chen**: Absolutely. We're struggling with our document processing workflows. Right now, everything is manual - we have team members reviewing contracts, extracting key information, routing for approvals. It's taking us 3-4 hours per document on average, and we process about 200 documents per month.
+
+**Alex Developer**: From a technical perspective, we're drowning in inefficiencies. Our current system requires someone to manually copy data from PDFs into our CRM, then route it through three different approval stages. We lose documents, miss deadlines, and honestly, it's killing our team's morale.
+
+**Mike Rodriguez**: That sounds incredibly frustrating. Sarah, what's driving the urgency to solve this now?
+
+**Sarah Chen**: Our board has mandated that we reduce operational costs by 40% by Q1 2025. We've identified document processing as our biggest opportunity - if we can automate 80% of it, we'll save approximately $180,000 annually. That's a huge chunk of our cost reduction target.
+
+**Jordan Kim**: Those are significant savings. What happens if you don't hit that Q1 deadline?
+
+**Sarah Chen**: Honestly? We'll probably have to consider layoffs. The board is serious about these numbers. We need to demonstrate clear ROI within 6 months of implementation.
+
+**Alex Developer**: And our current vendor, ProcessFlow, just told us their modernization would take 18 months and cost $300K. That's way too long and expensive.
+
+**Mike Rodriguez**: Sarah, who's involved in making this decision?
+
+**Sarah Chen**: I'm driving the evaluation, but our CFO David Park has to approve any purchase over $50K. Our IT Director, Jennifer Walsh, needs to sign off on the technical integration. And of course, Alex's team will be the primary users.
+
+**Alex Developer**: I should mention - Jennifer is pretty particular about security. Any solution needs SOC2 compliance and has to integrate with our existing Salesforce setup without major disruption.
+
+**Jordan Kim**: That makes sense. What's your timeline for making a decision?
+
+**Sarah Chen**: We need to have a solution selected and implementation started by September 15th. That gives us time to see results before the Q1 board review.
+
+**Mike Rodriguez**: And what's your budget range for a solution like this?
+
+**Sarah Chen**: We've allocated up to $75,000 for the first year, including implementation. Given the $180K in savings, the ROI is clear if we can stay within budget.
+
+**Alex Developer**: We're also evaluating two other vendors - SmartDoc and AutoProcess. SmartDoc came in at $65K but their demo was pretty clunky. AutoProcess looks good but they're asking $95K, which is over budget.
+
+**Sarah Chen**: The key thing is we need something that works out of the box. We don't have 6 months to customize and configure. We need to start seeing results within 30 days of go-live.
+
+**Jordan Kim**: That's exactly what our solution is designed for. Let me show you how our Smart Capture technology can handle your document types...
+
+[Demo section - 15 minutes]
+
+**Alex Developer**: This looks promising. The accuracy rates you're showing are impressive - 95% straight-through processing would be a game-changer for us.
+
+**Sarah Chen**: I like what I'm seeing. What are the next steps?
+
+**Mike Rodriguez**: I'd love to set up a pilot with 50 of your actual documents. We can show you real results in your environment. Would next week work for a technical deep dive with Jennifer?
+
+**Alex Developer**: I think so. Let me check with Jennifer and get back to you tomorrow.
+
+**Sarah Chen**: And I'll need to brief David on what we've discussed today. Can you send me some ROI projections based on our numbers?
+
+**Mike Rodriguez**: Absolutely. I'll get those to you by end of week. Sarah, one question - if we can prove this saves you the $180K annually and fits your budget, what would prevent you from moving forward?
+
+**Sarah Chen**: Honestly, if the technical integration goes smoothly and Jennifer approves the security review, I don't see any blockers. This is exactly what we need.
+
+**Alex Developer**: The only concern I have is change management. Our team has been using the current process for years. We'll need good training and support during rollout.
+
+**Jordan Kim**: We include comprehensive training and 90-day white-glove support with every implementation. You won't be left hanging.
+
+**Sarah Chen**: Perfect. Let's move forward with the pilot. I'm excited to see real results.
+
+---
+
+**Call Summary:**
+- Strong buying intent with clear pain points and budget
+- Q1 2025 deadline creates urgency  
+- Champion (Sarah) and technical evaluator (Alex) both engaged
+- Economic buyer (David, CFO) identified but not yet engaged
+- Clear ROI metrics ($180K savings vs $75K investment)
+- Competitive situation with 2 other vendors
+- Next steps: Technical pilot and executive briefing

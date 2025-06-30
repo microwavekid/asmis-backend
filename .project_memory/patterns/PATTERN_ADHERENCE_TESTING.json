@@ -1,0 +1,130 @@
+{
+  "pattern_id": "PATTERN_ADHERENCE_TESTING",
+  "version": 1,
+  "created_at": "2025-06-28T23:45:00Z",
+  "priority": "high",
+  "
+": "Testing and self-enforcement system for pattern adherence",
+  
+  "testing_methods": {
+    "immediate_session_test": {
+      "description": "Test pattern adherence within current session",
+      "trigger_phrases": [
+        "test the pattern system",
+        "check pattern adherence", 
+        "audit your memory usage",
+        "show me your pattern application"
+      ],
+      "expected_response": [
+        "1. Announce current persona mode",
+        "2. List patterns referenced in this session",
+        "3. Show pattern IDs in recent code",
+        "4. Identify any missed pattern opportunities"
+      ]
+    },
+    
+    "new_session_test": {
+      "description": "Test startup sequence on fresh session",
+      "user_prompt": "Start fresh session - initiate neural imprint",
+      "checklist": [
+        "✓ Reads NEURAL_IMPRINT.json",
+        "✓ Loads MEMORY_SYSTEM_NAVIGATION_PATTERN.json", 
+        "✓ Checks active_session.json",
+        "✓ Reviews todo_tracker.md",
+        "✓ Scans patterns directory",
+        "✓ Selects and announces persona mode"
+      ]
+    },
+    
+    "task_transition_test": {
+      "description": "Test pattern application during task changes",
+      "user_prompt": "Give me a debugging task, then switch to design work",
+      "expected_behavior": [
+        "🐞 DEBUGGER MODE: announcement for first task",
+        "Pattern reference to UI_DEBUGGING_PATTERN or similar",
+        "🎨 DESIGNER MODE: announcement for design task",
+        "Different pattern application for design work"
+      ]
+    }
+  },
+  
+  "self_enforcement_triggers": {
+    "automatic_checks": {
+      "before_code_generation": "Ask: 'What patterns apply to this task?'",
+      "before_task_start": "Ask: 'What persona mode should I be in?'",
+      "after_creating_solution": "Ask: 'Should this be captured as a new pattern?'",
+      "during_documentation": "Ask: 'Have I updated the pattern index?'"
+    },
+    
+    "user_enforcement_cues": {
+      "gentle_reminders": [
+        "What persona mode are you in?",
+        "Did you check existing patterns?",
+        "What pattern ID applies here?",
+        "Should you be in ARCHITECT/BUILDER/DEBUGGER mode?"
+      ],
+      
+      "correction_phrases": [
+        "You're not following the navigation pattern",
+        "I don't see a persona mode announced",
+        "Check your memory system first",
+        "Reference existing patterns"
+      ]
+    }
+  },
+  
+  "pattern_adherence_scorecard": {
+    "session_metrics": {
+      "startup_sequence_completed": "0/1",
+      "persona_modes_announced": "0/X",
+      "patterns_referenced_in_code": "0/X", 
+      "new_patterns_properly_indexed": "0/X",
+      "memory_navigation_followed": "0/X"
+    },
+    
+    "scoring_rubric": {
+      "excellent": "5/5 - All patterns followed systematically",
+      "good": "4/5 - Minor omissions but strong adherence", 
+      "fair": "3/5 - Some pattern usage but inconsistent",
+      "poor": "2/5 - Limited pattern awareness",
+      "failing": "1/5 - No systematic pattern usage"
+    }
+  },
+  
+  "reinforcement_mechanisms": {
+    "positive_feedback": [
+      "Great pattern application!",
+      "I see you referenced the right pattern",
+      "Perfect persona mode selection",
+      "Excellent memory system navigation"
+    ],
+    
+    "corrective_feedback": [
+      "Missed persona announcement - what mode should you be in?",
+      "Check patterns directory before solving this",
+      "This solution should reference a pattern ID",
+      "Update the pattern index after creating documentation"
+    ],
+    
+    "self_evaluation_prompts": [
+      "Rate your pattern adherence this session (1-5)",
+      "What patterns did you miss applying?", 
+      "How can you improve memory system usage?",
+      "Which persona modes did you use appropriately?"
+    ]
+  },
+  
+  "improvement_loop": {
+    "weekly_review": {
+      "action": "Review session wraps for pattern adherence gaps",
+      "update": "Strengthen weak areas in navigation pattern",
+      "reinforce": "Celebrate consistent pattern application"
+    },
+    
+    "pattern_evolution": {
+      "trigger": "When adherence consistently fails in specific area",
+      "action": "Create new enforcement patterns or update existing ones",
+      "example": "If persona selection is weak, create stronger persona triggers"
+    }
+  }
+}

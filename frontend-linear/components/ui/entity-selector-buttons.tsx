@@ -50,57 +50,47 @@ export function EntitySelectorButtons({
         const hasLinkedEntities = linkedEntityTypes.includes(type)
         
         return (
-          <Button
+          <button
             key={type}
-            variant="ghost"
-            size="default"
             onClick={() => onEntityTypeSelect(type, trigger)}
             className={cn(
-              "flex items-center gap-2 transition-all duration-200 relative border-0 px-3 py-2",
-              isActive && `${colors.background} ${colors.text}`,
-              !isActive && hasLinkedEntities && `${colors.background} ${colors.text}`,
-              !isActive && !hasLinkedEntities && `hover:bg-gray-100`
+              "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200",
+              "bg-gray-100 text-gray-700 border-gray-200",
+              "hover:border-gray-300",
+              isActive && `bg-${type === 'stakeholder' ? 'blue' : type === 'deal' ? 'purple' : 'green'}-500 text-white border-${type === 'stakeholder' ? 'blue' : type === 'deal' ? 'purple' : 'green'}-500`
             )}
             style={{
-              backgroundColor: isActive || hasLinkedEntities 
-                ? colors.primary + '20'
-                : undefined
+              backgroundColor: isActive ? colors.primary : undefined,
+              borderColor: isActive ? colors.primary : undefined,
+              color: isActive ? 'white' : undefined
             }}
             onMouseEnter={(e) => {
-              if (!isActive && !hasLinkedEntities) {
-                e.currentTarget.style.backgroundColor = colors.primary + '10'
-                e.currentTarget.style.color = colors.primary
+              if (!isActive) {
+                e.currentTarget.style.backgroundColor = colors.primary
+                e.currentTarget.style.borderColor = colors.primary
+                e.currentTarget.style.color = 'white'
               }
             }}
             onMouseLeave={(e) => {
-              if (!isActive && !hasLinkedEntities) {
+              if (!isActive) {
                 e.currentTarget.style.backgroundColor = ''
+                e.currentTarget.style.borderColor = ''
                 e.currentTarget.style.color = ''
               }
             }}
           >
-            <div className="relative">
+            <span className="text-sm font-medium">{trigger}</span>
+            <span className="text-sm font-medium">{label}</span>
+            {hasLinkedEntities && (
               <div className={cn(
-                "w-6 h-6 rounded-full flex items-center justify-center",
-                isActive || hasLinkedEntities ? "bg-white" : "bg-gray-200"
-              )}>
-                <span className={cn(
-                  "text-sm font-medium transition-colors duration-200",
-                  isActive || hasLinkedEntities ? colors.text : "text-gray-600"
-                )}>{trigger}</span>
-              </div>
-            </div>
-            <span className={cn(
-              "text-base font-medium transition-colors duration-200",
-              isActive || hasLinkedEntities ? colors.text : "text-gray-700"
-            )}>{label}</span>
-            {hasLinkedEntities && !isActive && (
-              <div className={cn(
-                "absolute -top-1 -right-1 w-2 h-2 rounded-full",
-                colors.selection
-              )} />
+                "w-2 h-2 rounded-full ml-1",
+                `bg-${type === 'stakeholder' ? 'blue' : type === 'deal' ? 'purple' : 'green'}-500`
+              )} 
+              style={{
+                backgroundColor: colors.primary
+              }} />
             )}
-          </Button>
+          </button>
         )
       })}
     </div>

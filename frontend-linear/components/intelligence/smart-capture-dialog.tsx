@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import {
   Dialog,
   DialogContent,
+  DialogClose,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { InlineAutocomplete } from "@/components/ui/inline-autocomplete"
@@ -19,7 +20,8 @@ import {
   MoreHorizontal,
   Hash,
   Building,
-  User
+  User,
+  X
 } from "lucide-react"
 
 interface SmartCaptureDialogProps {
@@ -199,7 +201,7 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
         className={cn(
-          "flex flex-col p-0 gap-0 border-gray-200",
+          "flex flex-col p-0 gap-0 border-gray-200 [&>button]:hidden",
           isExpanded ? "max-w-4xl max-h-[90vh]" : "max-w-2xl max-h-[600px]"
         )}
       >
@@ -209,13 +211,25 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
             <Zap className="h-4 w-4 text-blue-600" />
             <span className="font-medium">Smart Capture</span>
           </div>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
-            type="button"
-          >
-            <Maximize2 className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              type="button"
+              title={isExpanded ? "Collapse" : "Expand"}
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
+            <DialogClose asChild>
+              <button
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                type="button"
+                title="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </DialogClose>
+          </div>
         </div>
 
         {/* Content */}
