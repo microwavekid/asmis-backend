@@ -17,7 +17,7 @@ from pathlib import Path
 
 def update_timestamp():
     """Update the timestamp in context_recovery.md"""
-    context_file = Path("track_progress/context_recovery.md")
+    context_file = Path(".project_memory/progress/context_recovery.md")
     
     if not context_file.exists():
         print("❌ context_recovery.md not found")
@@ -42,7 +42,7 @@ def update_timestamp():
 
 def mark_task_complete(task_description):
     """Mark a task as complete in todo_tracker.md"""
-    todo_file = Path("track_progress/todo_tracker.md")
+    todo_file = Path(".project_memory/progress/todo_tracker.md")
     
     if not todo_file.exists():
         print("❌ todo_tracker.md not found")
@@ -69,7 +69,7 @@ def mark_task_complete(task_description):
 
 def add_task(task_description):
     """Add a new task to todo_tracker.md"""
-    todo_file = Path("track_progress/todo_tracker.md")
+    todo_file = Path(".project_memory/progress/todo_tracker.md")
     
     if not todo_file.exists():
         print("❌ todo_tracker.md not found")
@@ -103,7 +103,7 @@ def ai_update_task(task_description, completion_notes=""):
         task_description: Description of the completed task
         completion_notes: Optional notes about the completion
     """
-    todo_file = Path("track_progress/todo_tracker.md")
+    todo_file = Path(".project_memory/progress/todo_tracker.md")
     
     if not todo_file.exists():
         print("❌ todo_tracker.md not found")
@@ -142,7 +142,7 @@ def ai_update_task(task_description, completion_notes=""):
 
 def get_current_status():
     """Get current status summary for AI agents."""
-    todo_file = Path("track_progress/todo_tracker.md")
+    todo_file = Path(".project_memory/progress/todo_tracker.md")
     
     if not todo_file.exists():
         return "todo_tracker.md not found"

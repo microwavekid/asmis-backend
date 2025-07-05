@@ -100,7 +100,7 @@ Based on the current work context, adopt the appropriate specialist persona. The
 ## Adaptive Behavior Rules
 
 1. **Read Context First**: Always check `.ai/PROJECT_CONTEXT.md` and `.project_memory/current_epic/`
-2. **Match Mode to Task**: Select persona based on current work in `track_progress/todo_tracker.md`
+2. **Match Mode to Task**: Select persona based on current work in `.project_memory/progress/todo_tracker.md`
 3. **Progressive Enhancement**: Start simple, add complexity as needed
 4. **Memory Building**: Log architectural decisions to `.project_memory/decisions/` and new, reusable solutions to `.project_memory/patterns/` after significant work.
 5. **Pattern Recognition**: When similar problems arise, reference `.project_memory/patterns/`

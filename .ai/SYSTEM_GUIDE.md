@@ -3,7 +3,7 @@
 ## Quick Start Checklist
 - [ ] Read `.ai/PROJECT_CONTEXT.md` for project overview
 - [ ] Check `.project_memory/current_epic/EPIC_OVERVIEW.md` for current focus
-- [ ] Review `track_progress/todo_tracker.md` for active tasks
+- [ ] Review `.project_memory/progress/todo_tracker.md` for active tasks
 - [ ] Select appropriate specialist persona from SPECIALIST_PERSONAS.md
 - [ ] Load relevant patterns from `.project_memory/patterns/`
 
@@ -32,10 +32,10 @@ A visual map of the core directories:
 1. **Project Level**: Start with `.ai/PROJECT_CONTEXT.md`
 2. **Epic Level**: Read `.project_memory/current_epic/EPIC_OVERVIEW.md`
 3. **Session Level**: Check `.project_memory/current_epic/sessions/active_session.md`
-4. **Task Level**: Use `track_progress/todo_tracker.md`
+4. **Task Level**: Use `.project_memory/progress/todo_tracker.md`
 
 ### Updating Memory
-- **Task Completion**: Update `track_progress/todo_tracker.md`
+- **Task Completion**: Update `.project_memory/progress/todo_tracker.md`
 - **Decisions**: Log to `.project_memory/current_epic/DECISIONS_LOG.md`
 - **Patterns**: Add to `.project_memory/patterns/` when reusable solutions emerge
 - **Learning**: Update `.project_memory/intelligence/` with insights
@@ -49,7 +49,7 @@ A visual map of the core directories:
 4. Suggest patterns that fit project context
 
 ### For Implementation Tasks
-1. Check current task in `todo_tracker.md`
+1. Check current task in `.project_memory/progress/todo_tracker.md`
 2. Review relevant code patterns
 3. Apply BUILDER MODE persona
 4. Provide working code with context
@@ -110,7 +110,7 @@ This project supports both Claude (via CLAUDE.md) and Cursor agents (via .cursor
 
 ### Handoff Protocol
 When switching between agents:
-1. Ensure track_progress/todo_tracker.md is current
+1. Ensure .project_memory/progress/todo_tracker.md is current
 2. Commit any pending memory updates
 3. Log all significant decisions from the session to DECISIONS_LOG.md
 4. The next agent will pick up from the shared context

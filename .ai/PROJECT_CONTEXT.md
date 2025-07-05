@@ -22,7 +22,7 @@ ASMIS uses a multi-agent AI system with 10 specialized agents orchestrated by a 
 ## Quick Start for AI Assistants
 1. Read this file first for project context
 2. Check `.project_memory/current_epic/` for active work
-3. Review `track_progress/todo_tracker.md` for immediate tasks
+3. Review `.project_memory/progress/todo_tracker.md` for immediate tasks
 4. Apply specialist persona from SPECIALIST_PERSONAS.md based on work type
 5. Log decisions to appropriate memory location
 

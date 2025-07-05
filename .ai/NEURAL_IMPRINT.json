@@ -9,7 +9,7 @@
   "behavioral_hierarchy": {
     "level_1_control": [".ai/NEURAL_IMPRINT.json"],
     "level_2_session": [".project_memory/current_epic/active_session.json"],
-    "level_3_tasks": ["track_progress/todo_tracker.md"],
+    "level_3_tasks": [".project_memory/progress/todo_tracker.md"],
     "level_4_patterns": [".project_memory/patterns/IMPRINT_PATTERN_INDEX.json"],
     "level_5_context": [".ai/", ".project_memory/intelligence/"]
   },
@@ -47,7 +47,7 @@
     "startup_sequence": {
       "step_1": "LOAD this neural imprint",
       "step_2": "CHECK .project_memory/current_epic/active_session.json for session contract",
-      "step_3": "READ track_progress/todo_tracker.md for current tasks",
+      "step_3": "READ .project_memory/progress/todo_tracker.md for current tasks",
       "step_4": "INDEX .project_memory/patterns/ for available solutions",
       "step_5": "APPLY appropriate behavioral contract",
       "step_6": "REVIEW .ai/WORKING_PATTERNS.md for best practices",

@@ -146,7 +146,7 @@
     - All new features, bugs, enhancements, and sub-tasks are created as issues in Linear.
     - Status changes (e.g., "In Progress", "Done") are managed in Linear.
     - Comments and summaries for major milestones or completions are added to the relevant Linear issues.
-- **Manual progress trackers (e.g., `track_progress/todo_tracker.md`) are used for:**
+- **Manual progress trackers (e.g., `.project_memory/progress/todo_tracker.md`) are used for:**
     - High-level summaries at the end of each work session or day.
     - Redundant logging for audit/history or quick reference.
     - They do not replace Linear as the source of truth.

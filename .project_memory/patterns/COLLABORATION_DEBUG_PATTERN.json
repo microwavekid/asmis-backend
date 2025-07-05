@@ -75,7 +75,7 @@
   "memory_integration": {
     "decision_logging": ".project_memory/current_epic/DECISIONS_LOG.md",
     "pattern_updates": ".project_memory/patterns/",
-    "progress_tracking": "track_progress/todo_tracker.md",
+    "progress_tracking": ".project_memory/progress/todo_tracker.md",
     "context_preservation": ".project_memory/intelligence/"
   },
 

@@ -18,7 +18,7 @@
     "startup_sequence": [
       "1. Read .ai/NEURAL_IMPRINT.json (behavioral control)",
       "2. Check .project_memory/current_epic/active_session.json (context)",
-      "3. Review track_progress/todo_tracker.md (current state)",
+      "3. Review .project_memory/progress/todo_tracker.md (current state)",
       "4. Scan .project_memory/patterns/ for relevant patterns",
       "5. Select appropriate persona from SPECIALIST_PERSONAS.md"
     ],
