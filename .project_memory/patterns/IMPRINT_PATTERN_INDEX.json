@@ -1,4 +1,12 @@
 {
+  "working_patterns_reference": {
+    "file": ".ai/WORKING_PATTERNS.md",
+    "description": "All pattern creation and evolution must be cross-checked with working patterns. Updates to best practices must be reflected in this file."
+  },
+  "session_pointer_reference": {
+    "file": ".project_memory/current_epic/active_session.json",
+    "description": "This file points to the current session contract and must be referenced at session start."
+  },
   "imprint_registry": {
     "version": 2,
     "headline": "ASMIS Pattern Imprinting Registry — Neural pattern enforcement system",

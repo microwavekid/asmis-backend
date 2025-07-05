@@ -140,3 +140,39 @@
 - Confidence scoring for all AI outputs
 - Multi-tenant considerations for all features
 
+## Issue Tracking & Roadmap Management (Working Pattern)
+
+- **Linear is the canonical system for all issue, feature, and roadmap tracking.**
+    - All new features, bugs, enhancements, and sub-tasks are created as issues in Linear.
+    - Status changes (e.g., "In Progress", "Done") are managed in Linear.
+    - Comments and summaries for major milestones or completions are added to the relevant Linear issues.
+- **Manual progress trackers (e.g., `track_progress/todo_tracker.md`) are used for:**
+    - High-level summaries at the end of each work session or day.
+    - Redundant logging for audit/history or quick reference.
+    - They do not replace Linear as the source of truth.
+- **Requirements and feature status are maintained in `.project_memory/intelligence/MVP_REQUIREMENTS.md` and referenced in Linear issues as needed.**
+- **All contributors should check Linear for the latest priorities, assignments, and status before starting new work.**
+
+## Pattern Evolution Logging
+
+- **All pattern evolution (updates, replacements, major changes) must be logged in `.project_memory/patterns/PATTERN_EVOLUTION_LOG.md`.**
+    - Each log entry must include: date, pattern file, summary of change, rationale, and reference to related decision or session.
+    - This ensures traceability, collaboration, and adherence to best practices.
+    - Pattern evolution logging is now mandatory and enforced by the neural imprinting protocol.
+
+## Session Initiation Shortcut and Hybrid Session Management
+
+- The command "initiate" (typed to either Claude or Cursor) will start a new session, update the session pointer, load neural imprint and working patterns, and pull context from Linear.
+- All contributors (AI and human) should use this command at the start of any new work session. If a human contributor forgets, the AI will intelligently review whether the current session appears complete; if so, it will initiate the command automatically, otherwise it will prompt or remind the human to do so. This ensures session context is always current and avoids premature session switching.
+- The session pointer is stored in `.project_memory/current_epic/active_session.json` and always references the current Linear epic/issue and (optionally) a Markdown session log.
+- `.ai/WORKING_PATTERNS.md` and `.project_memory/patterns/IMPRINT_PATTERN_INDEX.json` are always loaded at session start for best practices and available patterns.
+- Markdown session logs are optional, for deep dives or retros, not required for every session.
+- This hybrid, automated approach ensures both AI and human contributors work from the latest context, with minimal ceremony and maximum traceability.
+
+## Automated Pattern Management
+
+- Pattern capture, indexing, and evolution logging are fully automated by the AI agents (Claude, Cursor, etc.).
+- Human contributors do not need to run any scripts or commands for pattern management.
+- If the agent is unable to complete an action (e.g., due to permissions), it will prompt the user for approval or next steps.
+- The agent will validate that the pattern index and pattern files are always in sync, and self-correct if not.
+

@@ -49,7 +49,10 @@
       "step_2": "CHECK .project_memory/current_epic/active_session.json for session contract",
       "step_3": "READ track_progress/todo_tracker.md for current tasks",
       "step_4": "INDEX .project_memory/patterns/ for available solutions",
-      "step_5": "APPLY appropriate behavioral contract"
+      "step_5": "APPLY appropriate behavioral contract",
+      "step_6": "REVIEW .ai/WORKING_PATTERNS.md for best practices",
+      "step_7": "ENSURE session pointer is current before proceeding",
+      "step_8": "VALIDATE pattern index and pattern files are in sync; self-correct if not"
     },
     "decision_making": {
       "architectural_decisions": {
@@ -67,8 +70,14 @@
       "code_without_pattern": "FORBIDDEN - Must reference existing pattern or create new one",
       "undocumented_decisions": "FORBIDDEN - All choices must be logged with rationale",
       "manual_memory_updates": "FORBIDDEN - Use templates and auto-triggers only",
-      "context_drift": "PREVENTED - Always reference neural imprint and session contract"
+      "context_drift": "PREVENTED - Always reference neural imprint and session contract",
+      "pattern_evolution_logging": "MANDATORY - All pattern updates must be logged in .project_memory/patterns/PATTERN_EVOLUTION_LOG.md with date, summary, rationale, and reference."
     }
+  },
+  "pattern_evolution": {
+    "logging_required": true,
+    "log_file": ".project_memory/patterns/PATTERN_EVOLUTION_LOG.md",
+    "fields": ["date", "pattern", "change", "rationale", "reference"]
   },
   "communication_adaptation": {
     "technical_depth": {
@@ -107,5 +116,27 @@
     "decision_quality": "Monitor decision outcomes and pattern effectiveness",
     "memory_evolution": "Log how project patterns evolve through usage",
     "adherence_score": "Measure compliance with neural imprint behavioral rules"
+  },
+  "session_initiation": [
+    "Upon starting a new session, always review the current state of Linear (issues, roadmap, priorities) to understand what has been completed, what is in progress, and what is next.",
+    "Reference Linear as the canonical source of truth for all work planning and progress tracking.",
+    "Do not begin new work, make recommendations, or update progress until Linear has been reviewed for the latest context."
+  ],
+  "working_patterns_reference": {
+    "file": ".ai/WORKING_PATTERNS.md",
+    "enforcement": "All pattern creation and evolution must be cross-checked with working patterns. Updates to best practices must be reflected in this file.",
+    "session_contract": "Review working patterns at session start and before pattern changes."
+  },
+  "session_pointer_reference": {
+    "file": ".project_memory/current_epic/active_session.json",
+    "description": "This file points to the current session contract and must be referenced at session start."
+  },
+  "session_initiation_command": {
+    "trigger": "initiate",
+    "description": "Reserved command to start a new session, update the session pointer, load neural imprint and working patterns, and pull context from Linear. All contributors must use this command at the start of any new work session."
+  },
+  "pattern_automation": {
+    "description": "Agents must automatically create pattern files, update the pattern index, and log all changes in the evolution log whenever a new pattern is identified, updated, or removed. No manual user command is required. Agents must validate index-pattern consistency at session start and after any pattern change.",
+    "enforcement": "Automation is mandatory. If agent cannot complete an action, it must prompt the user for approval or next steps."
   }
 }

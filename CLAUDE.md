@@ -25,6 +25,25 @@
 }
 ```
 
+## Reserved Commands
+
+- **initiate**: Triggers the ASMIS Session Initiation Protocol.
+    - Loads `.ai/NEURAL_IMPRINT.json` and `.ai/WORKING_PATTERNS.md`
+    - Updates `.project_memory/current_epic/active_session.json` with new session info
+    - Pulls current context from Linear (epic/issue, blockers, objectives)
+    - (Optionally) creates a Markdown session log
+    - Announces session start and next steps
+    - Refuses to proceed with new work until session is active and context is loaded
+
+## Behavioral Contracts
+
+- On receiving the "initiate" command, Claude must:
+    1. Confirm session initiation.
+    2. Prompt for session details if not provided.
+    3. Update session pointer and load neural imprint.
+    4. Reference Linear for context.
+    5. Announce readiness and next steps.
+
 ## Startup Imprinting Sequence
 1. **NEURAL LOAD**: Read `.ai/NEURAL_IMPRINT.json` for behavioral control
 2. **MEMORY NAVIGATION**: Load `MEMORY_SYSTEM_NAVIGATION_PATTERN.json` for systematic navigation
@@ -195,3 +214,10 @@ When you notice the user mastering concepts:
 - Help the system evolve through use
 - Adapt communication depth based on demonstrated understanding
 - Update technical growth tracking as patterns become familiar
+
+## Automated Pattern Management
+
+- Agents must automatically create pattern files, update the pattern index, and log all changes in the evolution log whenever a new pattern is identified, updated, or removed.
+- No manual user command is required.
+- Agents must validate index-pattern consistency at session start and after any pattern change.
+- If unable to complete an action, agent must prompt the user for approval or next steps.

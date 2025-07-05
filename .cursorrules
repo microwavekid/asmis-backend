@@ -476,4 +476,25 @@ rule "Automatic progress tracking" {
   pattern: "task.*complete|issue.*fixed|feature.*implemented"
   message: "Automatically update todo_tracker.md when tasks are completed"
   action: "Use scripts/update_progress.py --ai-update to mark tasks complete with timestamps and notes"
-} 
+}
+
+# Automated Pattern Management
+# Agents must automatically create pattern files, update the pattern index, and log all changes in the evolution log whenever a new pattern is identified, updated, or removed.
+# No manual user command is required.
+# Agents must validate index-pattern consistency at session start and after any pattern change.
+# If unable to complete an action, agent must prompt the user for approval or next steps.
+
+[RESERVED_COMMANDS]
+initiate = "Triggers the ASMIS Session Initiation Protocol"
+
+[COMMAND: initiate]
+description = "Triggers the ASMIS Session Initiation Protocol"
+steps = [
+  "Load .ai/NEURAL_IMPRINT.json and .ai/WORKING_PATTERNS.md",
+  "Prompt for or receive session details (topic, Linear epic/issue)",
+  "Update .project_memory/current_epic/active_session.json",
+  "Pull context from Linear",
+  "Create Markdown session log (optional)",
+  "Announce session start and next steps"
+]
+enforcement = "Refuse to proceed with new work until session is active and context is loaded" 
