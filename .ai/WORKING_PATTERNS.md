@@ -176,3 +176,20 @@
 - If the agent is unable to complete an action (e.g., due to permissions), it will prompt the user for approval or next steps.
 - The agent will validate that the pattern index and pattern files are always in sync, and self-correct if not.
 
+## Session Log Template (Updated)
+
+At the top of every session log in `.project_memory/sessions/`, include:
+
+```
+# Session: <Session Title>
+**Date**: <YYYY-MM-DD>
+**Linear Project**: [Project Name or ID](https://linear.app/your-org/project/PROJECT_ID)
+**Related Issues**: [ISSUE-123](https://linear.app/your-org/issue/ISSUE-123), [ISSUE-456](https://linear.app/your-org/issue/ISSUE-456)
+**Duration**: <X hours>
+...
+```
+
+- Always link to the relevant Linear project and issues for traceability.
+- Do not create a new Linear issue for every session. Only create new issues, projects, or milestones in Linear if new work is identified that is not already documented.
+- When new work is discovered during a session, the AI may create the appropriate Linear issue/project/milestone and link it in the session log.
+

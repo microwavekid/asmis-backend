@@ -138,5 +138,9 @@
   "pattern_automation": {
     "description": "Agents must automatically create pattern files, update the pattern index, and log all changes in the evolution log whenever a new pattern is identified, updated, or removed. No manual user command is required. Agents must validate index-pattern consistency at session start and after any pattern change.",
     "enforcement": "Automation is mandatory. If agent cannot complete an action, it must prompt the user for approval or next steps."
+  },
+  "session_log_protocol": {
+    "metadata": "Each session log must include Linear project and issue links in the metadata block at the top.",
+    "issue_creation": "Agents should only create new Linear issues, projects, or milestones when new work is identified that is not already documented in Linear. Do not create new issues for every session by default."
   }
 }
