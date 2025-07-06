@@ -551,6 +551,11 @@ class Account(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
         "SmartCaptureNote",
         back_populates="account"
     )
+    tasks: Mapped[list["Task"]] = relationship(
+        "Task",
+        back_populates="account",
+        cascade="all, delete-orphan"
+    )
     
     __table_args__ = (
         Index('ix_account_name', 'name'),
@@ -623,6 +628,11 @@ class Deal(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     smart_capture_notes: Mapped[list["SmartCaptureNote"]] = relationship(
         "SmartCaptureNote",
         back_populates="deal"
+    )
+    tasks: Mapped[list["Task"]] = relationship(
+        "Task",
+        back_populates="deal",
+        cascade="all, delete-orphan"
     )
     
     __table_args__ = (
@@ -709,6 +719,11 @@ class Stakeholder(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     smart_capture_notes: Mapped[list["SmartCaptureNote"]] = relationship(
         "SmartCaptureNote",
         back_populates="stakeholder"
+    )
+    tasks: Mapped[list["Task"]] = relationship(
+        "Task",
+        back_populates="stakeholder",
+        cascade="all, delete-orphan"
     )
     
     @property
@@ -1176,3 +1191,32 @@ class EntityRecognitionCache(Base, UUIDMixin, TimestampMixin):
     
     def __repr__(self) -> str:
         return f"<EntityRecognitionCache(hash='{self.input_hash[:16]}...', hits={self.hit_count})>"
+
+
+class Task(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
+    """Stub model for tasks related to deals, accounts, or stakeholders."""
+    __tablename__ = "tasks"
+
+    # Core fields
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="open")  # open, in_progress, completed
+    due_date: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    priority: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # low, medium, high
+
+    # Relationships (stubs)
+    account_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("accounts.id"), nullable=True)
+    deal_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("deals.id"), nullable=True)
+    stakeholder_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("stakeholders.id"), nullable=True)
+
+    # Metadata
+    tags: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True, default=dict)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # ORM relationships (to be implemented)
+    account = relationship("Account", back_populates="tasks", lazy="joined")
+    deal = relationship("Deal", back_populates="tasks", lazy="joined")
+    stakeholder = relationship("Stakeholder", back_populates="tasks", lazy="joined")
+
+    def __repr__(self) -> str:
+        return f"<Task(title='{self.title}', status='{self.status}')>"

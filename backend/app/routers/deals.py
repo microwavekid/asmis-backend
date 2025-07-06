@@ -93,6 +93,118 @@ async def list_deals(
         raise HTTPException(status_code=500, detail="Failed to list deals")
 
 
+@router.get("/stats", response_model=DealStatsResponse)
+async def get_deal_stats(
+    db: AsyncSession = Depends(get_async_db_session)
+):
+    """Get aggregated deal statistics for dashboard."""
+    try:
+        # Get basic deal stats
+        basic_stats_query = select(
+            func.count(Deal.id).label("total_deals"),
+            func.coalesce(func.sum(Deal.amount), 0).label("total_value"),
+            func.coalesce(func.avg(Deal.amount), 0).label("average_deal_size")
+        ).where(Deal.status == "active")
+        
+        basic_result = await db.execute(basic_stats_query)
+        basic_stats = basic_result.first()
+        
+        # Get deals by stage
+        stage_stats_query = select(
+            Deal.stage,
+            func.count(Deal.id).label("count")
+        ).where(Deal.status == "active").group_by(Deal.stage)
+        
+        stage_result = await db.execute(stage_stats_query)
+        deals_by_stage = {row.stage: row.count for row in stage_result}
+        
+        # Get deals by priority (calculated dynamically)
+        deals_query = select(Deal.close_date, Deal.amount).where(Deal.status == "active")
+        deals_result = await db.execute(deals_query)
+        
+        priority_counts = {"high": 0, "medium": 0, "low": 0}
+        for row in deals_result:
+            priority = _calculate_priority(row.close_date, row.amount)
+            priority_counts[priority] += 1
+        
+        # Get health score distribution
+        health_stats_query = select(
+            func.case(
+                (MEDDPICCAnalysis.completeness_score >= 80, "high"),
+                (MEDDPICCAnalysis.completeness_score >= 60, "medium"),
+                else_="low"
+            ).label("health_range"),
+            func.count(Deal.id).label("count")
+        ).join(
+            MEDDPICCAnalysis, Deal.id == MEDDPICCAnalysis.deal_id, isouter=True
+        ).where(Deal.status == "active").group_by("health_range")
+        
+        health_result = await db.execute(health_stats_query)
+        health_distribution = {row.health_range or "low": row.count for row in health_result}
+        
+        # Get MEDDPICC score distribution
+        meddpicc_stats_query = select(
+            func.case(
+                (MEDDPICCAnalysis.overall_score >= 80, "high"),
+                (MEDDPICCAnalysis.overall_score >= 60, "medium"),
+                else_="low"
+            ).label("score_range"),
+            func.count(Deal.id).label("count")
+        ).join(
+            MEDDPICCAnalysis, Deal.id == MEDDPICCAnalysis.deal_id, isouter=True
+        ).where(Deal.status == "active").group_by("score_range")
+        
+        meddpicc_result = await db.execute(meddpicc_stats_query)
+        meddpicc_distribution = {row.score_range or "low": row.count for row in meddpicc_result}
+        
+        # Get recent activity (deals created in last 30 days by week)
+        thirty_days_ago = datetime.now() - timedelta(days=30)
+        recent_activity_query = select(
+            func.date_trunc('week', Deal.created_at).label("week"),
+            func.count(Deal.id).label("count")
+        ).where(
+            Deal.created_at >= thirty_days_ago
+        ).group_by(func.date_trunc('week', Deal.created_at))
+        
+        activity_result = await db.execute(recent_activity_query)
+        recent_activity = {
+            f"week_{i}": 0 for i in range(4)
+        }
+        for i, row in enumerate(activity_result):
+            recent_activity[f"week_{i}"] = row.count
+        
+        # Calculate conversion rates (simplified)
+        total_deals = basic_stats.total_deals or 1  # Avoid division by zero
+        conversion_rates = {
+            "discovery_to_evaluation": min(
+                deals_by_stage.get("technical_evaluation", 0) + 
+                deals_by_stage.get("business_evaluation", 0) + 
+                deals_by_stage.get("negotiation", 0) + 
+                deals_by_stage.get("closing", 0) + 
+                deals_by_stage.get("closed_won", 0)
+            ) / total_deals * 100 if total_deals > 0 else 0,
+            "evaluation_to_close": min(
+                deals_by_stage.get("closed_won", 0)
+            ) / total_deals * 100 if total_deals > 0 else 0
+        }
+        
+        return DealStatsResponse(
+            total_deals=basic_stats.total_deals or 0,
+            total_value=basic_stats.total_value or 0.0,
+            average_deal_size=basic_stats.average_deal_size or 0.0,
+            deals_by_stage=deals_by_stage,
+            deals_by_priority=priority_counts,
+            health_score_distribution=health_distribution,
+            meddpicc_score_distribution=meddpicc_distribution,
+            recent_activity=recent_activity,
+            conversion_rates=conversion_rates
+        )
+        
+    except Exception as e:
+        logger.error(f"Error getting deal stats: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get deal statistics")
+
+
 @router.get("/{deal_id}", response_model=DealResponse)
 async def get_deal(
     deal_id: str,
@@ -420,6 +532,14 @@ async def analyze_deal_transcript(
                         if isinstance(value, dict) and "score" in value:
                             logger.info(f"  -> {key} score: {value['score']}")
             
+            # Save analysis results to database
+            try:
+                await _save_meddpicc_analysis_to_db(db, deal_id, analysis_result)
+                logger.info(f"MEDDPICC analysis saved to database for deal {deal_id}")
+            except Exception as db_error:
+                logger.error(f"Failed to save MEDDPICC analysis to database for deal {deal_id}: {str(db_error)}")
+                # Continue with response even if DB save fails
+            
             return {
                 "message": "Analysis completed successfully", 
                 "deal_id": deal_id, 
@@ -563,3 +683,143 @@ def _format_stakeholder(stakeholder: Stakeholder) -> Dict[str, Any]:
         "engagement_level": stakeholder.engagement_level,
         "last_contact_date": stakeholder.last_contact_date.isoformat() if stakeholder.last_contact_date else None
     }
+
+
+async def _save_meddpicc_analysis_to_db(db: AsyncSession, deal_id: str, analysis_result: Dict[str, Any]) -> None:
+    """Save MEDDPICC analysis results to the database."""
+    from sqlalchemy import select
+    from sqlalchemy.dialects.sqlite import insert
+    
+    # Extract key data from analysis results
+    meddpicc_completeness = analysis_result.get("meddpicc_completeness", {})
+    extraction_result = analysis_result.get("extraction_result", {})
+    meddpicc_analysis = extraction_result.get("meddpic_analysis", {})
+    
+    # Extract overall scores
+    overall_score = meddpicc_completeness.get("overall_score", 0.0)
+    element_scores = meddpicc_completeness.get("element_scores", {})
+    
+    # Extract component scores and data
+    def get_component_data(component_name: str) -> tuple:
+        """Extract score, status, and data for a component."""
+        component_data = element_scores.get(component_name, {})
+        analysis_data = meddpicc_analysis.get(component_name, {})
+        
+        score = component_data.get("score", 0.0)
+        gaps = component_data.get("gaps", [])
+        status = "complete" if score >= 80 else "partial" if score >= 40 else "missing"
+        
+        return score, status, analysis_data
+    
+    # Extract all component data
+    metrics_score, metrics_status, metrics_data = get_component_data("metrics")
+    economic_buyer_score, economic_buyer_status, economic_buyer_data = get_component_data("economic_buyer")
+    decision_criteria_score, decision_criteria_status, decision_criteria_data = get_component_data("decision_criteria")
+    decision_process_score, decision_process_status, decision_process_data = get_component_data("decision_process")
+    identify_pain_score, identify_pain_status, identify_pain_data = get_component_data("implicate_pain")
+    champion_score, champion_status, champion_data = get_component_data("champion")
+    competition_score, competition_status, competition_data = get_component_data("competition")
+    
+    # Check if analysis already exists
+    existing_query = select(MEDDPICCAnalysis).where(MEDDPICCAnalysis.deal_id == deal_id)
+    existing_result = await db.execute(existing_query)
+    existing_analysis = existing_result.scalar_one_or_none()
+    
+    current_time = datetime.now()
+    
+    if existing_analysis:
+        # Update existing record
+        existing_analysis.overall_score = overall_score
+        existing_analysis.completeness_score = overall_score  # Using overall_score as completeness for now
+        existing_analysis.last_scored_at = current_time
+        existing_analysis.processing_status = "complete"
+        
+        # Update component scores
+        existing_analysis.metrics_score = metrics_score
+        existing_analysis.economic_buyer_score = economic_buyer_score
+        existing_analysis.decision_criteria_score = decision_criteria_score
+        existing_analysis.decision_process_score = decision_process_score
+        existing_analysis.identify_pain_score = identify_pain_score
+        existing_analysis.champion_score = champion_score
+        existing_analysis.competition_score = competition_score
+        
+        # Update component statuses
+        existing_analysis.metrics_status = metrics_status
+        existing_analysis.economic_buyer_status = economic_buyer_status
+        existing_analysis.decision_criteria_status = decision_criteria_status
+        existing_analysis.decision_process_status = decision_process_status
+        existing_analysis.identify_pain_status = identify_pain_status
+        existing_analysis.champion_status = champion_status
+        existing_analysis.competition_status = competition_status
+        
+        # Update component data
+        existing_analysis.metrics_data = metrics_data or {}
+        existing_analysis.economic_buyer_data = economic_buyer_data or {}
+        existing_analysis.decision_criteria_data = decision_criteria_data or {}
+        existing_analysis.decision_process_data = decision_process_data or {}
+        existing_analysis.identify_pain_data = identify_pain_data or {}
+        existing_analysis.champion_data = champion_data or {}
+        existing_analysis.competition_data = competition_data or {}
+        
+        # Update insights and recommendations
+        existing_analysis.key_insights = meddpicc_completeness.get("critical_gaps", {})
+        existing_analysis.risk_factors = {"critical_gaps": meddpicc_completeness.get("critical_gaps", [])}
+        existing_analysis.recommendations = {"next_actions": meddpicc_completeness.get("next_actions", [])}
+        
+        existing_analysis.updated_at = current_time
+        
+    else:
+        # Create new record
+        new_analysis = MEDDPICCAnalysis(
+            deal_id=deal_id,
+            overall_score=overall_score,
+            completeness_score=overall_score,  # Using overall_score as completeness for now
+            last_scored_at=current_time,
+            processing_status="complete",
+            
+            # Component scores
+            metrics_score=metrics_score,
+            economic_buyer_score=economic_buyer_score,
+            decision_criteria_score=decision_criteria_score,
+            decision_process_score=decision_process_score,
+            identify_pain_score=identify_pain_score,
+            champion_score=champion_score,
+            competition_score=competition_score,
+            
+            # Component statuses
+            metrics_status=metrics_status,
+            economic_buyer_status=economic_buyer_status,
+            decision_criteria_status=decision_criteria_status,
+            decision_process_status=decision_process_status,
+            identify_pain_status=identify_pain_status,
+            champion_status=champion_status,
+            competition_status=competition_status,
+            
+            # Component data
+            metrics_data=metrics_data or {},
+            economic_buyer_data=economic_buyer_data or {},
+            decision_criteria_data=decision_criteria_data or {},
+            decision_process_data=decision_process_data or {},
+            identify_pain_data=identify_pain_data or {},
+            champion_data=champion_data or {},
+            competition_data=competition_data or {},
+            
+            # Insights and recommendations
+            key_insights=meddpicc_completeness.get("critical_gaps", {}),
+            risk_factors={"critical_gaps": meddpicc_completeness.get("critical_gaps", [])},
+            recommendations={"next_actions": meddpicc_completeness.get("next_actions", [])},
+            
+            # Metadata
+            analysis_version="2.0",
+            confidence_threshold=0.7
+        )
+        
+        db.add(new_analysis)
+    
+    # Commit the changes
+    await db.commit()
+    
+    if existing_analysis:
+        await db.refresh(existing_analysis)
+    else:
+        await db.refresh(new_analysis)
