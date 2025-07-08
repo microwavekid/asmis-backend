@@ -1,0 +1,249 @@
+{
+  "pattern_id": "DROPDOWN_POSITIONING_PATTERN",
+  "version": "1.0", 
+  "created_date": "2025-07-08",
+  "category": "ui_enhancement",
+  "title": "Smart Dropdown Positioning with Collision Detection",
+  "description": "Standardized pattern for dropdown and popover positioning that prevents text overlap and adapts to viewport constraints",
+  
+  "problem_context": {
+    "challenge": "Dropdowns appear off-screen or cover important content on different screen sizes",
+    "symptoms": [
+      "Dropdowns extending beyond viewport boundaries",
+      "Text covered by dropdown overlays",
+      "Inconsistent positioning behavior across components",
+      "Poor mobile/responsive experience",
+      "Manual positioning workarounds in component code"
+    ],
+    "impact": "Poor user experience, accessibility issues, inconsistent behavior"
+  },
+
+  "solution_architecture": {
+    "core_utility": "lib/utils/dropdown-positioning.ts",
+    "key_functions": [
+      "calculateDropdownPosition() - Smart positioning with collision detection",
+      "getCursorCoordinatesWithBounds() - Enhanced cursor positioning for text inputs",
+      "createResizeHandler() - Debounced repositioning on viewport changes"
+    ],
+    
+    "positioning_strategy": [
+      "Try preferred position (usually bottom-start)",
+      "Test alternative alignments (center, end)",
+      "Fallback to opposite side if needed",
+      "Try perpendicular sides (left/right)",
+      "Force fit within viewport with padding as last resort"
+    ],
+    
+    "collision_detection": {
+      "viewport_padding": "16px default padding from screen edges",
+      "boundary_checking": "Ensures dropdown fits within visible area",
+      "fallback_positioning": "Automatic repositioning when collisions detected"
+    }
+  },
+
+  "implementation_guidelines": {
+    "when_to_use": [
+      "Any dropdown that could appear near viewport edges",
+      "Text input autocompletions and mentions",
+      "Context menus and right-click dropdowns", 
+      "Complex multi-level dropdown systems",
+      "Mobile-responsive dropdown components"
+    ],
+    
+    "when_not_to_use": [
+      "Simple dropdowns with plenty of space",
+      "Fixed-position overlays (modals, dialogs)",
+      "Tooltips with simple hover behavior",
+      "Components using Radix UI with adequate built-in positioning"
+    ],
+    
+    "component_types": {
+      "custom_dropdowns": {
+        "description": "Components with manual positioning logic",
+        "action": "Replace manual positioning with utility functions",
+        "example": "InlineAutocomplete, MentionAutocomplete"
+      },
+      
+      "radix_components": {
+        "description": "Components using Radix UI Popover/DropdownMenu",
+        "action": "Add collision detection props and responsive sizing",
+        "props": "collisionPadding={16}, avoidCollisions={true}, responsive classes"
+      },
+      
+      "cursor_positioned": {
+        "description": "Dropdowns that appear at text cursor position",
+        "action": "Use getCursorCoordinatesWithBounds() utility",
+        "example": "Autocomplete, mention systems, text annotations"
+      }
+    }
+  },
+
+  "standard_improvements": {
+    "z_index_system": {
+      "old": "Hardcoded z-50, z-40 values",
+      "new": "z-[1010] for popovers, z-[1020] for modals, etc.",
+      "rationale": "Consistent layering system prevents conflicts"
+    },
+    
+    "responsive_sizing": {
+      "old": "Fixed width (w-64)",
+      "new": "min-w-64 max-w-80 or responsive classes",
+      "rationale": "Adapts to content and screen size"
+    },
+    
+    "collision_props": {
+      "radix_additions": [
+        "collisionPadding={16}",
+        "avoidCollisions={true}", 
+        "side=\"bottom\"",
+        "sideOffset={8}"
+      ]
+    }
+  },
+
+  "developer_guidelines": {
+    "new_dropdowns": [
+      "Always import and use dropdown-positioning utility for custom positioning",
+      "Add collision detection props to Radix UI components", 
+      "Use responsive sizing classes instead of fixed widths",
+      "Test positioning on mobile and edge cases"
+    ],
+    
+    "existing_dropdowns": [
+      "Identify components with hardcoded positioning or z-index",
+      "Replace manual calculations with utility functions",
+      "Add collision detection to prevent text overlap",
+      "Update z-index values to use consistent system"
+    ],
+    
+    "code_review_checklist": [
+      "✓ Uses positioning utility for custom dropdowns",
+      "✓ Includes collision detection props for Radix components",
+      "✓ Has responsive width classes",
+      "✓ Uses consistent z-index values",
+      "✓ Tested on mobile and edge viewport sizes"
+    ]
+  },
+
+  "components_inventory": {
+    "updated_components": [
+      "InlineAutocomplete - Using getCursorCoordinatesWithBounds()",
+      "LinearDropdown - Enhanced with collision detection",
+      "ViewsDropdown - Removed manual alignment workarounds"
+    ],
+    
+    "priority_updates": [
+      "MentionAutocomplete - Replace custom getCaretCoordinates()",
+      "ContextSelector - Add collision detection for nested dropdowns",
+      "AttachmentSelector - Improve tooltip positioning"
+    ],
+    
+    "standard_components": [
+      "Select, Popover, DropdownMenu - Update z-index to consistent system",
+      "Tooltip, HoverCard - Consider collision improvements for edge cases"
+    ]
+  },
+
+  "testing_strategy": {
+    "viewport_tests": [
+      "Dropdown near top edge (should appear below)",
+      "Dropdown near bottom edge (should appear above)",
+      "Dropdown near left/right edges (should reposition)",
+      "Mobile viewport with limited space"
+    ],
+    
+    "interaction_tests": [
+      "Keyboard navigation still works after repositioning",
+      "Focus management maintained during position changes",
+      "Arrow keys and selection work correctly",
+      "Resize window while dropdown is open"
+    ],
+    
+    "visual_tests": [
+      "No text overlap in any position",
+      "Arrow indicators point to correct trigger",
+      "Smooth transitions during repositioning",
+      "Consistent styling across positions"
+    ]
+  },
+
+  "maintenance_procedures": {
+    "adding_new_dropdowns": [
+      "Import positioning utility functions",
+      "Use calculateDropdownPosition() for custom positioned elements",
+      "Add standard collision detection props to Radix components",
+      "Test positioning edge cases before merge"
+    ],
+    
+    "updating_existing": [
+      "Search for hardcoded z-index values (z-50, z-40)",
+      "Look for manual positioning calculations",
+      "Check for alignment offset workarounds",
+      "Replace with standardized positioning patterns"
+    ],
+    
+    "pattern_evolution": [
+      "Track components that need positioning improvements",
+      "Monitor user feedback about dropdown behavior",
+      "Update utility functions based on new use cases",
+      "Document any new positioning patterns discovered"
+    ]
+  },
+
+  "anti_patterns": {
+    "avoid_these": [
+      "❌ Hardcoded positioning calculations in components",
+      "❌ Manual alignment offset workarounds (alignOffset={-5})",
+      "❌ Fixed z-index values scattered across codebase",
+      "❌ Fixed width dropdowns that don't adapt to content",
+      "❌ No collision detection for edge-positioned dropdowns"
+    ],
+    
+    "migrate_from": [
+      "Manual DOM measurement and positioning",
+      "setTimeout workarounds for positioning issues",
+      "CSS-only positioning that breaks on mobile",
+      "Inconsistent spacing and offset values"
+    ]
+  },
+
+  "success_metrics": {
+    "quantitative": [
+      "Zero reported dropdown positioning issues",
+      "All dropdowns work correctly on mobile viewports",
+      "Consistent z-index usage across codebase (no conflicts)",
+      "Positioning utility used in 100% of custom dropdown components"
+    ],
+    
+    "qualitative": [
+      "Improved user experience on small screens",
+      "Consistent dropdown behavior across application",
+      "Easier development of new dropdown features",
+      "Reduced CSS debugging time for positioning issues"
+    ]
+  },
+
+  "related_patterns": [
+    "COMPONENT_DATA_MAPPING_PATTERN",
+    "SMART_CAPTURE_UI_PATTERN",
+    "UI_DEBUGGING_PATTERN"
+  ],
+
+  "decision_log": [
+    {
+      "date": "2025-07-08",
+      "decision": "Create centralized positioning utility with collision detection",
+      "rationale": "Multiple components had manual positioning issues and text overlap problems"
+    },
+    {
+      "date": "2025-07-08", 
+      "decision": "Use z-[1010] for popovers instead of hardcoded z-50",
+      "rationale": "More predictable layering system that prevents z-index conflicts"
+    },
+    {
+      "date": "2025-07-08",
+      "decision": "Add responsive width classes (min-w-64 max-w-80) for all dropdowns", 
+      "rationale": "Better mobile experience and content adaptation"
+    }
+  ]
+}

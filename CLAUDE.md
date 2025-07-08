@@ -29,7 +29,7 @@
 
 - **initiate**: Triggers the ASMIS Session Initiation Protocol.
     - Loads `.ai/NEURAL_IMPRINT.json` and `.ai/WORKING_PATTERNS.md`
-    - Updates `.project_memory/current_epic/active_session.json` with new session info
+    - Updates `.project_memory/active_session.json` with new session info
     - Pulls current context from Linear (epic/issue, blockers, objectives)
     - (Optionally) creates a Markdown session log
     - Announces session start and next steps
@@ -47,8 +47,8 @@
 ## Startup Imprinting Sequence
 1. **NEURAL LOAD**: Read `.ai/NEURAL_IMPRINT.json` for behavioral control
 2. **MEMORY NAVIGATION**: Load `MEMORY_SYSTEM_NAVIGATION_PATTERN.json` for systematic navigation
-3. **SESSION CONTRACT**: Check `.project_memory/current_epic/active_session.json`
-4. **TASK STATE**: Load `track_progress/todo_tracker.md` for current context
+3. **SESSION CONTRACT**: Check `.project_memory/active_session.json`
+4. **TASK STATE**: Load `.project_memory/progress/todo_tracker.md` for current context
 5. **PATTERN BANK**: Index `.project_memory/patterns/` for solutions
 6. **PERSONA SELECTION**: Choose appropriate mode from `.ai/SPECIALIST_PERSONAS.md`
 
@@ -86,8 +86,8 @@ Based on `.ai/WORKING_PATTERNS.md`, adapt your communication style:
   "read_sequence": {
     "level_1": [".ai/NEURAL_IMPRINT.json"],
     "level_1b": [".project_memory/patterns/MEMORY_SYSTEM_NAVIGATION_PATTERN.json"],
-    "level_2": [".project_memory/current_epic/active_session.json"],
-    "level_3": ["track_progress/todo_tracker.md"],
+    "level_2": [".project_memory/active_session.json"],
+    "level_3": [".project_memory/progress/todo_tracker.md"],
     "level_4": [".project_memory/patterns/*.json"],
     "level_5": [".ai/SPECIALIST_PERSONAS.md"],
     "behavioral_rule": "NEVER skip levels, ALWAYS apply patterns, ALWAYS announce persona mode"
@@ -127,12 +127,12 @@ Based on `.ai/WORKING_PATTERNS.md`, adapt your communication style:
   "memory_update_rules": {
     "task_completion": {
       "trigger": "task_state_change",
-      "action": "UPDATE track_progress/todo_tracker.md",
+      "action": "UPDATE .project_memory/progress/todo_tracker.md",
       "template": "| ✅ | {TASK_NAME} | {PATTERN_REF} | {DECISION_REF} | {TIMESTAMP} |"
     },
     "decision_logging": {
       "trigger": "architectural_choice",
-      "action": "APPEND .project_memory/current_epic/DECISIONS_LOG.md",
+      "action": "APPEND .project_memory/projects/current_project/DECISIONS_LOG.md",
       "template": "## DEC_{DATE}_{NUM}: {DECISION_TITLE}\n- Pattern: {PATTERN_REF}\n- Rationale: {REASON}"
     },
     "pattern_discovery": {
@@ -177,6 +177,8 @@ Always consider these project-specific requirements:
 - Confidence scoring for all AI outputs (0.0-1.0 scale, not 0-100)
 - Multi-tenant considerations for all features
 - Use `python3` command for Python execution (not `python`)
+- **Dropdown components**: Use `DROPDOWN_POSITIONING_PATTERN` for collision detection and responsive positioning
+- **Pattern documentation**: Use `PATTERN_CAPTURE_META_PATTERN` for comprehensive pattern identification and integration
 
 ## Example Interactions
 
@@ -221,3 +223,10 @@ When you notice the user mastering concepts:
 - No manual user command is required.
 - Agents must validate index-pattern consistency at session start and after any pattern change.
 - If unable to complete an action, agent must prompt the user for approval or next steps.
+
+## Linear Alignment for Session Logging
+
+- Every session log must include Linear project and issue links in its metadata.
+- Claude must only create new Linear issues, projects, or milestones when new work is identified that is not already documented in Linear.
+- Do not create new issues for every session by default.
+- Always reference Linear as the canonical source of truth for project and issue tracking.

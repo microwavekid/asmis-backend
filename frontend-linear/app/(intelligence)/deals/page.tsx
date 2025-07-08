@@ -15,7 +15,8 @@ import {
   Plus
 } from "lucide-react"
 
-import { DealsTable, type Deal } from "@/components/intelligence/deals-table"
+import { DealsTable } from "@/components/intelligence/deals-table"
+import { mapDealsIntelligenceToDeals, type Deal } from "@/lib/utils/deal-mapping"
 import { DealsFilters, type FilterState } from "@/components/intelligence/deals-filters"
 import { MEDDPICCModal } from "@/components/intelligence/meddpicc-modal"
 import { ViewsDropdown } from "@/components/intelligence/views-dropdown"
@@ -112,22 +113,10 @@ export default function DealsPage() {
     })
   }, [deals, filters, selectedAccount, selectedDeal])
 
-  // Convert DealIntelligence to Deal interface for the table
+  // PATTERN_REF: COMPONENT_DATA_MAPPING_PATTERN - Clean data mapping with extracted utilities
+  // DECISION_REF: DEC_2025-07-08_002 - Simplified mapping using dedicated utility functions
   const mappedDeals = useMemo(() => {
-    return filteredDeals.map(deal => ({
-      id: deal.dealId,
-      name: deal.dealName,
-      account: deal.accountName,
-      stage: deal.stage,
-      health: deal.health.score,
-      value: deal.dealValue || 0,
-      closeDate: new Date().toISOString(), // Placeholder - add closeDate to DealIntelligence if needed
-      meddpiccScore: deal.meddpiccAnalysis?.overallScore || 0,
-      confidence: deal.meddpiccAnalysis?.overallScore || 0, // Using MEDDPICC score as confidence for now
-      priority: "medium" as const, // Default priority since not in DealIntelligence
-      nextActions: deal.nextActions.map(action => action.title),
-      risks: [] // Placeholder - would need to extract from meddpiccAnalysis.risks if available
-    }))
+    return mapDealsIntelligenceToDeals(filteredDeals)
   }, [filteredDeals])
 
 

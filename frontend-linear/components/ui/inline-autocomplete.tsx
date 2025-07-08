@@ -5,6 +5,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
+import { getCursorCoordinatesWithBounds, type DropdownPosition } from "@/lib/utils/dropdown-positioning"
 import { Entity, EntityChip } from "./entity-chip"
 import { EntitySelectorButtons } from "./entity-selector-buttons"
 import { entityColors, EntityType } from "@/lib/utils/colors"
@@ -62,7 +63,12 @@ export function InlineAutocomplete({
   const [entityRanges, setEntityRanges] = useState<EntityRange[]>([])
   const [activeEntityType, setActiveEntityType] = useState<EntityType | null>(null)
   const [ghostText, setGhostText] = useState<GhostTextSuggestion | null>(null)
-  const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 })
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({ 
+    x: 0, 
+    y: 0, 
+    side: 'bottom', 
+    align: 'start' 
+  })
   
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   
@@ -135,43 +141,12 @@ export function InlineAutocomplete({
     return parts
   }, [linkedEntities])
   
-  // Calculate cursor position for dropdown placement
-  const getCursorCoordinates = useCallback((textarea: HTMLTextAreaElement, position: number) => {
-    const div = document.createElement('div')
-    const style = getComputedStyle(textarea)
-    
-    // Copy textarea styles to div for measurement
-    div.style.position = 'absolute'
-    div.style.visibility = 'hidden'
-    div.style.whiteSpace = 'pre-wrap'
-    div.style.wordWrap = 'break-word'
-    div.style.font = style.font
-    div.style.lineHeight = style.lineHeight
-    div.style.padding = style.padding
-    div.style.border = style.border
-    div.style.width = style.width
-    div.style.height = style.height
-    
-    // Add text up to cursor position
-    const textBeforeCursor = textarea.value.substring(0, position)
-    div.textContent = textBeforeCursor
-    
-    // Add a span for cursor position
-    const cursorSpan = document.createElement('span')
-    cursorSpan.textContent = '|'
-    div.appendChild(cursorSpan)
-    
-    document.body.appendChild(div)
-    
-    const textareaRect = textarea.getBoundingClientRect()
-    const spanRect = cursorSpan.getBoundingClientRect()
-    
-    document.body.removeChild(div)
-    
-    return {
-      x: spanRect.left - textareaRect.left,
-      y: spanRect.top - textareaRect.top + 24 // 24px below cursor
-    }
+  // Smart dropdown positioning with collision detection
+  const calculateDropdownPosition = useCallback((textarea: HTMLTextAreaElement, position: number) => {
+    // PATTERN_REF: DROPDOWN_POSITIONING_PATTERN
+    // DECISION_REF: DEC_2025-07-08_003 - Smart positioning with collision detection
+    const dropdownSize = { width: 256, height: 192 } // Approximate dropdown size
+    return getCursorCoordinatesWithBounds(textarea, position, dropdownSize)
   }, [])
 
   // Mock entity search - replace with real API call
@@ -348,8 +323,8 @@ export function InlineAutocomplete({
 
       // Update dropdown position
       if (textareaRef.current) {
-        const coords = getCursorCoordinates(textareaRef.current, cursorPosition)
-        setDropdownPosition(coords)
+        const position = calculateDropdownPosition(textareaRef.current, cursorPosition)
+        setDropdownPosition(position)
       }
 
       try {
@@ -592,17 +567,25 @@ export function InlineAutocomplete({
           rows={6}
         />
         
-        {/* Entity Suggestions Dropdown - Positioned at cursor */}
+        {/* Entity Suggestions Dropdown - Smart positioned with collision detection */}
         {searchResults.length > 0 && (
           <div 
-            className="absolute bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto min-w-64"
+            className="absolute bg-white border border-gray-200 rounded-md shadow-lg z-[1010] max-h-48 overflow-y-auto min-w-64 max-w-80"
             style={{
               left: `${dropdownPosition.x}px`,
               top: `${dropdownPosition.y}px`
             }}
           >
-            {/* Dropdown arrow pointing up */}
-            <div className="absolute w-2 h-2 bg-white border-l border-t border-gray-200 transform rotate-45 -top-1 left-4" />
+            {/* Dropdown arrow - positioned based on side */}
+            <div 
+              className={cn(
+                "absolute w-2 h-2 bg-white border-gray-200 transform rotate-45",
+                dropdownPosition.side === 'bottom' && "border-l border-t -top-1 left-4",
+                dropdownPosition.side === 'top' && "border-r border-b -bottom-1 left-4",
+                dropdownPosition.side === 'right' && "border-l border-b -left-1 top-4",
+                dropdownPosition.side === 'left' && "border-r border-t -right-1 top-4"
+              )} 
+            />
             {searchResults.map((entity, index) => (
               <div
                 key={entity.id}

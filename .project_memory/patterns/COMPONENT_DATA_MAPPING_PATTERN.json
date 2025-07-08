@@ -1,0 +1,191 @@
+{
+  "pattern_id": "COMPONENT_DATA_MAPPING_PATTERN",
+  "version": "1.0",
+  "created_date": "2025-07-08",
+  "category": "refactoring",
+  "title": "Extract Complex Data Mapping from React Components",
+  "description": "Pattern for extracting complex data transformation logic from React components into testable, reusable utility functions",
+  
+  "problem_context": {
+    "challenge": "React components become bloated with complex data transformation logic",
+    "symptoms": [
+      "Components with 100+ lines of mapping logic",
+      "Difficult to test transformation logic",
+      "Duplicate transformation code across components",
+      "Hard to maintain and modify business logic",
+      "Mixed concerns (UI rendering + data transformation)"
+    ],
+    "impact": "Poor maintainability, difficult testing, code duplication"
+  },
+
+  "solution_architecture": {
+    "core_principle": "Single Responsibility Principle - Components handle UI, utilities handle data transformation",
+    "extraction_strategy": [
+      "Identify complex data transformation logic in components",
+      "Extract transformation to dedicated utility file",
+      "Break down into focused, testable functions",
+      "Replace complex logic with simple utility calls"
+    ],
+    
+    "utility_structure": {
+      "main_mapping_function": "Primary export that handles the complete transformation",
+      "helper_functions": "Internal functions for specific transformation tasks",
+      "type_definitions": "Export interfaces for transformed data structures",
+      "batch_functions": "Functions for handling arrays of data"
+    },
+    
+    "file_organization": {
+      "location": "lib/utils/[domain]-mapping.ts",
+      "naming": "Descriptive names that indicate transformation (e.g., mapDealIntelligenceToDeal)",
+      "exports": "Export both individual functions and batch processing functions"
+    }
+  },
+
+  "implementation_checklist": [
+    "✓ Create dedicated utility file in lib/utils/",
+    "✓ Export main mapping function and interfaces",
+    "✓ Break complex logic into focused helper functions",
+    "✓ Add JSDoc comments for all functions",
+    "✓ Use safe property access with optional chaining",
+    "✓ Provide meaningful fallback values",
+    "✓ Replace component logic with utility calls",
+    "✓ Update imports and type definitions"
+  ],
+
+  "before_after_example": {
+    "before": {
+      "description": "Complex mapping logic inside React component",
+      "code_pattern": "const mappedData = useMemo(() => {\n  return rawData.map(item => {\n    // 100+ lines of complex transformation\n    const formatStage = (stage) => { ... }\n    const extractDate = () => { ... }\n    const derivePriority = () => { ... }\n    return { ... }\n  })\n}, [rawData])",
+      "problems": ["Hard to test", "Mixed concerns", "Difficult to maintain"]
+    },
+    
+    "after": {
+      "description": "Clean component with utility function",
+      "code_pattern": "import { mapRawDataToDisplayData } from '@/lib/utils/data-mapping'\n\nconst mappedData = useMemo(() => {\n  return mapRawDataToDisplayData(rawData)\n}, [rawData])",
+      "benefits": ["Testable", "Reusable", "Single responsibility", "Easy to maintain"]
+    }
+  },
+
+  "utility_function_patterns": {
+    "main_mapper": {
+      "purpose": "Primary transformation function",
+      "signature": "mapSourceToTarget(source: SourceType): TargetType",
+      "implementation": "Calls helper functions for specific transformations"
+    },
+    
+    "helper_functions": {
+      "naming": "Descriptive verbs (format, extract, derive, calculate)",
+      "scope": "Internal functions for specific transformation tasks",
+      "parameters": "Take source data and return transformed values"
+    },
+    
+    "batch_processing": {
+      "purpose": "Handle arrays of data",
+      "signature": "mapSourceArrayToTargetArray(sources: SourceType[]): TargetType[]",
+      "implementation": "Uses Array.map with main mapper function"
+    }
+  },
+
+  "testing_approach": {
+    "unit_tests": [
+      "Test each helper function independently",
+      "Test main mapping function with various input scenarios",
+      "Test edge cases and missing data handling",
+      "Test fallback values and error conditions"
+    ],
+    
+    "test_benefits": [
+      "Isolated testing of business logic",
+      "Easy to create comprehensive test cases",
+      "Fast test execution (no React rendering)",
+      "Clear test failure messages"
+    ]
+  },
+
+  "reusability_guidelines": {
+    "when_to_apply": [
+      "Components with 50+ lines of data transformation",
+      "Complex nested object transformations",
+      "Multiple components needing same transformation",
+      "Business logic that changes frequently",
+      "Data transformation that needs comprehensive testing"
+    ],
+    
+    "when_not_to_apply": [
+      "Simple property renaming (1-2 lines)",
+      "Component-specific display logic",
+      "One-off transformations unlikely to be reused",
+      "Performance-critical inline transformations"
+    ]
+  },
+
+  "performance_considerations": {
+    "benefits": [
+      "Cleaner memoization in components",
+      "Easier to optimize individual functions",
+      "Better tree-shaking of unused functions"
+    ],
+    
+    "trade_offs": [
+      "Additional function call overhead (minimal)",
+      "Slight increase in bundle size for exports"
+    ]
+  },
+
+  "maintenance_benefits": {
+    "code_quality": [
+      "Improved separation of concerns",
+      "Better code readability",
+      "Easier to modify business logic",
+      "Cleaner component code"
+    ],
+    
+    "developer_experience": [
+      "Faster debugging of transformation issues",
+      "Easier to onboard new team members",
+      "Better IDE support for utility functions",
+      "Improved code discoverability"
+    ]
+  },
+
+  "related_patterns": [
+    "SMART_CAPTURE_UI_PATTERN", 
+    "UI_DEBUGGING_PATTERN",
+    "DROPDOWN_POSITIONING_PATTERN",
+    "SINGLE_RESPONSIBILITY_PRINCIPLE"
+  ],
+
+  "success_metrics": {
+    "quantitative": [
+      "Component line count reduction > 50%",
+      "Test coverage for transformation logic > 90%",
+      "Utility function reuse across multiple components",
+      "Reduced bug reports for data transformation issues"
+    ],
+    
+    "qualitative": [
+      "Improved code maintainability",
+      "Easier debugging of data issues",
+      "Better developer confidence in changes",
+      "Cleaner component architecture"
+    ]
+  },
+
+  "decision_log": [
+    {
+      "date": "2025-07-08",
+      "decision": "Extract deal mapping logic to dedicated utility",
+      "rationale": "100+ lines of complex logic was making component hard to maintain and test"
+    },
+    {
+      "date": "2025-07-08",
+      "decision": "Use focused helper functions within utility",
+      "rationale": "Improves testability and readability compared to monolithic function"
+    },
+    {
+      "date": "2025-07-08",
+      "decision": "Export both individual and batch processing functions",
+      "rationale": "Provides flexibility for different use cases and component needs"
+    }
+  ]
+}

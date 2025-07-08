@@ -98,9 +98,12 @@ export function LinearDropdown({
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className={cn("w-64 p-0", className)} 
+        className={cn("min-w-64 max-w-80 p-0", className)} 
         align="start"
-        sideOffset={4}
+        side="bottom"
+        sideOffset={8}
+        collisionPadding={16}
+        avoidCollisions={true}
       >
         <div className="p-1.5 border-b">
           <div className="relative">

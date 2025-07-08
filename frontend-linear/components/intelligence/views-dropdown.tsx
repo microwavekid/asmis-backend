@@ -64,7 +64,14 @@ export function ViewsDropdown({ currentView, onViewChange, onCreateView }: Views
             <span className="text-sm">{selectedView.name}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
+        {/* PATTERN_REF: DROPDOWN_POSITIONING_PATTERN - Use proper collision detection */}
+        <DropdownMenuContent 
+          align="start" 
+          side="bottom"
+          sideOffset={8} 
+          collisionPadding={16}
+          className="w-56"
+        >
           <DropdownMenuLabel className="text-xs text-[var(--content-secondary)]">
             Views
           </DropdownMenuLabel>
