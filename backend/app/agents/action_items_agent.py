@@ -22,7 +22,7 @@ class ActionItemsAgent:
         model (str): Claude model to use for analysis
     """
     
-    def __init__(self, api_key: str, model: str = "claude-3-5-sonnet-20241022"):
+    def __init__(self, api_key: str, model: str = "claude-3-5-haiku-20241022"):
         """
         Initialize the ActionItemsAgent.
         
@@ -31,7 +31,6 @@ class ActionItemsAgent:
             model (str): Claude model to use for analysis
         """
         try:
-            logger.info(f"Initializing ActionItemsAgent with model: {model}")
             self.client = AsyncAnthropic(api_key=api_key)
             self.model = model
             logger.info("ActionItemsAgent initialized successfully")
