@@ -212,6 +212,8 @@ async def get_deal_stats(
 
 
 
+
+
 @router.get("/{deal_id}", response_model=DealResponse)
 async def get_deal(
     deal_id: str,
@@ -505,22 +507,22 @@ def _format_meddpicc_analysis(meddpicc: MEDDPICCAnalysis) -> Dict[str, Any]:
                 "status": meddpicc.metrics_status,
                 "data": meddpicc.metrics_data or {}
             },
-            "economicBuyer": {
+            "economic_buyer": {
                 "score": int(meddpicc.economic_buyer_score),
                 "status": meddpicc.economic_buyer_status,
                 "data": meddpicc.economic_buyer_data or {}
             },
-            "decisionCriteria": {
+            "decision_criteria": {
                 "score": int(meddpicc.decision_criteria_score),
                 "status": meddpicc.decision_criteria_status,
                 "data": meddpicc.decision_criteria_data or {}
             },
-            "decisionProcess": {
+            "decision_process": {
                 "score": int(meddpicc.decision_process_score),
                 "status": meddpicc.decision_process_status,
                 "data": meddpicc.decision_process_data or {}
             },
-            "identifyPain": {
+            "identify_pain": {
                 "score": int(meddpicc.identify_pain_score),
                 "status": meddpicc.identify_pain_status,
                 "data": meddpicc.identify_pain_data or {}
