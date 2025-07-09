@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { apiClient } from "@/lib/api/client"
 import {
   Dialog,
   DialogContent,
@@ -127,20 +128,9 @@ export function SmartCaptureDialog({ open, onOpenChange }: SmartCaptureDialogPro
         capture_location: window.location.pathname
       }
 
+      // PATTERN_REF: UI_DEBUGGING_PATTERN - Use API client instead of hardcoded URL
       // Call Smart Capture API
-      const response = await fetch("http://localhost:8000/api/smart-capture/notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestData)
-      })
-
-      if (!response.ok) {
-        throw new Error(`API call failed: ${response.statusText}`)
-      }
-
-      const result = await response.json()
+      const result = await apiClient.post("/api/smart-capture/notes", requestData)
       console.log("Smart Capture note created:", result)
       
       // Close dialog and show success
