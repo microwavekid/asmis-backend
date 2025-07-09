@@ -27,12 +27,13 @@ export interface MEDDPICCAnalysis {
   processingStatus: ProcessingStatus;
   
   // Components structure (new format)
+  // PATTERN_REF: UI_DEBUGGING_PATTERN - Ensure consistent key naming with backend
   components: {
     metrics: MEDDPICCComponent;
-    economicBuyer: MEDDPICCComponent;
-    decisionCriteria: MEDDPICCComponent;
-    decisionProcess: MEDDPICCComponent;
-    identifyPain: MEDDPICCComponent;
+    economic_buyer: MEDDPICCComponent;
+    decision_criteria: MEDDPICCComponent;
+    decision_process: MEDDPICCComponent;
+    identify_pain: MEDDPICCComponent;
     champion: MEDDPICCComponent;
     competition: MEDDPICCComponent;
   };

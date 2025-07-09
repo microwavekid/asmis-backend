@@ -31,22 +31,23 @@ interface MEDDPICCCardProps {
   onEvidenceClick?: (evidence: Evidence) => void
 }
 
+// PATTERN_REF: UI_DEBUGGING_PATTERN - Fix key mismatch between types and component
 const MEDDPICC_ICONS = {
   metrics: Target,
-  economicBuyer: DollarSign,
-  decisionCriteria: CheckSquare,
-  decisionProcess: Calendar,
-  identifyPain: AlertTriangle,
+  economic_buyer: DollarSign,
+  decision_criteria: CheckSquare,
+  decision_process: Calendar,
+  identify_pain: AlertTriangle,
   champion: Trophy,
   competition: Users
 }
 
 const MEDDPICC_LABELS = {
   metrics: "Metrics",
-  economicBuyer: "Economic Buyer",
-  decisionCriteria: "Decision Criteria", 
-  decisionProcess: "Decision Process",
-  identifyPain: "Identify Pain",
+  economic_buyer: "Economic Buyer",
+  decision_criteria: "Decision Criteria", 
+  decision_process: "Decision Process",
+  identify_pain: "Identify Pain",
   champion: "Champion",
   competition: "Competition"
 }
