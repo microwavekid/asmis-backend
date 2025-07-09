@@ -8,7 +8,7 @@ DECISION_REF: DEC_2025-06-29_MVP_PIVOT_001
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import logging
@@ -128,8 +128,9 @@ async def get_deal_stats(
             priority_counts[priority] += 1
         
         # Get health score distribution
+        # PATTERN_REF: API_COMPATIBILITY_PATTERN - SQLite-compatible case syntax
         health_stats_query = select(
-            func.case(
+            case(
                 (MEDDPICCAnalysis.completeness_score >= 80, "high"),
                 (MEDDPICCAnalysis.completeness_score >= 60, "medium"),
                 else_="low"
@@ -143,8 +144,9 @@ async def get_deal_stats(
         health_distribution = {row.health_range or "low": row.count for row in health_result}
         
         # Get MEDDPICC score distribution
+        # PATTERN_REF: API_COMPATIBILITY_PATTERN - SQLite-compatible case syntax
         meddpicc_stats_query = select(
-            func.case(
+            case(
                 (MEDDPICCAnalysis.overall_score >= 80, "high"),
                 (MEDDPICCAnalysis.overall_score >= 60, "medium"),
                 else_="low"
@@ -177,16 +179,17 @@ async def get_deal_stats(
         }
         
         # Calculate conversion rates (simplified)
+        # PATTERN_REF: API_COMPATIBILITY_PATTERN - Fix min() function misuse
         total_deals = basic_stats.total_deals or 1  # Avoid division by zero
         conversion_rates = {
-            "discovery_to_evaluation": min(
+            "discovery_to_evaluation": (
                 deals_by_stage.get("technical_evaluation", 0) + 
                 deals_by_stage.get("business_evaluation", 0) + 
                 deals_by_stage.get("negotiation", 0) + 
                 deals_by_stage.get("closing", 0) + 
                 deals_by_stage.get("closed_won", 0)
             ) / total_deals * 100 if total_deals > 0 else 0,
-            "evaluation_to_close": min(
+            "evaluation_to_close": (
                 deals_by_stage.get("closed_won", 0)
             ) / total_deals * 100 if total_deals > 0 else 0
         }
@@ -206,6 +209,7 @@ async def get_deal_stats(
     except Exception as e:
         logger.error(f"Error getting deal stats: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get deal statistics")
+
 
 
 @router.get("/{deal_id}", response_model=DealResponse)
