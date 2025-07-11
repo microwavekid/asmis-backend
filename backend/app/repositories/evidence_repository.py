@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from .base_repository import BaseRepository
+from .tenant_repository import TenantRepository
 from ..database.models import (
     IntelligenceEvidence, 
     Transcript, 
@@ -24,8 +25,8 @@ from ..database.connection import db_manager
 logger = logging.getLogger(__name__)
 
 
-class EvidenceRepository(BaseRepository[IntelligenceEvidence]):
-    """Repository for evidence management operations."""
+class EvidenceRepository(TenantRepository[IntelligenceEvidence]):
+    """Repository for evidence management operations with tenant isolation."""
     
     def __init__(self):
         """Initialize evidence repository."""
@@ -34,14 +35,16 @@ class EvidenceRepository(BaseRepository[IntelligenceEvidence]):
     def get_evidence_by_analysis(
         self, 
         session: Session, 
-        analysis_id: str
+        analysis_id: str,
+        tenant_id: Optional[str] = None
     ) -> List[IntelligenceEvidence]:
         """
-        Get all evidence for a specific analysis.
+        Get all evidence for a specific analysis with tenant filtering.
         
         Args:
             session: Database session
             analysis_id: Analysis ID
+            tenant_id: Tenant ID for filtering
             
         Returns:
             List of evidence records
@@ -49,7 +52,9 @@ class EvidenceRepository(BaseRepository[IntelligenceEvidence]):
         try:
             stmt = select(IntelligenceEvidence).where(
                 IntelligenceEvidence.analysis_id == analysis_id
-            ).order_by(IntelligenceEvidence.start_position)
+            )
+            stmt = self._add_tenant_filter(stmt, tenant_id)
+            stmt = stmt.order_by(IntelligenceEvidence.start_position)
             
             result = session.execute(stmt)
             return result.scalars().all()
@@ -63,16 +68,18 @@ class EvidenceRepository(BaseRepository[IntelligenceEvidence]):
         session: Session, 
         analysis_id: str, 
         element_type: str, 
-        element_key: Optional[str] = None
+        element_key: Optional[str] = None,
+        tenant_id: Optional[str] = None
     ) -> List[IntelligenceEvidence]:
         """
-        Get evidence for a specific MEDDPICC element.
+        Get evidence for a specific MEDDPICC element with tenant filtering.
         
         Args:
             session: Database session
             analysis_id: Analysis ID
             element_type: Type of element (e.g., "decision_criteria")
             element_key: Specific element key (optional)
+            tenant_id: Tenant ID for filtering
             
         Returns:
             List of evidence records
@@ -86,9 +93,9 @@ class EvidenceRepository(BaseRepository[IntelligenceEvidence]):
             if element_key:
                 conditions.append(IntelligenceEvidence.element_key == element_key)
             
-            stmt = select(IntelligenceEvidence).where(
-                and_(*conditions)
-            ).order_by(IntelligenceEvidence.confidence.desc())
+            stmt = select(IntelligenceEvidence).where(and_(*conditions))
+            stmt = self._add_tenant_filter(stmt, tenant_id)
+            stmt = stmt.order_by(IntelligenceEvidence.confidence.desc())
             
             result = session.execute(stmt)
             return result.scalars().all()
@@ -277,8 +284,8 @@ class EvidenceRepository(BaseRepository[IntelligenceEvidence]):
             raise
 
 
-class TranscriptRepository(BaseRepository[Transcript]):
-    """Repository for transcript management operations."""
+class TranscriptRepository(TenantRepository[Transcript]):
+    """Repository for transcript management operations with tenant isolation."""
     
     def __init__(self):
         """Initialize transcript repository."""
@@ -287,13 +294,16 @@ class TranscriptRepository(BaseRepository[Transcript]):
     def get_by_deal(
         self, 
         session: Session, 
-        deal_id: str
+        deal_id: str,
+        tenant_id: Optional[str] = None
     ) -> List[Transcript]:
-        """Get all transcripts for a deal."""
+        """Get all transcripts for a deal with tenant filtering."""
         try:
             stmt = select(Transcript).where(
                 Transcript.deal_id == deal_id
-            ).order_by(Transcript.meeting_date.desc())
+            )
+            stmt = self._add_tenant_filter(stmt, tenant_id)
+            stmt = stmt.order_by(Transcript.meeting_date.desc())
             
             result = session.execute(stmt)
             return result.scalars().all()
