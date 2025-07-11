@@ -243,6 +243,14 @@ class Transcript(Base, UUIDMixin, TimestampMixin):
     """Model for meeting transcripts."""
     __tablename__ = "transcripts"
     
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
+    
     # Core transcript information
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
@@ -335,6 +343,14 @@ class IntelligenceEvidence(Base, UUIDMixin, TimestampMixin):
     # Analysis reference
     analysis_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
+    
     # Element classification
     element_type: Mapped[str] = mapped_column(String(50), nullable=False)  # "decision_criteria", "champion", etc.
     element_key: Mapped[str] = mapped_column(String(100), nullable=False)  # Specific criterion ID or element identifier
@@ -404,6 +420,14 @@ class Document(Base, UUIDMixin, TimestampMixin):
     # Business context
     deal_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     account_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
     
     # Document information
     title: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -483,6 +507,32 @@ class DocumentSection(Base, UUIDMixin, TimestampMixin):
         return f"<DocumentSection(document_id='{self.document_id}', name='{self.section_name}')>"
 
 
+class Tenant(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
+    """Model for tenant organizations."""
+    __tablename__ = "tenants"
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    # Relationships
+    tenant_users: Mapped[list["TenantUser"]] = relationship(
+        "TenantUser", 
+        back_populates="tenant",
+        cascade="all, delete-orphan"
+    )
+
+    # Table constraints and indexes
+    __table_args__ = (
+        UniqueConstraint('slug', name='uq_tenant_slug'),
+        Index('ix_tenant_active', 'is_active'),
+        Index('ix_tenant_slug', 'slug'),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Tenant(name='{self.name}', slug='{self.slug}')>"
+
+
 class User(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     """Model for application users."""
     __tablename__ = "users"
@@ -491,6 +541,13 @@ class User(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    # Relationships
+    tenant_user: Mapped[Optional["TenantUser"]] = relationship(
+        "TenantUser", 
+        back_populates="user",
+        uselist=False
+    )
 
     # Table constraints and indexes
     __table_args__ = (
@@ -503,11 +560,57 @@ class User(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
         return f"<User(username='{self.username}', email='{self.email}')>"
 
 
+class TenantUser(Base, UUIDMixin, TimestampMixin):
+    """Model for tenant-user associations."""
+    __tablename__ = "tenant_users"
+
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), 
+        ForeignKey("tenants.id"),
+        nullable=False
+    )
+    user_id: Mapped[str] = mapped_column(
+        String(36), 
+        ForeignKey("users.id"),
+        nullable=False
+    )
+    role: Mapped[str] = mapped_column(String(50), nullable=False, default="member")
+
+    # Relationships
+    tenant: Mapped["Tenant"] = relationship(
+        "Tenant", 
+        back_populates="tenant_users"
+    )
+    user: Mapped["User"] = relationship(
+        "User", 
+        back_populates="tenant_user"
+    )
+
+    # Table constraints and indexes
+    __table_args__ = (
+        UniqueConstraint('user_id', name='uq_tenant_user_user_id'),
+        Index('ix_tenant_user_tenant_id', 'tenant_id'),
+        Index('ix_tenant_user_user_id', 'user_id'),
+        Index('ix_tenant_user_role', 'role'),
+    )
+
+    def __repr__(self) -> str:
+        return f"<TenantUser(tenant_id='{self.tenant_id}', user_id='{self.user_id}', role='{self.role}')>"
+
+
 # Smart Capture Core Business Entity Models
 
 class Account(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     """Model for customer accounts/companies."""
     __tablename__ = "accounts"
+    
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
     
     # Company information
     name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -572,6 +675,14 @@ class Account(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
 class Deal(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     """Model for sales opportunities/deals."""
     __tablename__ = "deals"
+    
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
     
     # Reference to account
     account_id: Mapped[str] = mapped_column(
@@ -651,6 +762,14 @@ class Deal(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
 class Stakeholder(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     """Model for people/contacts within accounts."""
     __tablename__ = "stakeholders"
+    
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
     
     # Reference to account
     account_id: Mapped[str] = mapped_column(
@@ -797,6 +916,14 @@ class MEDDPICCAnalysis(Base, UUIDMixin, TimestampMixin):
     """Model for structured MEDDPICC analysis data with evidence tracking."""
     __tablename__ = "meddpicc_analyses"
     
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
+    
     # Reference to deal
     deal_id: Mapped[str] = mapped_column(
         String(36),
@@ -879,6 +1006,14 @@ class MEDDPICCEvidence(Base, UUIDMixin, TimestampMixin):
     """Model for linking evidence to specific MEDDPICC components."""
     __tablename__ = "meddpicc_evidence"
     
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
+    
     # Reference to analysis
     analysis_id: Mapped[str] = mapped_column(
         String(36),
@@ -939,6 +1074,14 @@ class MEDDPICCEvidence(Base, UUIDMixin, TimestampMixin):
 class SmartCaptureNote(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     """Model for Smart Capture notes with context and extraction tracking."""
     __tablename__ = "smart_capture_notes"
+    
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
     
     # Note content
     content: Mapped[str] = mapped_column(Text, nullable=False)
@@ -1203,6 +1346,14 @@ class Task(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="open")  # open, in_progress, completed
     due_date: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     priority: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # low, medium, high
+
+    # Multi-tenant isolation
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id"),
+        nullable=False,
+        index=True
+    )
 
     # Relationships (stubs)
     account_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("accounts.id"), nullable=True)

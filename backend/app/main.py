@@ -6,7 +6,9 @@ from datetime import datetime
 import shutil
 from dotenv import load_dotenv
 from app.agents.meddpic_orchestrator import MEDDPICCOrchestrator, SourceType
-from app.routers import deals
+from app.routers import task_router
+from app.routers.router_config import get_deals_router, get_router_mode
+from app.api import smart_capture
 from app.database.connection import async_db_manager
 import anthropic
 import logging
@@ -31,7 +33,15 @@ app.add_middleware(
 )
 
 # Include API routers
-app.include_router(deals.router)
+# Use configurable deals router (stub or real based on environment)
+deals_router = get_deals_router()
+app.include_router(deals_router)
+app.include_router(smart_capture.router)
+app.include_router(task_router)
+
+# Log which router mode is active
+logger = logging.getLogger(__name__)
+logger.info(f"Using {get_router_mode()} routers for deals API")
 
 
 @app.on_event("startup")

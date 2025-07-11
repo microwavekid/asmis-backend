@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 import uuid
 from datetime import datetime
 
-from app.database.models import SmartCaptureNote, SmartCaptureLinkedEntity
+from app.database.models import SmartCaptureNote, EntityLink
 
 class SmartCaptureRepository:
     """Repository for Smart Capture operations."""
@@ -40,14 +40,13 @@ class SmartCaptureRepository:
         
         # Add linked entities if provided
         if linked_entities:
-            for entity_data in linked_entities:
-                linked_entity = SmartCaptureLinkedEntity(
-                    id=str(uuid.uuid4()),
+            for entity in linked_entities:
+                linked_entity = EntityLink(
                     note_id=note.id,
-                    entity_id=entity_data['id'],
-                    entity_type=entity_data['type'],
-                    entity_name=entity_data['name'],
-                    confidence=entity_data.get('confidence', 0.9)
+                    entity_type=entity['type'],
+                    entity_id=entity['id'],
+                    link_type=entity.get('link_type', 'mentioned'),
+                    confidence=entity.get('confidence', 1.0)
                 )
                 note.linked_entities.append(linked_entity)
         
