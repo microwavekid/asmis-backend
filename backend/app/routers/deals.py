@@ -372,6 +372,123 @@ async def create_deal(
         raise HTTPException(status_code=500, detail="Failed to create deal")
 
 
+@router.put("/{deal_id}", response_model=DealResponse)
+async def update_deal(
+    deal_id: str,
+    deal_update: DealUpdate,
+    auth: AuthContext = Depends(get_auth_dependency()),
+    db: AsyncSession = Depends(get_async_db_session)
+):
+    """Update an existing deal with tenant verification."""
+    try:
+        # Get existing deal with tenant verification
+        query = select(Deal, Account).join(
+            Account, Deal.account_id == Account.id
+        ).where(
+            Deal.id == deal_id,
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
+        
+        result = await db.execute(query)
+        row = result.first()
+        
+        if not row:
+            raise HTTPException(status_code=404, detail="Deal not found")
+        
+        deal, account = row
+        
+        # Apply updates from DealUpdate schema (only provided fields)
+        update_data = deal_update.model_dump(exclude_unset=True)
+        
+        for field, value in update_data.items():
+            if hasattr(deal, field):
+                setattr(deal, field, value)
+        
+        # Update timestamp
+        deal.updated_at = datetime.now()
+        
+        await db.commit()
+        await db.refresh(deal)
+        
+        # Get stakeholders for response
+        stakeholders_query = select(Stakeholder).where(Stakeholder.account_id == account.id)
+        stakeholders_result = await db.execute(stakeholders_query)
+        stakeholders = stakeholders_result.scalars().all()
+        
+        # Get MEDDPICC analysis if exists
+        meddpicc_query = select(MEDDPICCAnalysis).where(MEDDPICCAnalysis.deal_id == deal_id)
+        meddpicc_result = await db.execute(meddpicc_query)
+        meddpicc = meddpicc_result.scalar_one_or_none()
+        
+        return DealResponse(
+            id=deal.id,
+            name=deal.name,
+            description=deal.description,
+            account_id=deal.account_id,
+            account_name=account.name,
+            stage=deal.stage,
+            status=deal.status,
+            amount=deal.amount,
+            currency=deal.currency,
+            probability=deal.probability,
+            close_date=deal.close_date,
+            deal_owner=deal.deal_owner,
+            sales_engineer=deal.sales_engineer,
+            competitive_situation=deal.competitive_situation,
+            primary_competitors=deal.primary_competitors or {},
+            notes=deal.notes,
+            tags=deal.tags or {},
+            created_at=deal.created_at,
+            updated_at=deal.updated_at,
+            meddpicc_analysis=_format_meddpicc_analysis(meddpicc) if meddpicc else None,
+            stakeholders=[]  # Stakeholders simplified for PUT endpoint
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating deal {deal_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to update deal")
+
+
+@router.delete("/{deal_id}", status_code=204)
+async def delete_deal(
+    deal_id: str,
+    auth: AuthContext = Depends(get_auth_dependency()),
+    db: AsyncSession = Depends(get_async_db_session)
+):
+    """Delete a deal with tenant verification (soft delete)."""
+    try:
+        # Verify deal exists and belongs to tenant
+        query = select(Deal).where(
+            Deal.id == deal_id,
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
+        
+        result = await db.execute(query)
+        deal = result.scalar_one_or_none()
+        
+        if not deal:
+            raise HTTPException(status_code=404, detail="Deal not found")
+        
+        # Soft delete: update status instead of actual deletion
+        deal.status = "deleted"
+        deal.updated_at = datetime.now()
+        
+        await db.commit()
+        
+        logger.info(f"Deal {deal_id} soft deleted by tenant {auth.tenant_id}")
+        
+        # Return 204 No Content for successful deletion
+        return None
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting deal {deal_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to delete deal")
+
+
 @router.get("/{deal_id}/meddpicc", response_model=MEDDPICCResponse)
 async def get_deal_meddpicc(
     deal_id: str,
