@@ -140,6 +140,34 @@
 - Confidence scoring for all AI outputs
 - Multi-tenant considerations for all features
 
+### Dev Server "Connection Refused" Pattern (CRITICAL) - ✅ RESOLVED
+- **Root Cause Discovery**: Next.js wasn't explicitly binding to 127.0.0.1 when using `localhost`
+- **Applied Fix**: Use `--hostname 127.0.0.1` flag to force proper IP binding (2025-07-08)
+- **Issue Status**: ✅ RESOLVED - Server now binds correctly and accepts connections
+
+#### **Working Solution:**
+```bash
+npm run dev -- --port 3000 --hostname 127.0.0.1
+```
+
+#### **Root Cause Analysis:**
+- Next.js was failing to resolve `localhost` to proper IP binding
+- Server reported "Ready" but wasn't actually listening on the expected interface
+- Explicit hostname binding resolves the issue completely
+
+#### **Quick Recovery Procedure:**
+```bash
+pkill -f "next dev"
+rm -rf .next
+npm run dev -- --port 3000 --hostname 127.0.0.1
+```
+
+#### **Testing Validation:**
+- ✅ Works with Node.js 18 and 20
+- ✅ lsof confirms proper port binding
+- ✅ curl receives expected 307 redirect responses
+- ✅ Manual browser testing now possible
+
 ## Issue Tracking & Roadmap Management (Working Pattern)
 
 - **Linear is the canonical system for all issue, feature, and roadmap tracking.**
@@ -164,7 +192,7 @@
 
 - The command "initiate" (typed to either Claude or Cursor) will start a new session, update the session pointer, load neural imprint and working patterns, and pull context from Linear.
 - All contributors (AI and human) should use this command at the start of any new work session. If a human contributor forgets, the AI will intelligently review whether the current session appears complete; if so, it will initiate the command automatically, otherwise it will prompt or remind the human to do so. This ensures session context is always current and avoids premature session switching.
-- The session pointer is stored in `.project_memory/current_epic/active_session.json` and always references the current Linear epic/issue and (optionally) a Markdown session log.
+- The session pointer is stored in `.project_memory/active_session.json` and always references the current Linear epic/issue and (optionally) a Markdown session log.
 - `.ai/WORKING_PATTERNS.md` and `.project_memory/patterns/IMPRINT_PATTERN_INDEX.json` are always loaded at session start for best practices and available patterns.
 - Markdown session logs are optional, for deep dives or retros, not required for every session.
 - This hybrid, automated approach ensures both AI and human contributors work from the latest context, with minimal ceremony and maximum traceability.
@@ -175,6 +203,46 @@
 - Human contributors do not need to run any scripts or commands for pattern management.
 - If the agent is unable to complete an action (e.g., due to permissions), it will prompt the user for approval or next steps.
 - The agent will validate that the pattern index and pattern files are always in sync, and self-correct if not.
+
+## Hybrid Stub-First Architecture Pattern
+
+### Pattern Discovery
+- **Date**: 2025-07-10
+- **Context**: MIC-45 multi-tenancy implementation
+- **Decision**: DEC_2025-07-10_001
+
+### Pattern Description
+For large architectural changes (multi-tenancy, auth systems, major refactoring):
+1. **Foundation + Stubs**: Create core models + minimal integration stubs
+2. **Integration Testing**: Test complete flow with stubs first
+3. **Real Implementation**: Replace stubs with full implementations
+4. **Final Validation**: Comprehensive testing and optimization
+
+### Benefits Observed
+- **Early Risk Identification**: Integration issues caught in 3 sessions vs 8
+- **Architectural Validation**: Confirm approach works before heavy implementation
+- **Parallel Development**: Multiple layers can be worked on simultaneously
+- **Reduced Rework**: Implementation guided by proven integration patterns
+
+### When to Use
+- ✅ **Large architectural changes** affecting multiple system layers
+- ✅ **New authentication/authorization** systems
+- ✅ **Database schema migrations** with breaking changes
+- ✅ **Multi-tenant architecture** implementation
+- ❌ **Simple feature additions** or bug fixes
+
+### Implementation Template
+```
+Phase 1: Foundation + Stubs (2-3 sessions)
+Phase 2: Integration Testing (1 session)  
+Phase 3: Real Implementation (4-6 sessions)
+Phase 4: Final Validation (1 session)
+```
+
+### Pattern Status
+- **Maturity**: Experimental (first use case)
+- **Reference**: `.project_memory/patterns/HYBRID_STUB_FIRST_PATTERN.json`
+- **Evolution**: Track effectiveness and refine based on outcomes
 
 ## Session Log Template (Updated)
 

@@ -1,0 +1,125 @@
+{
+  "pattern_id": "SYNC_STATUS_CONFLICT_DETECTION_PATTERN",
+  "category": "workflow_optimization",
+  "created": "2025-07-12",
+  "created_by": "hybrid_architecture_implementation",
+  "description": "Comprehensive sync status tracking and conflict detection for hybrid Linear/cache architecture",
+  "problem_context": "Need systematic approach to detect and resolve conflicts between local cache and Linear canonical data",
+  
+  "conflict_detection_algorithm": {
+    "timestamp_comparison": {
+      "method": "compare_last_updated_fields",
+      "conflict_threshold": "local_timestamp != linear_timestamp",
+      "resolution": "user_guided_merge"
+    },
+    "status_divergence": {
+      "method": "compare_issue_status_fields",
+      "conflicts": ["Ready vs In Progress", "In Progress vs Done", "Done vs Ready"],
+      "priority": "high"
+    },
+    "assignment_conflicts": {
+      "method": "compare_assignee_fields", 
+      "detection": "local_assignee != linear_assignee",
+      "priority": "medium"
+    },
+    "title_changes": {
+      "method": "compare_title_fields",
+      "detection": "cached_title != linear_title",
+      "priority": "low"
+    }
+  },
+
+  "sync_status_states": {
+    "fresh": {
+      "criteria": "last_sync < 30_minutes AND no_conflicts_detected",
+      "indicator": "✅ Fresh",
+      "action_required": false
+    },
+    "stale": {
+      "criteria": "last_sync > 2_hours AND no_conflicts_detected", 
+      "indicator": "⏰ Stale",
+      "action_required": "background_sync_recommended"
+    },
+    "conflicted": {
+      "criteria": "conflicts_detected.length > 0",
+      "indicator": "⚠️ Conflicts",
+      "action_required": "immediate_resolution"
+    },
+    "syncing": {
+      "criteria": "sync_in_progress = true",
+      "indicator": "🔄 Syncing",
+      "action_required": false
+    },
+    "error": {
+      "criteria": "last_sync_failed = true",
+      "indicator": "❌ Sync Error", 
+      "action_required": "investigate_error"
+    }
+  },
+
+  "conflict_resolution_templates": {
+    "status_conflict": {
+      "template": "Issue {issue_id} status conflict:\n- Local: {local_status}\n- Linear: {linear_status}\n- Last updated: {linear_timestamp}\nChoose resolution: [L]inear wins, [M]erge, [K]eep local",
+      "resolution_options": ["linear_wins", "merge_states", "keep_local", "manual_edit"]
+    },
+    "assignment_conflict": {
+      "template": "Issue {issue_id} assignment conflict:\n- Local: {local_assignee}\n- Linear: {linear_assignee}\nChoose resolution: [L]inear wins, [K]eep local, [R]eassign",
+      "resolution_options": ["linear_wins", "keep_local", "reassign_to_other"]
+    },
+    "batch_conflict": {
+      "template": "Multiple conflicts detected ({count} issues):\n{conflict_list}\nChoose resolution: [A]uto-resolve safe, [R]eview each, [L]inear wins all",
+      "auto_resolve_criteria": "timestamp_based_with_user_approval"
+    }
+  },
+
+  "sync_performance_metrics": {
+    "response_time_targets": {
+      "cache_read": "<100ms",
+      "conflict_detection": "<500ms",
+      "full_sync": "<3s",
+      "conflict_resolution": "user_paced"
+    },
+    "reliability_targets": {
+      "cache_hit_rate": ">90%",
+      "conflict_detection_accuracy": ">95%",
+      "false_positive_rate": "<5%"
+    }
+  },
+
+  "implementation_triggers": {
+    "initiate_command": "background_conflict_check",
+    "sync_command": "full_sync_with_conflict_resolution",
+    "session_wrap": "batch_sync_with_conflict_detection",
+    "git_commit": "verification_sync",
+    "periodic_check": "every_30_minutes_if_active"
+  },
+
+  "user_experience_patterns": {
+    "non_blocking_startup": "show_cache_immediately, enhance_progressively",
+    "progressive_enhancement": "cache_first, fresh_data_overlay",
+    "conflict_notification": "clear_indicators, actionable_resolutions",
+    "batch_operations": "queue_changes, sync_efficiently"
+  },
+
+  "success_metrics": {
+    "startup_performance": "session_start_under_100ms",
+    "conflict_accuracy": "zero_false_negatives_for_real_conflicts", 
+    "user_satisfaction": "minimal_interruption_for_conflict_resolution",
+    "data_integrity": "zero_data_loss_during_conflict_resolution"
+  },
+
+  "integration_points": {
+    "neural_imprint": "conflict_resolution_behavioral_rules",
+    "initiate_command": "background_sync_check",
+    "sync_command": "full_sync_with_user_guided_resolution",
+    "todo_tracker": "conflict_status_indicators",
+    "system_guide": "conflict_resolution_workflows"
+  },
+
+  "escalation_procedures": {
+    "unresolvable_conflicts": "flag_for_manual_review",
+    "repeated_conflicts": "suggest_workflow_improvements",
+    "sync_failures": "fallback_to_linear_only_mode",
+    "data_corruption": "immediate_backup_and_rollback"
+  }
+}

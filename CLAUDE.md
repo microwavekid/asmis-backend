@@ -27,22 +27,70 @@
 
 ## Reserved Commands
 
-- **initiate**: Triggers the ASMIS Session Initiation Protocol.
+- **initiate**: Triggers the ASMIS Session Initiation Protocol with smart cache optimization.
     - Loads `.ai/NEURAL_IMPRINT.json` and `.ai/WORKING_PATTERNS.md`
+    - Reads local task cache for immediate context (fast startup)
     - Updates `.project_memory/active_session.json` with new session info
-    - Pulls current context from Linear (epic/issue, blockers, objectives)
+    - Launches async Linear sync check (non-blocking)
+    - Provides immediate context from cache, enhances with fresh data progressively
     - (Optionally) creates a Markdown session log
-    - Announces session start and next steps
-    - Refuses to proceed with new work until session is active and context is loaded
+    - Announces session start with cache status and next steps
+
+- **REMEMBER**: Triggers the neural imprinting reflection cycle (analysis only).
+    - Analyzes pattern effectiveness and behavioral compliance
+    - Identifies successful patterns for strengthening
+    - Generates improvement proposals with safety validation
+    - NO MODIFICATIONS - analysis and proposal generation only
+    - Outputs proposals with IDs for user review and approval
+
+- **IMPROVE**: Executes approved behavioral improvements (action only).
+    - Implements user-approved proposals from REMEMBER cycle
+    - Requires explicit proposal ID or ALL/CANCEL commands
+    - Creates behavioral backups before any changes
+    - Preserves core imprint integrity with fatal-level safeguards
+    - Enables immediate rollback via REVERT command
+
+- **sync**: Forces immediate Linear synchronization and conflict resolution.
+    - Performs full Linear API sync to check for updates
+    - Detects and reports conflicts between local cache and Linear
+    - Updates local cache with fresh Linear data
+    - Provides conflict resolution options for divergent data
+    - Updates sync timestamps and cache status
 
 ## Behavioral Contracts
 
 - On receiving the "initiate" command, Claude must:
-    1. Confirm session initiation.
-    2. Prompt for session details if not provided.
+    1. Confirm session initiation with performance mode.
+    2. Read local task cache for immediate context (fast startup).
     3. Update session pointer and load neural imprint.
-    4. Reference Linear for context.
-    5. Announce readiness and next steps.
+    4. Launch async Linear sync check (non-blocking).
+    5. Present cached context with sync status indicators.
+    6. Announce readiness and flag any conflicts detected.
+
+- On receiving the "REMEMBER" command, Claude must:
+    1. Verify neural imprint integrity (fatal check).
+    2. Load system architecture context for comprehensive analysis.
+    3. Analyze behavioral compliance and pattern effectiveness.
+    4. Evaluate system performance and architecture effectiveness.
+    5. Generate improvement proposals with safety validation.
+    6. Present proposals with IDs for user review.
+    7. Make NO modifications - analysis only.
+
+- On receiving the "IMPROVE" command, Claude must:
+    1. Validate proposal ID exists from recent REMEMBER output.
+    2. Load system architecture context for impact assessment.
+    3. Confirm explicit user approval for implementation.
+    4. Verify architectural safety and runaway prevention measures.
+    5. Create behavioral backup before any changes.
+    6. Implement approved modifications while preserving imprint integrity.
+    7. Log all changes and enable immediate rollback capability.
+
+- On receiving the "sync" command, Claude must:
+    1. Perform full Linear API sync to fetch current state.
+    2. Compare Linear data with local cache for conflicts.
+    3. Present conflicts clearly with resolution options.
+    4. Update local cache with user-approved changes.
+    5. Update sync timestamps and cache status indicators.
 
 ## Startup Imprinting Sequence
 1. **NEURAL LOAD**: Read `.ai/NEURAL_IMPRINT.json` for behavioral control

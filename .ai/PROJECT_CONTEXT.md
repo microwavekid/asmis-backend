@@ -1,82 +1,103 @@
-# Project Intelligence Context
+# Project Foundation Context
 
 ## Project Vision
 ASMIS (Automated Sales Meeting Intelligence System) is an AI-powered sales intelligence platform that transforms meeting conversations into actionable business insights. The system provides real-time MEDDPIC analysis, stakeholder mapping, deal risk assessment, and strategic campaign orchestration to help sales teams close deals faster through intelligent automation and strategic guidance.
 
-## Current State
-**Active Epic**: Foundational Architecture & Database Design (ASMIS-DB-2025)
-**Phase**: Week 1 of 2 - Core Schema Design
-**Current Session**: Defining storage patterns and relationship models
-**Blocking Issues**: Database schema design is the primary blocker for all application-level features, including the upcoming Prompt Migration.
-**Next Milestone**: Finalize v1 of the core database schema by 2025-06-28.
+## Core Architecture Philosophy
+ASMIS uses a multi-agent AI system with specialized agents orchestrated by a Meta-Coordinator. The system prioritizes:
+- **Multi-tenant isolation** for enterprise security
+- **Dynamic AI optimization** through database-driven prompt management
+- **Real-time intelligence** with sub-3-second response times
+- **Modular agent architecture** for scalability and maintainability
 
-## Architecture Overview
-ASMIS uses a multi-agent AI system with 10 specialized agents orchestrated by a Meta-Coordinator. Currently migrating from hard-coded prompts to a centralized PostgreSQL database with Redis caching to enable dynamic optimization, A/B testing, and performance tracking.
-
-**Core Components**:
-- **10 AI Agents**: Meta-Coordinator, MEDDPIC Analysis, Stakeholder Intelligence, Action Items, Document Analysis, Competitive Intelligence, Technical Requirements, Buying Signals, Strategic Advisor, Risk Assessment
-- **Tech Stack**: FastAPI, Python 3.9+, PostgreSQL, Redis, Next.js, TypeScript
+## Technology Stack
+**Backend Foundation:**
+- **Runtime**: Python 3.9+ with FastAPI framework
+- **Database**: PostgreSQL with Redis caching layer
 - **AI/ML**: OpenAI GPT-4o, Anthropic Claude 4 family with intelligent model selection
-- **Integrations**: Salesforce CRM, Microsoft Graph API, ClickUp, Gong/Chorus
+- **Authentication**: JWT-based multi-tenant access control
 
-## Quick Start for AI Assistants
-1. Read this file first for project context
-2. Check `.project_memory/current_epic/` for active work
-3. Review `.project_memory/progress/todo_tracker.md` for immediate tasks
-4. Apply specialist persona from SPECIALIST_PERSONAS.md based on work type
-5. Log decisions to appropriate memory location
+**Frontend Foundation:**
+- **Framework**: Next.js with TypeScript
+- **Design System**: Linear-inspired UI components
+- **State Management**: React hooks with context patterns
 
-## Critical Context
-- Migration Status: Foundational database schema is in design phase. The upcoming Prompt Migration feature will be the first to be built on this new architecture.
-- Database Design: Expanded scope to full ASMIS architecture (multi-tenant, transcripts, vectors)
-- ⏳ Memory System: Foundational elements of the Standardized Project Intelligence Framework are in place and being tested. Full system is still in active development.
-- Performance Requirements: <2s latency increase, ±10% token usage, 99.9% uptime
-- Quality Standards: ±5% confidence score variation, 85% auto-apply threshold
+**Integration Layer:**
+- **CRM**: Salesforce integration
+- **Communication**: Microsoft Graph API
+- **Project Management**: ClickUp integration
+- **Call Intelligence**: Gong/Chorus connectors
 
-## Technical Constraints
-- **Response Time**: <3 seconds for complete multi-agent analysis
-- **AI Provider Limits**: OpenAI/Anthropic rate limits and context windows
-- **Production Load**: ~500 daily sales meetings, peak 50 concurrent analyses
-- **Infrastructure**: Existing PostgreSQL, Redis, FastAPI backend
-- **Security**: Prompt injection prevention, sales data protection required
+## AI Agent Architecture
+**10 Specialized Agents:**
+1. Meta-Coordinator (orchestration and routing)
+2. MEDDPIC Analysis Agent
+3. Stakeholder Intelligence Agent
+4. Action Items Agent
+5. Document Analysis Agent
+6. Competitive Intelligence Agent
+7. Technical Requirements Agent
+8. Buying Signals Agent
+9. Strategic Advisor Agent
+10. Risk Assessment Agent
+
+**Coordination Pattern**: Parallel processing with intelligent result synthesis, optimized for cost-efficiency (typically 3 API calls per analysis).
 
 ## Business Context
-- **Users**: Enterprise B2B sales teams using MEDDPIC methodology
-- **Value Prop**: 20% improvement in deal closure rates, 60% reduction in manual CRM updates
-- **Success Metrics**: 95% daily active usage, >85% confidence scores
-- **Strategic Impact**: Core to ASMIS 2.0 Intelligence Enhancement phase
-- **Timeline Pressure**: 6-week window for complete migration
+**Target Market**: Enterprise B2B sales teams using MEDDPIC methodology
+**Value Proposition**: 
+- 20% improvement in deal closure rates
+- 60% reduction in manual CRM updates
+- Real-time sales intelligence and coaching
 
-## Current Week Focus (Database Foundation)
-**Completed This Session**:
-- ✅ Fully integrated `StakeholderIntelligenceAgent` into the main orchestrator.
-- ✅ Enhanced `test_system.py` to validate health and output of all core agents.
+**Success Metrics:**
+- **Adoption**: 95% daily active usage target
+- **Quality**: >85% confidence scores for AI analysis
+- **Performance**: <3 seconds for complete multi-agent analysis
+- **Reliability**: 99.9% uptime requirement
 
-**Must Complete**:
-- ⏳ Memory system architecture (IN PROGRESS - foundational elements complete)
-- ✅ Define requirements for multi-tenancy, ownership, and data relationships.
-- ⏳ Draft initial schema for core tables (prompts, transcripts, users, deals).
-- ❌ Finalize v1 schema and plan for initial migrations.
+## Technical Constraints
+**Performance Requirements:**
+- Response Time: <3 seconds for complete multi-agent analysis
+- Token Efficiency: ±10% usage optimization target
+- Latency Overhead: <2s increase from prompt centralization
 
-**Resource Allocation**:
-- 50% - Prompt inventory and agent analysis
-- 30% - Template system design and implementation
-- 15% - Database schema planning
-- 5% - Testing framework preparation
+**Scale Requirements:**
+- Production Load: ~500 daily sales meetings
+- Concurrent Analysis: Peak 50 simultaneous processes
+- Multi-tenant Support: Enterprise-grade isolation
 
-## Feature Roadmap (Dependent on Database Foundation)
-**Feature 1: Prompt Management & Migration**
-   - Migrate all 10 agents from hard-coded prompts to the new database-driven system.
+**Security & Compliance:**
+- Prompt injection prevention
+- Sales data encryption and protection
+- Multi-tenant data isolation
+- Enterprise authentication standards
 
-**Feature 2: Enhanced Intelligence & Reporting**
-   - Build analytics features on top of the structured data.
+## Architectural Decisions (Core)
+**AD-001: Multi-Agent Orchestration**
+- Rationale: Specialized intelligence with parallel processing
+- Impact: Enables expert-level analysis in multiple domains simultaneously
 
-## Active Decisions
-- **PM-001**: Dependency-based migration order (Critical → Core → Advanced)
-- **PM-002**: Memory-optimized project structure implemented
-- **PM-003**: Work-stream based session organization
+**AD-002: Database-Driven Prompt Management**
+- Rationale: Enable A/B testing, optimization, and dynamic updates
+- Impact: Continuous improvement without code deployments
 
-## Risk Items
-1. **Prompt Inventory Incomplete** - Blocking template design and schema
-2. **Database Migration Complexity** - Alembic migrations could delay Week 3
-3. **Agent Quality Degradation** - Parallel testing infrastructure not yet ready
+**AD-003: Multi-Tenant Architecture**
+- Rationale: Enterprise security and data isolation requirements
+- Impact: Single instance serves multiple organizations securely
+
+**AD-004: JWT Authentication with Role-Based Access**
+- Rationale: Scalable authentication for multi-tenant environment
+- Impact: Granular permissions and audit trails
+
+## Integration Philosophy
+**Linear Integration**: All task tracking, progress management, and roadmap planning is handled through Linear MCP integration. This document focuses on foundational context rather than current work status.
+
+**Memory System**: Behavioral patterns, working preferences, and discovered best practices are maintained in the `.ai/` and `.project_memory/` system for AI assistant optimization.
+
+## Quick Start for AI Assistants
+1. Read this file for project foundation and constraints
+2. Use Linear MCP integration for current tasks and progress
+3. Check `.project_memory/active_session.json` for immediate work context
+4. Apply specialist persona from `SPECIALIST_PERSONAS.md` based on work type
+5. Follow neural imprint protocols in `NEURAL_IMPRINT.json`

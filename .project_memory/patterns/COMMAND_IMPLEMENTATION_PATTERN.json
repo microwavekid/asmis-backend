@@ -1,0 +1,40 @@
+{
+  "pattern_id": "COMMAND_IMPLEMENTATION_PATTERN",
+  "category": "behavioral_execution",
+  "created": "2025-07-12",
+  "created_by": "IMPROVE command (REM-2025-07-12-002)",
+  "description": "Systematic approach for implementing reserved commands with neural imprint compliance",
+  "problem_context": "Need consistent execution of reserved commands while maintaining behavioral integrity",
+  "solution_pattern": {
+    "phases": [
+      "trigger_recognition",
+      "protocol_loading",
+      "integrity_verification",
+      "phased_execution",
+      "output_compliance"
+    ],
+    "key_principles": [
+      "Always verify neural imprint integrity first",
+      "Follow prescribed protocol steps exactly",
+      "Use mandatory response templates",
+      "Enforce forbidden actions list",
+      "Generate trackable outputs with IDs"
+    ]
+  },
+  "implementation_template": {
+    "step_1": "Recognize command trigger from reserved list",
+    "step_2": "Load protocol from behavioral_rules or command definition",
+    "step_3": "Execute fatal-level integrity checks",
+    "step_4": "Follow phase-by-phase execution",
+    "step_5": "Generate output using neural anchors"
+  },
+  "success_metrics": {
+    "protocol_adherence": "100% step compliance",
+    "template_usage": "Mandatory templates always used",
+    "safety_enforcement": "Zero forbidden action violations"
+  },
+  "related_patterns": [
+    "MEMORY_SYSTEM_NAVIGATION_PATTERN",
+    "PATTERN_CAPTURE_META_PATTERN"
+  ]
+}

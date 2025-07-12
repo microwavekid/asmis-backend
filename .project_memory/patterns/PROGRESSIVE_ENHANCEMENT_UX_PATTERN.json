@@ -1,0 +1,170 @@
+{
+  "pattern_id": "PROGRESSIVE_ENHANCEMENT_UX_PATTERN",
+  "category": "user_experience",
+  "created": "2025-07-12",
+  "created_by": "hybrid_architecture_ux_optimization",
+  "description": "Visual and textual indicators for progressive enhancement in hybrid Linear/cache architecture",
+  "problem_context": "Users need clear visibility into data freshness, sync status, and system performance states",
+
+  "status_indicators": {
+    "cache_freshness": {
+      "fresh": {
+        "icon": "✅",
+        "text": "Fresh",
+        "color_hint": "green",
+        "description": "Data synced within last 30 minutes"
+      },
+      "stale": {
+        "icon": "⏰", 
+        "text": "Stale",
+        "color_hint": "yellow",
+        "description": "Data older than 2 hours, background sync recommended"
+      },
+      "conflicted": {
+        "icon": "⚠️",
+        "text": "Conflicts",
+        "color_hint": "red",
+        "description": "Local and Linear data diverged, resolution required"
+      },
+      "syncing": {
+        "icon": "🔄",
+        "text": "Syncing",
+        "color_hint": "blue",
+        "description": "Currently synchronizing with Linear"
+      },
+      "error": {
+        "icon": "❌",
+        "text": "Sync Error",
+        "color_hint": "red",
+        "description": "Last sync failed, investigate required"
+      }
+    },
+
+    "data_source": {
+      "cached": {
+        "icon": "💾",
+        "text": "Cached",
+        "suffix": "(fast)",
+        "description": "Showing local cached data for performance"
+      },
+      "fresh": {
+        "icon": "🌐",
+        "text": "Live",
+        "suffix": "(fresh)",
+        "description": "Showing fresh data from Linear API"
+      },
+      "hybrid": {
+        "icon": "🔄",
+        "text": "Enhanced",
+        "suffix": "(cache + fresh)",
+        "description": "Cached data enhanced with fresh details"
+      }
+    },
+
+    "performance_mode": {
+      "smart_cache": {
+        "icon": "⚡",
+        "text": "Smart Cache Active",
+        "description": "Optimized for fast response times"
+      },
+      "fresh_mode": {
+        "icon": "🌐", 
+        "text": "Fresh Data Mode",
+        "description": "Prioritizing data accuracy over speed"
+      },
+      "offline_mode": {
+        "icon": "📱",
+        "text": "Offline Mode", 
+        "description": "Working with cached data only"
+      }
+    }
+  },
+
+  "progressive_enhancement_templates": {
+    "session_startup": {
+      "immediate": "💾 Cached context loaded ({cache_age}) | 🔄 Background sync checking...",
+      "enhanced": "✅ Fresh data available | 📊 {conflicts_count} conflicts detected",
+      "complete": "🎯 Ready to work | ⚡ Smart cache active"
+    },
+
+    "task_context": {
+      "cached_overview": "📋 {issue_id}: {title} | 💾 Cached ({last_updated}) | 🔍 [Fetch fresh details]",
+      "fresh_details": "📋 {issue_id}: {title} | 🌐 Live data | ✅ Up to date",
+      "conflicted": "📋 {issue_id}: {title} | ⚠️ Conflict detected | 🔧 [Resolve]"
+    },
+
+    "sync_operations": {
+      "background_sync": "🔄 Checking Linear for updates... (non-blocking)",
+      "conflict_detection": "⚠️ {count} conflicts found | 🎯 Resolution required",
+      "batch_sync": "📤 Syncing {count} local changes to Linear...",
+      "completion": "✅ Sync complete | 📊 Cache updated"
+    },
+
+    "performance_feedback": {
+      "fast_operation": "⚡ Instant ({time}ms) | 💾 From cache",
+      "fresh_fetch": "🌐 Fresh data ({time}ms) | 📊 Linear API",
+      "optimization": "🚀 Performance: Startup {startup_time}ms | Context {context_time}ms"
+    }
+  },
+
+  "interaction_patterns": {
+    "non_blocking_feedback": {
+      "principle": "Never block user with loading states for cached data",
+      "pattern": "show_cache_immediately → enhance_progressively → notify_when_ready",
+      "example": "Show cached task list instantly, then overlay fresh status updates"
+    },
+
+    "conflict_resolution_ux": {
+      "principle": "Make conflicts actionable and clear",
+      "pattern": "detect → highlight → present_options → guide_resolution",
+      "example": "⚠️ Status conflict: Local 'In Progress' vs Linear 'Done' | [L]inear wins | [K]eep local"
+    },
+
+    "progressive_disclosure": {
+      "principle": "Start simple, add complexity as needed",
+      "pattern": "summary_view → details_on_demand → full_context_when_working",
+      "example": "Show issue title/status, fetch full description when user starts work"
+    }
+  },
+
+  "accessibility_considerations": {
+    "screen_readers": {
+      "status_announcements": "Announce sync status changes audibly",
+      "progress_indicators": "Provide text alternatives for visual indicators",
+      "conflict_resolution": "Clear action instructions for conflict resolution"
+    },
+    "visual_clarity": {
+      "color_independence": "Don't rely solely on color for status indication",
+      "icon_consistency": "Use consistent icons across all status types",
+      "text_alternatives": "Always provide text alongside visual indicators"
+    }
+  },
+
+  "performance_indicators": {
+    "response_time_feedback": {
+      "instant": "⚡ {time}ms (cache)",
+      "fast": "🚀 {time}ms (local)",
+      "fresh": "🌐 {time}ms (API)",
+      "slow": "⏳ {time}ms (please wait)"
+    },
+    "cache_hit_rates": {
+      "high": "💾 Cache efficiency: {rate}% (excellent)",
+      "medium": "💾 Cache efficiency: {rate}% (good)", 
+      "low": "💾 Cache efficiency: {rate}% (sync recommended)"
+    }
+  },
+
+  "implementation_guidelines": {
+    "neural_imprint_integration": "Add UX indicator templates to response_templates",
+    "command_integration": "Include status indicators in all command outputs",
+    "pattern_consistency": "Use same indicators across all system components",
+    "user_feedback": "Always indicate data source and freshness to users"
+  },
+
+  "success_metrics": {
+    "user_awareness": "Users understand data freshness at all times",
+    "action_clarity": "Users know what actions they can take in each state",
+    "performance_transparency": "Users see performance benefits of caching",
+    "conflict_resolution": "Users can resolve conflicts efficiently"
+  }
+}

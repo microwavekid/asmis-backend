@@ -33,6 +33,14 @@
       "pattern": "Identify reusable solution → Create pattern entry → Log to appropriate memory file → Reference in future work",
       "update_rules": "{ENUM: append_only|structured_replace|template_fill|never_delete}",
       "mandatory_logging": true
+    },
+    "progressive_enhancement_indicators": {
+      "pattern": "Always indicate data source and freshness to users",
+      "cache_status_template": "{CACHE_ICON} {STATUS_TEXT} | Last sync: {TIME_AGO}",
+      "data_source_template": "{SOURCE_ICON} {DATA_TYPE} ({PERFORMANCE_HINT})",
+      "conflict_alert_template": "⚠️ CONFLICT: {ISSUE_ID} | {CONFLICT_TYPE} | [Resolution options]",
+      "mandatory_indicators": ["cache_freshness", "data_source", "sync_status"],
+      "forbidden": ["show_data_without_source_indicator", "hide_conflict_status", "unclear_freshness"]
     }
   },
   "neural_anchors": {
@@ -46,7 +54,7 @@
   "behavioral_rules": {
     "startup_sequence": {
       "step_1": "LOAD this neural imprint",
-      "step_2": "CHECK .project_memory/current_epic/active_session.json for session contract",
+      "step_2": "CHECK .project_memory/active_session.json for session contract",
       "step_3": "READ .project_memory/progress/todo_tracker.md for current tasks",
       "step_4": "INDEX .project_memory/patterns/ for available solutions",
       "step_5": "APPLY appropriate behavioral contract",
@@ -57,7 +65,7 @@
     "decision_making": {
       "architectural_decisions": {
         "required": ["problem_context", "options_evaluated", "pattern_applied", "rationale"],
-        "log_to": ".project_memory/current_epic/DECISIONS_LOG.md",
+        "log_to": ".project_memory/projects/current_project/DECISIONS_LOG.md",
         "template": "## DEC_{DATE}_{NUM}: {TITLE}\n**Pattern**: {PATTERN_REF}\n**Rationale**: {REASON}"
       },
       "implementation_decisions": {
@@ -72,6 +80,46 @@
       "manual_memory_updates": "FORBIDDEN - Use templates and auto-triggers only",
       "context_drift": "PREVENTED - Always reference neural imprint and session contract",
       "pattern_evolution_logging": "MANDATORY - All pattern updates must be logged in .project_memory/patterns/PATTERN_EVOLUTION_LOG.md with date, summary, rationale, and reference."
+    },
+    "remember_protocol": {
+      "step_1": "VERIFY neural imprint integrity (FATAL - abort if fails)",
+      "step_2": "LOAD system architecture context for comprehensive analysis",
+      "step_3": "ANALYZE pattern compliance rates and template usage",
+      "step_4": "IDENTIFY successful patterns for myelination", 
+      "step_5": "DETECT gaps in patterns and compliance issues",
+      "step_6": "EVALUATE system performance and architecture effectiveness",
+      "step_7": "GENERATE improvement proposals with safety validation",
+      "template": "🧠 REMEMBER CYCLE | ⏱️ Est: {TIME} | 📊 Scope: {CONTEXT} | 🏗️ Architecture: ANALYZED | 🛡️ Safeguards: ALL",
+      "forbidden": ["any_modifications", "automatic_improvements", "unapproved_changes"],
+      "output_format": "🆕 Proposal: {TYPE} | 🎯 Target: {COMPONENT} | 🛡️ Safety: {VALIDATION} | 📊 Impact: {SCORE} | ID: {PROPOSAL_ID}"
+    },
+    "improve_protocol": {
+      "step_1": "VALIDATE proposal ID from recent REMEMBER output",
+      "step_2": "LOAD system architecture context for impact assessment",
+      "step_3": "CONFIRM explicit user approval for implementation",
+      "step_4": "VERIFY architectural safety and runaway prevention",
+      "step_5": "CREATE behavioral backup before changes",
+      "step_6": "IMPLEMENT approved modifications preserving imprint integrity",
+      "step_7": "LOG changes and enable rollback capability",
+      "template": "🔧 IMPROVE ACTION | ⏱️ Est: {TIME} | 📋 ID: {PROPOSAL_ID} | 🏗️ Architecture: PROTECTED | 🛡️ Safety: PASSED",
+      "required": ["proposal_validation", "user_approval", "safety_confirmation", "architecture_protection"],
+      "forbidden": ["unapproved_changes", "imprint_structure_modification", "batch_unsafe_changes", "architecture_document_modification"],
+      "runaway_prevention": {
+        "architecture_modification": "FORBIDDEN - SYSTEM_ARCHITECTURE.md is read-only context",
+        "command_self_modification": "FORBIDDEN - IMPROVE cannot modify its own protocols",
+        "recursive_enhancement": "LIMITED - depth limit of 2 levels",
+        "batch_architecture_changes": "FORBIDDEN - no mass architectural modifications"
+      }
+    },
+    "sync_conflict_resolution": {
+      "step_1": "DETECT conflicts using SYNC_STATUS_CONFLICT_DETECTION_PATTERN",
+      "step_2": "PRESENT conflicts with clear resolution options",
+      "step_3": "AWAIT user guidance for conflict resolution",
+      "step_4": "APPLY user-selected resolution to local cache",
+      "step_5": "UPDATE sync status and timestamps",
+      "template": "⚠️ CONFLICT: {ISSUE_ID} | 🔍 Type: {CONFLICT_TYPE} | 🎯 Resolution: {USER_CHOICE}",
+      "forbidden": ["auto_resolve_conflicts", "silent_overwrites", "data_loss_during_resolution"],
+      "escalation": "unresolvable_conflicts_require_manual_intervention"
     }
   },
   "pattern_evolution": {
@@ -133,7 +181,72 @@
   },
   "session_initiation_command": {
     "trigger": "initiate",
-    "description": "Reserved command to start a new session, update the session pointer, load neural imprint and working patterns, and pull context from Linear. All contributors must use this command at the start of any new work session."
+    "description": "Reserved command with smart cache optimization - starts session immediately with cached context, performs async Linear sync check for progressive enhancement. All contributors must use this command at the start of any new work session.",
+    "performance_mode": "smart_cache",
+    "startup_sequence": ["read_local_cache", "load_neural_imprint", "async_linear_check", "progressive_enhancement"],
+    "non_blocking": true
+  },
+  "remember_command": {
+    "trigger": "REMEMBER",
+    "description": "Reserved command for neural imprinting reflection cycle - analysis only, no modifications",
+    "syntax": "REMEMBER [context] [depth]",
+    "context_enum": ["session", "epic", "pattern", "decision", "system"],
+    "depth_enum": ["surface", "deep", "meta"],
+    "phases": [
+      "imprint_integrity_verification",
+      "reflection_scan",
+      "pattern_myelination_analysis", 
+      "gap_analysis",
+      "enhancement_proposals"
+    ],
+    "analysis_context": [
+      ".ai/NEURAL_IMPRINT.json",
+      ".ai/SYSTEM_ARCHITECTURE.md",
+      ".project_memory/patterns/IMPRINT_PATTERN_INDEX.json",
+      ".project_memory/patterns/PATTERN_EVOLUTION_LOG.md",
+      ".project_memory/progress/todo_tracker.md"
+    ],
+    "forbidden_actions": ["any_system_modifications", "pattern_changes", "automatic_improvements"],
+    "output_requirement": "proposals_with_ids_for_user_approval"
+  },
+  "improve_command": {
+    "trigger": "IMPROVE",
+    "description": "Reserved command for executing approved behavioral improvements - action only",
+    "syntax": "IMPROVE [proposal_id] | IMPROVE ALL | IMPROVE CANCEL",
+    "phases": [
+      "proposal_validation",
+      "implementation",
+      "verification"
+    ],
+    "analysis_context": [
+      ".ai/NEURAL_IMPRINT.json",
+      ".ai/SYSTEM_ARCHITECTURE.md",
+      ".project_memory/patterns/IMPRINT_PATTERN_INDEX.json",
+      ".project_memory/patterns/PATTERN_EVOLUTION_LOG.md",
+      ".project_memory/backups/"
+    ],
+    "requirements": ["explicit_user_approval", "proposal_id_validation", "imprint_safety_confirmation"],
+    "safeguards": ["behavioral_backup", "rollback_capability", "integrity_preservation"],
+    "forbidden_actions": ["unapproved_changes", "imprint_structure_modification", "behavioral_contract_removal"],
+    "architecture_modification_restrictions": {
+      "system_architecture_md": "READ_ONLY - analysis context only, modifications forbidden",
+      "neural_imprint_json": "STRUCTURE_IMMUTABLE - only pattern weights and templates allowed",
+      "core_architecture": "FATAL_PROTECTION - multi-layer system design cannot be modified",
+      "command_protocols": "PROTECTED - reserved command definitions cannot be altered"
+    }
+  },
+  "sync_command": {
+    "trigger": "sync",
+    "description": "Reserved command for immediate Linear synchronization and conflict resolution",
+    "phases": [
+      "linear_api_sync",
+      "conflict_detection",
+      "conflict_resolution",
+      "cache_update"
+    ],
+    "performance_impact": "blocking_operation",
+    "conflict_resolution": "user_guided",
+    "cache_refresh": "full_update"
   },
   "pattern_automation": {
     "description": "Agents must automatically create pattern files, update the pattern index, and log all changes in the evolution log whenever a new pattern is identified, updated, or removed. No manual user command is required. Agents must validate index-pattern consistency at session start and after any pattern change.",

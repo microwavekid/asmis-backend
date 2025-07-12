@@ -1,0 +1,19 @@
+{
+  "pattern_weights": {
+    "MEMORY_SYSTEM_NAVIGATION_PATTERN": 1.15,
+    "PATTERN_CAPTURE_META_PATTERN": 1.0,
+    "DROPDOWN_POSITIONING_PATTERN": 1.0,
+    "HYBRID_STUB_FIRST_PATTERN": 1.0,
+    "RIGOROUS_STUB_BASED_TESTING_PATTERN": 1.0
+  },
+  "last_myelination": "2025-07-12_15:35:00",
+  "myelination_log": [
+    {
+      "date": "2025-07-12",
+      "pattern": "MEMORY_SYSTEM_NAVIGATION_PATTERN",
+      "adjustment": 0.15,
+      "evidence": "12 successful uses in current session",
+      "proposal_id": "REM-2025-07-12-001"
+    }
+  ]
+}

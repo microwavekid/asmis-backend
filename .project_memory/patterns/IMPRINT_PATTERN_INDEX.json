@@ -10,8 +10,8 @@
   "imprint_registry": {
     "version": 2,
     "headline": "ASMIS Pattern Imprinting Registry — Neural pattern enforcement system",
-    "total_patterns": 5,
-    "last_updated": "2025-06-28T23:40:00Z"
+    "total_patterns": 9,
+    "last_updated": "2025-07-12T17:00:00Z"
   },
   "available_patterns": {
     "DATABASE_ACCESS_PATTERN": {
@@ -47,6 +47,35 @@
       "priority": "fatal",
       "use_cases": ["session_start", "task_transition", "pattern_application", "persona_selection"],
       "token_count": 247,
+      "adherence_requirement": "mandatory",
+      "weight": 1.15
+    },
+    "COMMAND_IMPLEMENTATION_PATTERN": {
+      "file": "COMMAND_IMPLEMENTATION_PATTERN.json",
+      "priority": "fatal",
+      "use_cases": ["reserved_commands", "protocol_execution", "behavioral_compliance"],
+      "token_count": 215,
+      "adherence_requirement": "mandatory"
+    },
+    "SYNC_STATUS_CONFLICT_DETECTION_PATTERN": {
+      "file": "SYNC_STATUS_CONFLICT_DETECTION_PATTERN.json",
+      "priority": "fatal",
+      "use_cases": ["sync_management", "conflict_resolution", "cache_coherence", "hybrid_workflows"],
+      "token_count": 324,
+      "adherence_requirement": "mandatory"
+    },
+    "PROGRESSIVE_ENHANCEMENT_UX_PATTERN": {
+      "file": "PROGRESSIVE_ENHANCEMENT_UX_PATTERN.json",
+      "priority": "fatal",
+      "use_cases": ["user_experience", "status_indicators", "progressive_enhancement", "cache_transparency"],
+      "token_count": 298,
+      "adherence_requirement": "mandatory"
+    },
+    "RUNAWAY_SELF_ENHANCEMENT_PREVENTION_PATTERN": {
+      "file": "RUNAWAY_SELF_ENHANCEMENT_PREVENTION_PATTERN.json",
+      "priority": "fatal",
+      "use_cases": ["system_safety", "self_improvement_limits", "architecture_protection", "runaway_prevention"],
+      "token_count": 412,
       "adherence_requirement": "mandatory"
     }
   },
@@ -57,6 +86,13 @@
     "expensive_operations": "ALWAYS load CACHING_PATTERN",
     "meddpic_orchestration": "ALWAYS load MEDDPIC_ORCHESTRATOR_PATTERN",
     "task_transition": "ALWAYS reference MEMORY_SYSTEM_NAVIGATION_PATTERN",
+    "sync_operations": "ALWAYS load SYNC_STATUS_CONFLICT_DETECTION_PATTERN",
+    "initiate_command": "ALWAYS load SYNC_STATUS_CONFLICT_DETECTION_PATTERN for background sync",
+    "user_interaction": "ALWAYS load PROGRESSIVE_ENHANCEMENT_UX_PATTERN for status indicators",
+    "cache_operations": "ALWAYS load PROGRESSIVE_ENHANCEMENT_UX_PATTERN for transparency",
+    "self_improvement": "ALWAYS load RUNAWAY_SELF_ENHANCEMENT_PREVENTION_PATTERN for safety",
+    "improve_command": "ALWAYS load RUNAWAY_SELF_ENHANCEMENT_PREVENTION_PATTERN for safeguards",
+    "remember_command": "ALWAYS load RUNAWAY_SELF_ENHANCEMENT_PREVENTION_PATTERN for proposal safety",
     "full_system_work": "Load ALL patterns for comprehensive adherence"
   },
   "neural_enforcement": {
