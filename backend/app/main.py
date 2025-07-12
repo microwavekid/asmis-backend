@@ -7,9 +7,9 @@ import shutil
 from dotenv import load_dotenv
 from app.agents.meddpic_orchestrator import MEDDPICCOrchestrator, SourceType
 from app.routers import task_router
-from app.routers.router_config import get_deals_router, get_router_mode
+from app.routers.router_config import get_deals_router, get_router_mode, get_auth_mode
 from app.api import smart_capture
-from app.database.connection import async_db_manager
+from app.database.connection import async_db_manager, db_manager
 import anthropic
 import logging
 
@@ -33,21 +33,29 @@ app.add_middleware(
 )
 
 # Include API routers
+# Authentication router (only if JWT auth is enabled)
+if get_auth_mode() == "JWT":
+    from app.routers.auth import router as auth_router
+    app.include_router(auth_router)
+
 # Use configurable deals router (stub or real based on environment)
 deals_router = get_deals_router()
 app.include_router(deals_router)
 app.include_router(smart_capture.router)
 app.include_router(task_router)
 
-# Log which router mode is active
+# Log which modes are active
 logger = logging.getLogger(__name__)
 logger.info(f"Using {get_router_mode()} routers for deals API")
+logger.info(f"Using {get_auth_mode()} authentication mode")
 
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connections on startup."""
     try:
+        # Initialize both sync and async database managers
+        db_manager.initialize()
         async_db_manager.initialize()
         logger.info("Database connections initialized")
     except Exception as e:
@@ -59,6 +67,8 @@ async def startup_event():
 async def shutdown_event():
     """Close database connections on shutdown."""
     try:
+        # Close both sync and async database managers
+        db_manager.close()
         await async_db_manager.close()
         logger.info("Database connections closed")
     except Exception as e:

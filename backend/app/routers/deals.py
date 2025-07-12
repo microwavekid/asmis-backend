@@ -17,6 +17,8 @@ from ..database.connection import get_async_db_session
 from ..database.models import Deal, Account, MEDDPICCAnalysis, Stakeholder
 from ..schemas.deals import DealResponse, DealCreate, DealUpdate, MEDDPICCResponse, DealListResponse, DealStatsResponse
 from ..agents.meddpic_orchestrator import MEDDPICCOrchestrator
+from ..auth.models import AuthContext
+from .router_config import get_auth_dependency
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,7 @@ async def list_deals(
     account_id: Optional[str] = Query(None, description="Filter by account"),
     limit: int = Query(50, le=100, description="Maximum number of deals to return"),
     offset: int = Query(0, description="Number of deals to skip"),
+    auth: AuthContext = Depends(get_auth_dependency()),
     db: AsyncSession = Depends(get_async_db_session)
 ):
     """
@@ -36,7 +39,7 @@ async def list_deals(
     Returns data compatible with Linear UI deals table.
     """
     try:
-        # Build query with joins
+        # Build query with joins and tenant isolation
         query = select(
             Deal,
             Account.name.label("account_name"),
@@ -46,6 +49,8 @@ async def list_deals(
             Account, Deal.account_id == Account.id
         ).outerjoin(
             MEDDPICCAnalysis, Deal.id == MEDDPICCAnalysis.deal_id
+        ).where(
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
         )
         
         # Apply filters
@@ -95,31 +100,41 @@ async def list_deals(
 
 @router.get("/stats", response_model=DealStatsResponse)
 async def get_deal_stats(
+    auth: AuthContext = Depends(get_auth_dependency()),
     db: AsyncSession = Depends(get_async_db_session)
 ):
     """Get aggregated deal statistics for dashboard."""
     try:
-        # Get basic deal stats
+        # Get basic deal stats with tenant isolation
         basic_stats_query = select(
             func.count(Deal.id).label("total_deals"),
             func.coalesce(func.sum(Deal.amount), 0).label("total_value"),
             func.coalesce(func.avg(Deal.amount), 0).label("average_deal_size")
-        ).where(Deal.status == "active")
+        ).where(
+            Deal.status == "active",
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
         
         basic_result = await db.execute(basic_stats_query)
         basic_stats = basic_result.first()
         
-        # Get deals by stage
+        # Get deals by stage with tenant isolation
         stage_stats_query = select(
             Deal.stage,
             func.count(Deal.id).label("count")
-        ).where(Deal.status == "active").group_by(Deal.stage)
+        ).where(
+            Deal.status == "active",
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        ).group_by(Deal.stage)
         
         stage_result = await db.execute(stage_stats_query)
         deals_by_stage = {row.stage: row.count for row in stage_result}
         
-        # Get deals by priority (calculated dynamically)
-        deals_query = select(Deal.close_date, Deal.amount).where(Deal.status == "active")
+        # Get deals by priority (calculated dynamically) with tenant isolation
+        deals_query = select(Deal.close_date, Deal.amount).where(
+            Deal.status == "active",
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
         deals_result = await db.execute(deals_query)
         
         priority_counts = {"high": 0, "medium": 0, "low": 0}
@@ -138,7 +153,10 @@ async def get_deal_stats(
             func.count(Deal.id).label("count")
         ).join(
             MEDDPICCAnalysis, Deal.id == MEDDPICCAnalysis.deal_id, isouter=True
-        ).where(Deal.status == "active").group_by("health_range")
+        ).where(
+            Deal.status == "active",
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        ).group_by("health_range")
         
         health_result = await db.execute(health_stats_query)
         health_distribution = {row.health_range or "low": row.count for row in health_result}
@@ -154,7 +172,10 @@ async def get_deal_stats(
             func.count(Deal.id).label("count")
         ).join(
             MEDDPICCAnalysis, Deal.id == MEDDPICCAnalysis.deal_id, isouter=True
-        ).where(Deal.status == "active").group_by("score_range")
+        ).where(
+            Deal.status == "active",
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        ).group_by("score_range")
         
         meddpicc_result = await db.execute(meddpicc_stats_query)
         meddpicc_distribution = {row.score_range or "low": row.count for row in meddpicc_result}
@@ -217,16 +238,20 @@ async def get_deal_stats(
 @router.get("/{deal_id}", response_model=DealResponse)
 async def get_deal(
     deal_id: str,
+    auth: AuthContext = Depends(get_auth_dependency()),
     db: AsyncSession = Depends(get_async_db_session)
 ):
     """Get detailed deal information including MEDDPICC analysis."""
     try:
-        # Get deal with account and MEDDPICC data
+        # Get deal with account and MEDDPICC data with tenant isolation
         query = select(Deal, Account, MEDDPICCAnalysis).join(
             Account, Deal.account_id == Account.id
         ).outerjoin(
             MEDDPICCAnalysis, Deal.id == MEDDPICCAnalysis.deal_id
-        ).where(Deal.id == deal_id)
+        ).where(
+            Deal.id == deal_id,
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
         
         result = await db.execute(query)
         row = result.first()
@@ -275,23 +300,28 @@ async def get_deal(
 @router.post("/", response_model=DealResponse)
 async def create_deal(
     deal_data: DealCreate,
+    auth: AuthContext = Depends(get_auth_dependency()),
     db: AsyncSession = Depends(get_async_db_session)
 ):
     """Create a new deal."""
     try:
-        # Verify account exists
-        account_query = select(Account).where(Account.id == deal_data.account_id)
+        # Verify account exists and belongs to user's tenant
+        account_query = select(Account).where(
+            Account.id == deal_data.account_id,
+            Account.tenant_id == auth.tenant_id  # Tenant isolation
+        )
         account_result = await db.execute(account_query)
         account = account_result.scalar_one_or_none()
         
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
         
-        # Create deal
+        # Create deal with tenant isolation
         deal = Deal(
             name=deal_data.name,
             description=deal_data.description,
             account_id=deal_data.account_id,
+            tenant_id=auth.tenant_id,  # Set tenant from auth context
             deal_type=deal_data.deal_type or "new_business",
             amount=deal_data.amount,
             currency=deal_data.currency or "USD",
@@ -345,12 +375,18 @@ async def create_deal(
 @router.get("/{deal_id}/meddpicc", response_model=MEDDPICCResponse)
 async def get_deal_meddpicc(
     deal_id: str,
+    auth: AuthContext = Depends(get_auth_dependency()),
     db: AsyncSession = Depends(get_async_db_session)
 ):
     """Get MEDDPICC analysis for a specific deal."""
     try:
-        # Get MEDDPICC analysis
-        query = select(MEDDPICCAnalysis).where(MEDDPICCAnalysis.deal_id == deal_id)
+        # Get MEDDPICC analysis with tenant isolation
+        query = select(MEDDPICCAnalysis).join(
+            Deal, MEDDPICCAnalysis.deal_id == Deal.id
+        ).where(
+            MEDDPICCAnalysis.deal_id == deal_id,
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
         result = await db.execute(query)
         meddpicc = result.scalar_one_or_none()
         
@@ -370,6 +406,7 @@ async def get_deal_meddpicc(
 async def analyze_deal_transcript(
     deal_id: str,
     request: dict,
+    auth: AuthContext = Depends(get_auth_dependency()),
     db: AsyncSession = Depends(get_async_db_session)
 ):
     """
@@ -382,8 +419,11 @@ async def analyze_deal_transcript(
         if not content:
             raise HTTPException(status_code=400, detail="Content is required")
         
-        # Verify deal exists
-        deal_query = select(Deal).where(Deal.id == deal_id)
+        # Verify deal exists and belongs to user's tenant
+        deal_query = select(Deal).where(
+            Deal.id == deal_id,
+            Deal.tenant_id == auth.tenant_id  # Tenant isolation
+        )
         deal_result = await db.execute(deal_query)
         deal = deal_result.scalar_one_or_none()
         

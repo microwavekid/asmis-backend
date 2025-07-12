@@ -204,11 +204,10 @@ def get_test_db_manager(database_url: str) -> DatabaseConnectionManager:
     return DatabaseConnectionManager(database_url)
 
 
-@contextmanager
 def get_db_session() -> Generator[Session, None, None]:
     """Get a database session from the global manager.
     
-    This is a convenience function for use in FastAPI dependencies.
+    This is a FastAPI dependency function.
     
     Yields:
         Session: Database session
